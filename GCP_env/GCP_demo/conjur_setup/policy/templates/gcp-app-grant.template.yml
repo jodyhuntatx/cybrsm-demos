@@ -1,0 +1,6 @@
+- !permit
+  role: !group {{ PROJECT_NAME }}
+  privileges: [ read, execute ]
+  resources:
+  - !variable secrets/db-username
+  - !variable secrets/db-password

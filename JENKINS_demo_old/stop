@@ -1,0 +1,3 @@
+source ../config/conjur.config
+source ./jenkinsvars.sh
+$DOCKER stop $JENKINS_DEMO_CONTAINER && $DOCKER rm $JENKINS_DEMO_CONTAINER

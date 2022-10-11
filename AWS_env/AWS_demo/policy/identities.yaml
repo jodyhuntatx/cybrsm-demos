@@ -1,0 +1,4 @@
+---
+# Individual identity definitions 
+- !host cust-portal/475601244925/GenericReadOnly
+- !host lambda1/475601244925/GenericReadOnly

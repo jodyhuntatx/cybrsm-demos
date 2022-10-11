@@ -1,0 +1,21 @@
+- !policy
+  id: gcp-demo
+  body:
+    - !group
+ 
+    - &hosts
+      - !host
+        id: gcp-client
+        annotations:
+          authn-gcp/instance-name: conjur-leader
+          authn-gcp/project-id: test-cluster-222715
+          authn-gcp/service-account-id: 115841005992567459905
+          authn-gcp/service-account-email: 714640084141-compute@developer.gserviceaccount.com
+           
+    - !grant
+      role: !group
+      members: *hosts
+          
+- !grant
+  role: !group conjur/authn-gcp/apps
+  member: !group gcp-demo

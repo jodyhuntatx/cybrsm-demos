@@ -1,0 +1,21 @@
+---
+- hosts: aimMachines
+  gather_facts: False
+  tasks:
+    - name: Pull password from CCP
+      uri: 
+        url: https://{{ ccp_ip }}/aimwebservice/api/Accounts?AppID={{ ccp_app_id }}&Safe={{ ccp_safe }}&Object={{ ccp_object_name }}
+        method: GET
+        headers:
+          Content-Type: "application/json"
+        return_content: yes
+        validate_certs: no
+        body_format: json
+      register: response
+      vars:
+        ccp_ip: "192.168.50.131"
+        ccp_app_id: "ANSIBLE"
+        ccp_safe: "CICD_Secrets"
+        ccp_folder: 'root'
+        ccp_object_name: "MySQL"
+    - debug: msg="{{ response.content }}"  

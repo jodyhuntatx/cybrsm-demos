@@ -1,0 +1,3 @@
+#!/bin/bash
+source ./dotnetdemo.config
+docker stop $DEMO_CONTAINER > /dev/null && docker rm $DEMO_CONTAINER > /dev/null

@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Cleaning $PWD..."
+rm -rf ./conjur-etc
+rm -rf ./AWS_demo/java/conjur-api-java
+rm -rf ./AWS_demo/python/conjur-iam-api-key

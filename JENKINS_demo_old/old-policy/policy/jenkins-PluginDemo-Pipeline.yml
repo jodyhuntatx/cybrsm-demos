@@ -1,0 +1,20 @@
+- !policy
+  id: jenkins
+  body:
+    - !group
+
+    - &hosts
+        - !host
+            id: PluginDemo-Pipeline
+            annotations:
+                authn-jwt/jenkins/jenkins_full_name: PluginDemo-Pipeline
+#                authn-jwt/jenkins/{{ JWT_CLAIM2_NAME }}: {{ JWT_CLAIM2_VALUE }}
+#                authn-jwt/jenkins/{{ JWT_CLAIM3_NAME }}: {{ JWT_CLAIM3_VALUE }}
+
+    - !grant 
+        role: !group
+        members: *hosts
+
+- !grant
+    role: !group conjur/authn-jwt/jenkins/consumers
+    member: !group jenkins

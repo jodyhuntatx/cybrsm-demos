@@ -1,0 +1,6 @@
+---
+- !grant
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  members:
+  - !host tf-build-ids/tf-id-2
+  - !host tf-build-ids/tf-id-3

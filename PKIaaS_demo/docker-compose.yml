@@ -1,0 +1,17 @@
+version: "3"
+services:
+
+  pkiaas:
+    image: nfmsjoeg/pkiaas:latest
+    environment:
+      CONJUR_CERT_FILE: "$MASTER_CERT_FILE"
+      CONJUR_AUTHN_LOGIN: "host/pki-service"
+      CONJUR_ACCOUNT: "$CONJUR_ACCOUNT"
+      CONJUR_APPLIANCE_URL: "$CONJUR_APPLIANCE_URL"
+
+    command: bash -c 'while [ ! -f /app/env/pkiaas.env ]; do echo "pkiaas.env not exist"; sleep 2; done; source /app/env/pkiaas.env && env && /app/pkiaas'
+    volumes:
+      - $CACHE_DIR:/app/cert
+      - ./env:/app/env
+    ports:
+    - "8080:8080"

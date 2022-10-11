@@ -1,0 +1,53 @@
+[
+  {
+    "ID": "\\VED\\Policy\\Certificates\\Division 3\\TestCerta",
+    "CN": "TestCommonName",
+    "SANS": {
+      "DNS": [
+        "TestCommonName"
+      ],
+      "Email": null,
+      "IP": null,
+      "URI": null,
+      "UPN": null
+    },
+    "Serial": "38F8757D00010000DE13",
+    "Thumbprint": "B17A0CD499124C047A0720CEB8F1225994AF43A0",
+    "ValidFrom": "2019-11-26T23:18:41Z",
+    "ValidTo": "2020-11-25T23:18:41Z"
+  },
+  {
+    "ID": "\\VED\\Policy\\Certificates\\Division 3\\localhost",
+    "CN": "localhost",
+    "SANS": {
+      "DNS": [
+        "localhost"
+      ],
+      "Email": null,
+      "IP": null,
+      "URI": null,
+      "UPN": null
+    },
+    "Serial": "132F391300010000DD1A",
+    "Thumbprint": "3DF6ABD9BEA67AAB609824B250B1017D4DD8CAC9",
+    "ValidFrom": "2019-11-19T15:13:09Z",
+    "ValidTo": "2020-11-18T15:13:09Z"
+  },
+  {
+    "ID": "\\VED\\Policy\\Certificates\\Division 3\\TestCertb",
+    "CN": "TestCertb",
+    "SANS": {
+      "DNS": [
+        "TestCertb"
+      ],
+      "Email": null,
+      "IP": null,
+      "URI": null,
+      "UPN": null
+    },
+    "Serial": "3E292AA300010000DE38",
+    "Thumbprint": "BC20EC792CD8C1A5683843B66475AA84F9EC0771",
+    "ValidFrom": "2019-11-27T23:29:58Z",
+    "ValidTo": "2020-11-26T23:29:58Z"
+  }
+]

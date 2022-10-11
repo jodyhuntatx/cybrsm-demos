@@ -1,0 +1,20 @@
+version: "2"
+services:
+
+  # nginx web server
+  server:
+    build: ./build/server
+    container_name: $SERVER_CN
+    extra_hosts:
+      - "$CONJUR_LEADER_HOSTNAME: $CONJUR_LEADER_HOST_IP"
+  
+  # curl web client
+  client:
+    build: ./build/client
+    container_name: $CLIENT_CN
+    entrypoint: "sleep infinity"
+    environment:
+      TERM: xterm
+      SERVER_CN: $SERVER_CN
+    extra_hosts:
+      - "$CONJUR_LEADER_HOSTNAME: $CONJUR_LEADER_HOST_IP"

@@ -1,0 +1,6 @@
+#!/bin/bash
+source ../../config/conjur.config
+echo "Stopping $MYSQL_CLIENT..."
+$DOCKER stop $MYSQL_CLIENT &> /dev/null && $DOCKER rm $MYSQL_CLIENT &> /dev/null 
+echo "Stopping $MYSQL_SERVER..."
+$DOCKER stop $MYSQL_SERVER &> /dev/null && $DOCKER rm $MYSQL_SERVER &> /dev/null 

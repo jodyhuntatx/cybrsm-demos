@@ -1,0 +1,41 @@
+---
+##################
+# define identities and group roles
+- !policy
+  id: client
+  annotations:
+    description: Client node group role
+  body:
+  - !group nodes	# a group role
+
+  - !host node1		# an identity
+  - !host node2		# another identity
+
+  - !grant		# role grant to identities
+    role: !group nodes
+    members:
+    - !host node1	# node2?
+
+##################
+# define resources
+- !policy
+  id: secrets
+  annotations:
+    description: Define secrets resources
+  body:
+  - !variable db-username
+  - !variable db-password
+
+##################
+# grant read,execute privs to the client/nodes group role on secrets 
+- !permit
+  privileges: [ read, execute ]
+  roles:
+  - !group client/nodes
+  resources:
+  - !variable secrets/db-username
+  - !variable secrets/db-password
+
+#- !grant
+#  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+#  member: !group client/nodes

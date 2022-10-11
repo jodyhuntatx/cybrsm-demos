@@ -1,0 +1,29 @@
+#!/bin/bash
+source ./self-serve.bashlib
+if [[ $# != 2 ]]; then
+  echo "Usage: $0 <access-request-filename> <ttl-in-secs>"
+  exit -1
+fi
+export ACCESS_REQUEST_JSON_FILE=$1
+export ACCESS_TTL=$2
+
+clear
+grant-safe-access-to-identities $ACCESS_REQUEST_JSON_FILE > /dev/null 	\
+  && sleep $ACCESS_TTL > /dev/null			\
+  && revoke-safe-access-for-identities $ACCESS_REQUEST_JSON_FILE > /dev/null &
+
+export PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .vaultName)
+export PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeName)
+export IDENTITIES=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities)
+echo "Access to secrets in $PAS_SAFE_NAME in vault $PAS_VAULT_NAME granted to:"
+i=0
+while true; do
+  conjur_identity=$(echo $IDENTITIES | jq -r .[$i].identity)
+  if [[ $conjur_identity != null ]]; then
+    echo "    $conjur_identity"
+    let i=$i+1
+  else
+    break
+  fi
+done
+echo "for $2 seconds."

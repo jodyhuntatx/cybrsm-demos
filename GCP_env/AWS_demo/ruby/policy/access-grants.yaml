@@ -1,0 +1,13 @@
+---
+##############################
+# Access Authorization
+# Grant authn-iam group role to identities (enable authn-iam for apps)
+# Grant secrets access role(s) to identities
+- !grant
+  roles:
+  - !group conjur/authn-iam/useast2/apps
+  - !group database/consumers
+    #  - !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  members:
+  - !host cust-portal/475601244925/GenericReadOnly
+    #  - !host lambda1/475601244925/GenericReadOnly

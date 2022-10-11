@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ $# != 4 ]]; then echo "Usage: $0 <access-request-template-filename> <project-name> <requestor> <environment>"; exit -1; fi
+REQUEST_TEMPLATE=$1
+PROJECT_NAME=$2
+REQUESTOR=$3
+ENVIRONMENT=$4
+cat $REQUEST_TEMPLATE				\
+| sed -e "s#{{ PROJECT_NAME }}#$PROJECT_NAME#"g	\
+| sed -e "s#{{ REQUESTOR }}#$REQUESTOR#"g	\
+| sed -e "s#{{ ENVIRONMENT }}#$ENVIRONMENT#"g	\
+> access-request.$PROJECT_NAME
+
+# skip checking into github - bypasses approvals
+#./_git-rest.sh submit access-request.$PROJECT_NAME
+
+cp access-request.$PROJECT_NAME access-request

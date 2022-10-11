@@ -1,0 +1,36 @@
+FROM ubuntu:16.04
+
+# install some prerequisites needed by adding GPG public keys (could be removed later)
+RUN apt-get update -y		\
+    && apt-get install -y	\
+    --no-install-recommends	\
+    wget			\
+    gnupg			\
+    ca-certificates		\
+    lsb-release			\
+    && wget -O - https://openresty.org/package/pubkey.gpg | apt-key add -	\
+    && echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main"	\
+	| tee /etc/apt/sources.list.d/openresty.list				\
+    && apt-get clean all
+
+RUN apt-get update -y		\
+    && apt-get install -y	\
+	openssl			\
+	vim			\
+	jq			\
+	curl			\
+	openresty		\
+    && mkdir /conjur		\
+    && apt-get clean all
+
+# change to appropriate TZ for demoing - important for cert TTL
+ENV TZ=America/Chicago
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ADD tls* /conjur/
+RUN chmod 440 /conjur/tls*
+RUN mkdir /conf /logs
+ADD nginx.conf /conf
+ADD index.html /
+
+ENTRYPOINT "/usr/local/openresty/nginx/sbin/nginx -p / -c conf/nginx.conf"

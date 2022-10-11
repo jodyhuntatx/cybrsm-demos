@@ -1,0 +1,20 @@
+- !policy
+  id: jenkins
+  body:
+    - !group
+
+    - &hosts
+        - !host
+            id: PluginDemo-Pipeline
+            annotations:
+                authn-jwt/jenkins/jenkins_name: PluginDemo-Pipeline
+                authn-jwt/jenkins/jenkins_task_noun: Build
+                authn-jwt/jenkins/jenkins_pronoun: Pipeline
+
+    - !grant 
+        role: !group
+        members: *hosts
+
+- !grant
+    role: !group conjur/authn-jwt/jenkins/consumers
+    member: !group jenkins

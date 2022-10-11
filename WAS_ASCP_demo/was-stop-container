@@ -1,0 +1,17 @@
+#!/bin/bash
+source wasascpdemo.config
+
+if [[ "$(docker ps | grep $DEMO_CONTAINER)" == "" ]]; then
+  exit 0
+fi
+
+echo
+read -p "Remove running WebSphere container? " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit -1
+fi
+
+echo "Stopping and removing $DEMO_CONTAINER container..."
+docker stop $DEMO_CONTAINER > /dev/null && docker rm $DEMO_CONTAINER > /dev/null

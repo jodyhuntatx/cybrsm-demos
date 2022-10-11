@@ -1,0 +1,12 @@
+#!/bin/bash
+source ./dotnetdemo.config
+
+main() {
+  docker exec -i $DEMO_CONTAINER mkdir -p $DEMO_DIR/src
+  for src in $SRC_FILES; do
+    docker cp $SRC_DIR/$src $DEMO_CONTAINER:$DEMO_DIR/src/
+  done
+  docker exec -i $DEMO_CONTAINER bash -c "cd src && dotnet run"
+}
+
+main "$@"

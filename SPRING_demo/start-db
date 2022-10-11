@@ -1,0 +1,7 @@
+#!/bin/bash
+source ./spring-demo.config
+cd mysql
+./1-mysqldb-server-start.sh
+./2-mysqldb-client-start.sh
+./3-mysqldb-create-db.sh
+cd ..

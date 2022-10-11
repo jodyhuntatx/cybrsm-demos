@@ -1,0 +1,13 @@
+- !user jhunt
+- !user bwills
+
+- !grant
+  role: !group user1/users
+  members:
+  - !user jhunt
+  - !user bwills
+
+- !grant
+  role: !group jenkins/users
+  members:
+  - !user jhunt

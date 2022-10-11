@@ -1,0 +1,10 @@
+# policy id needs to match the convention `conjur/authn-iam/<service ID>`
+- !policy
+  id: conjur/authn-iam/useast2
+  body:
+  - !webservice
+  - !group apps
+  - !permit
+    role: !group apps
+    privilege: [ read, authenticate ]
+    resource: !webservice

@@ -1,0 +1,36 @@
+{
+  "vaultName": "DemoVault",
+  "cpmName": "PasswordManager",
+  "lobName": "CICD",
+  "requestor": "Jody Hunt",
+  "projectName": "JuneDemo",
+  "safeName": "JuneDemo",
+  "identities": [
+    {
+      "identity": "!host client/node1"
+    }
+  ],
+  "accountRequests": [
+    {
+      "accountName": "WinServerAcct",
+      "platformId": "WinServerLocal",
+      "address": "WIN-T4KRGHVATN4",
+      "userName": "mdamon",
+      "secretType": "password"
+    },
+    {
+      "accountName": "OracleDB-Dev",
+      "platformId": "Oracle",
+      "address": "",
+      "userName": "galgadot",
+      "secretType": "password"
+    },
+    {
+      "accountName": "SQLServer-Dev",
+      "platformId": "MSSql",
+      "address": "",
+      "userName": "jfavreau",
+      "secretType": "password"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+- !delete
+  record: !user foo
+- !delete
+  record: !user bar
+- !delete
+  record: !user baz

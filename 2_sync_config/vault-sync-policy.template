@@ -1,0 +1,14 @@
+---
+- !group {{ VAULT_NAME }}-admins
+
+- !policy
+  id: {{ VAULT_NAME }}
+  owner: !group {{ VAULT_NAME }}-admins
+
+- !host
+  id: {{ SYNC_HOST }}
+
+- !grant
+  role: !group {{ VAULT_NAME }}-admins
+  members:
+  - !host {{ SYNC_HOST }}

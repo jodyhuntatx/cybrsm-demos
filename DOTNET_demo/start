@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source ./dotnetdemo.config
+
+if [[ "$(docker images | grep $DEMO_IMAGE)" == "" ]]; then
+  docker build . -t $DEMO_IMAGE
+fi
+
+docker run -d \
+    --name $DEMO_CONTAINER \
+    --entrypoint sh \
+    --add-host "$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP" \
+    --env CONJUR_APPLIANCE_URL=$CONJUR_APPLIANCE_URL \
+    --env CONJUR_ACCOUNT=$CONJUR_ACCOUNT \
+    --env CONJUR_AUTHN_LOGIN=$CONJUR_AUTHN_LOGIN \
+    --env CONJUR_AUTHN_API_KEY=$CONJUR_AUTHN_API_KEY \
+    --env CONJUR_IGNORE_UNTRUSTED_SSL=$CONJUR_IGNORE_UNTRUSTED_SSL \
+    $DEMO_IMAGE \
+    -c "sleep infinity"
+

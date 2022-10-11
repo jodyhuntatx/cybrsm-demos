@@ -1,0 +1,8 @@
+---
+- !policy
+  id: jenkins
+  annotations:
+    description: Conjur policy for Jenkins
+    jenkins: "true"
+  body:
+  - !host master

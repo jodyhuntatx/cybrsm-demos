@@ -1,0 +1,3 @@
+#!/bin/bash
+source ./keymgmt.config
+$DOCKER stop $CONJUR_FOLLOWER_CONTAINER_NAME && $DOCKER rm $CONJUR_FOLLOWER_CONTAINER_NAME > /dev/null

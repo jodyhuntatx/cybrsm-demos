@@ -1,0 +1,24 @@
+version: "2"
+services:
+
+  jenkins-master:
+    container_name: jenkins-master
+    image: jenkins-master:latest
+    build: ./build
+    entrypoint: sleep infinity
+    extra_hosts: 
+      - "$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP"
+    environment:
+      TERM: xterm
+      CONJUR_APPLIANCE_URL: https://$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_PORT
+      CONJUR_ACCOUNT: $CONJUR_ACCOUNT
+      CONJUR_AUTHN_LOGIN: admin
+      CONJUR_ADMIN_PASSWORD: $CONJUR_ADMIN_PASSWORD
+    ports:
+      - "$JENKINS_PORT:8080"
+    volumes:
+      - "jenkins:/var/jenkins_home"
+    restart: always
+
+volumes:
+  jenkins:

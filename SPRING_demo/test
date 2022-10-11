@@ -1,0 +1,13 @@
+#!/bin/bash
+source ./spring-demo.config
+set -x
+cybr conjur logon-non-interactive
+cybr conjur append-policy -b root -f ./policy/spring-demo.yml
+export DEMO_LOGIN=host/spring-apps/spring-demo
+export CONJUR_AUTHN_API_KEY=$(cybr conjur rotate-api-key -l $DEMO_LOGIN)
+export CONJUR_AUTHN_LOGIN=$DEMO_LOGIN
+
+summon -p summon-conjur 	\
+	docker run -d --name test --env-file @SUMMONENVFILE \
+	ubuntu:16.04		\
+	sleep 200000000

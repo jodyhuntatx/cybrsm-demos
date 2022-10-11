@@ -1,0 +1,10 @@
+#!/bin/bash
+source ./wasascpdemo.config
+
+echo "Stopping WebSphere server..."
+docker exec $DEMO_CONTAINER \
+	/opt/IBM/WebSphere/AppServer/profiles/default/bin/stopServer.sh server1 -username admin -password Cyberark1
+
+echo "Starting WebSphere server..."
+docker exec $DEMO_CONTAINER \
+	/opt/IBM/WebSphere/AppServer/profiles/default/bin/startServer.sh server1

@@ -1,0 +1,19 @@
+- !policy
+  id: Ansible
+  body:
+
+  - !layer Controllers
+  - !host Controller1
+
+  - !grant
+    role: !layer Controllers
+    member: !host Controller1
+
+  - !permit
+    roles:
+    - !layer Controllers
+    - !layer /webapp1
+    privileges: [ read, execute ]
+    resources: 
+    - !variable /webapp1/database_username
+    - !variable /webapp1/database_password

@@ -1,0 +1,30 @@
+---
+- !policy
+  id: mutual-tls/server
+  owner: !host pki-admin
+  body:
+    - !host
+    - &servervars
+      - !variable certificate
+      - !variable privateKey
+      - !variable caCertificate
+
+    - !permit
+      role: !host
+      privilege: [ read, execute ]
+      resource: *servervars
+
+- !policy
+  id: mutual-tls/client
+  owner: !host pki-admin
+  body:
+    - !host
+    - &clientvars
+      - !variable certificate
+      - !variable privateKey
+      - !variable caCertificate
+
+    - !permit
+      role: !host
+      privilege: [ read, execute ]
+      resource: *clientvars

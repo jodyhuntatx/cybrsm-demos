@@ -1,0 +1,23 @@
+#!/bin/bash
+source ../config/conjur.config
+source ../bin/conjur_utils.sh
+
+export CONJUR_AUTHN_LOGIN=$CONJUR_ADMIN_USERNAME
+export CONJUR_AUTHN_API_KEY=$CONJUR_ADMIN_PASSWORD
+
+conjur_append_policy root ./tower-policy.yaml
+
+NEW_API_KEY=$(conjur_rotate_api_key host tower/project1)
+echo
+echo "Tower authn creds:"
+echo "  Hostname: host/tower/project1"
+echo "  Account: $CONJUR_ACCOUNT"
+echo "  API key: $NEW_API_KEY"
+echo "  Cert:"
+cat ../etc/$CONJUR_LEADER_HOSTNAME-$CONJUR_ACCOUNT.pem
+echo
+echo "Projects: /var/lib/awx/projects"
+echo "Tower start/stop: ansible-tower-service start/stop/restart"
+echo
+echo "CCP query format: Safe=<safe-name>;Object=<object-name>"
+echo

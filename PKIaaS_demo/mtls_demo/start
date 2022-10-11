@@ -1,0 +1,9 @@
+#!/bin/bash
+./stop
+./0_gen_certs.sh init
+./1_build_images.sh
+./2_start_containers.sh
+echo
+echo
+echo "Certificate TTL may be short. Type \"summon ./connect.sh\" to test."
+./exec-into-client.sh

@@ -1,0 +1,8 @@
+- !host {{ CONJUR_HOSTNAME }}
+
+- !variable {{ VARIABLE_NAME }}
+
+- !permit
+  role: !host {{ CONJUR_HOSTNAME }}
+  privileges: [ read, execute ]
+  resource: !variable {{ VARIABLE_NAME }}

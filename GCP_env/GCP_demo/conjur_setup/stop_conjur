@@ -1,0 +1,7 @@
+#!/bin/bash
+source ./gcp.config
+
+sudo docker stop $CONJUR_MASTER_CONTAINER_NAME && \
+	sudo docker rm $CONJUR_MASTER_CONTAINER_NAME > /dev/null
+sudo docker stop $CLI_CONTAINER_NAME && \
+	sudo docker rm $CLI_CONTAINER_NAME > /dev/null

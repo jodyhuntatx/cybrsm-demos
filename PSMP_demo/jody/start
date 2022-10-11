@@ -1,0 +1,85 @@
+#!/bin/bash
+source ./psm4sshdemo.config
+
+main() {
+  stop_container
+  start_container
+  unzip_install_file
+  copy_config_files
+  docker exec $PSMP_CNAME bash -c "/usr/lib/systemd/systemd --system --unit=basic.target" &
+  verify_sig
+  install_packages
+}
+
+####################
+stop_container() {
+  echo "Stopping running client..."
+  docker stop $PSMP_CNAME > /dev/null ; docker rm $PSMP_CNAME > /dev/null
+}
+
+####################
+start_container() {
+  echo "Building base image..."
+  pushd build
+    docker build -t $PSMPDEMOIMAGE .
+  popd
+
+  echo "Starting container..."
+  docker run -d		\
+    --name $PSMP_CNAME	\
+    --privileged	\
+    -e container=docker \
+    -v /sys/fs/cgroup:/sys/fs/cgroup	\
+    --entrypoint sh	\
+    $PSMPDEMOIMAGE	\
+    -c "sleep infinity"
+}
+
+####################
+unzip_install_file() {
+  echo "Copying zip file to container..."
+  docker cp $PSMPZIPDIR/$PSMPZIPFILE $PSMP_CNAME:/tmp/$PSMPZIPFILE
+  echo "Unzipping installation file..."
+  docker exec -i $PSMP_CNAME bash -c "cd /tmp; unzip /tmp/$PSMPZIPFILE"
+
+  # rename install directory to one without blank spaces in it
+  export PSMPINSTDIR="$(docker exec -i $PSMP_CNAME ls /tmp | grep Privilege)"
+  docker exec $PSMP_CNAME bash -c "mv /tmp/\"$PSMPINSTDIR\" /tmp/psmpinst"
+}
+
+####################
+copy_config_files() {
+  echo "Copying vault.ini & parms files to container..."
+  docker cp etc/vault.ini $PSMP_CNAME:/tmp/psmpinst
+  docker cp etc/psmpparms $PSMP_CNAME:/var/tmp/psmpparms
+  docker cp etc/install_cyberark_sshd.sh $PSMP_CNAME:/tmp/psmpinst/install_cyberark_sshd.sh
+
+  docker exec $PSMP_CNAME bash -c "	\
+	cd /tmp/psmpinst; \
+	chmod 755 CreateCredFile; \
+	/tmp/psmpinst/CreateCredFile user.cred PASSWORD -username $VAULT_ADMIN_UNAME -password $VAULT_ADMIN_PWD \
+  "
+}
+
+####################
+verify_sig() {
+  export PSMP_RPM=$(docker exec -i $PSMP_CNAME ls /tmp/psmpinst | grep ^CARK | grep rpm$)
+  echo "Verifying RPM package signature..."
+  docker exec $PSMP_CNAME bash -c "cd /tmp/psmpinst; rpm --import RPM-GPG-KEY-CyberArk; rpm -K -v $PSMP_RPM"
+}
+
+####################
+install_packages() {
+# Uncomment if enabling AD Bridge
+  export LIBSSH_RPM=$(docker exec -i $PSMP_CNAME ls /tmp/psmpinst/Pre-Requisites | grep ^libssh | grep rpm$)
+  docker exec $PSMP_CNAME rpm -i /tmp/psmpinst/Pre-Requisites/$LIBSSH_RPM
+
+  export PSMP_RPM=$(docker exec -i $PSMP_CNAME ls /tmp/psmpinst | grep ^CARK | grep rpm$)
+  docker exec $PSMP_CNAME bash -c "	\
+	mkdir -p /etc/ssh ;		\
+	touch /etc/ssh/dummy.key ;	\
+	sudo rpm -v -i /tmp/psmpinst/$PSMP_RPM	\
+  "
+}
+
+main "$@"

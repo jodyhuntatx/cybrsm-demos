@@ -1,0 +1,54 @@
+---
+# Create service account for postgres db
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgres-db
+  namespace: {{ CYBERARK_NAMESPACE_NAME }}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres-db
+  namespace: 
+spec:
+  selector:
+    app: postgres-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: postgres-db
+  labels:
+    app: postgres-db
+spec:
+  serviceName: postgres-db
+  selector:
+    matchLabels:
+      app: postgres-db
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+    spec:
+      serviceAccountName: postgres-db
+      securityContext:
+        fsGroup: 999
+      containers:
+      - name: postgres-db
+        imagePullPolicy: IfNotPresent
+        image: {{ IMAGE_NAME }}
+        ports:
+          - containerPort: 5432
+        env:
+          - name: POSTGRES_USER
+            value: test_app
+          - name: POSTGRES_PASSWORD
+            value: UhGfMk5L
+          - name: POSTGRES_DB
+            value: test_app

@@ -1,0 +1,8 @@
+#!/bin/bash
+pushd 1-setup/1-namespace-setup
+./start
+popd
+pushd 1-setup/2-deployment
+./start
+popd
+cd 2-use-cases

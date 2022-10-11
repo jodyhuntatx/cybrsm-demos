@@ -1,0 +1,12 @@
+vcert_username: test
+vcert_password: test
+vcert_zone: some_zone
+vcert_access_token: access_token
+vcert_legacy_auth: false
+vcert_base_url: some_url
+credhub_client_id: some_id
+credhub_client_secret: some_secret
+credhub_username: test2
+credhub_password: test2
+credhub_endpoint: some_other_url
+log_level: info

@@ -1,0 +1,18 @@
+[automationcontroller]
+192.168.50.132 ansible_connection=local
+
+[database]
+
+[all:vars]
+admin_password='Cyberark1'
+
+pg_host=''
+pg_port=''
+
+pg_database='awx'
+pg_username='awx'
+pg_password='Cyberark1'
+
+registry_url='registry.redhat.io'
+registry_username=''
+registry_password=''

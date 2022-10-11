@@ -1,0 +1,31 @@
+node {
+   stage('Test') {
+       withCredentials([
+	conjurSecretCredential(credentialsId: 'test-db-username', variable: 'DB_UNAME'),
+        conjurSecretCredential(credentialsId: 'test-db-password', variable: 'DB_PWD')
+	]) {
+		sh "echo ######## >> /demo/demo.out"
+		sh "date >> /demo/demo.out"
+		sh "echo Test: >> /demo/demo.out"
+		sh "echo DB_UNAME=$DB_UNAME >> /demo/demo.out"
+		sh "echo DB_PWD=$DB_PWD >> /demo/demo.out"
+		sh "echo >> /demo/demo.out"
+       }
+   }
+
+   stage('Prod') {
+       withCredentials([
+	conjurSecretCredential(credentialsId: 'prod-db-username', variable: 'DB_UNAME'),
+        conjurSecretCredential(credentialsId: 'prod-db-password', variable: 'DB_PWD')
+	]) {
+		sh "echo Prod: >> /demo/demo.out"
+		sh "echo DB_UNAME=$DB_UNAME >> /demo/demo.out"
+		sh "echo DB_PWD=$DB_PWD >> /demo/demo.out"
+		sh "echo ######## >> /demo/demo.out"
+       }
+   }
+
+   stage('Results') {
+       echo "Finished!"
+   }
+}

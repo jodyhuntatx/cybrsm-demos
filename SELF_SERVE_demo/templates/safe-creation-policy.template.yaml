@@ -1,0 +1,45 @@
+---
+# Pre-loaded synchronizer LOB, Safe & Delegation policies for a project.
+# All secrets for the project are in {{ PAS_SAFE_NAME }}
+# Loading this policy with values for {{ PAS_VAULT_NAME }}, {{ PAS_LOB_NAME }},
+# and {{ PAS_SAFE_NAME }} enables permission grants on safe secrets 
+# via the delegation/consumers role before the synchronizer pushes secrets
+# to Conjur.
+
+#########################
+# Vault RBAC
+# - updates vault policy with LOB admin group
+- !policy
+  id: {{ PAS_VAULT_NAME }}
+  body:
+  - !group {{ PAS_LOB_NAME }}-admins
+
+  #########################
+  # LOB RBAC
+  # - creates LOB policy owned by LOB admin group
+  # - creates safe admin group
+  - !policy
+    id: {{ PAS_LOB_NAME }}
+    owner: !group /{{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}-admins
+    body:
+    - !group {{ PAS_SAFE_NAME }}-admins
+
+    #########################
+    # Safe RBAC
+    # - creates empty sub-policy for safe
+    # - creates delegation sub-policy w/ consumers group
+    - !policy
+      id: {{ PAS_SAFE_NAME }}
+      owner: !group /{{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}-admins
+      body:
+      - !policy
+        id: delegation
+        owner: !group /{{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}-admins
+        body:
+        - !group consumers
+
+    - !permit
+      role: !group {{ PAS_SAFE_NAME }}-admins
+      privileges: [ create , read , update ]
+      resource: !policy {{ PAS_SAFE_NAME }}
+

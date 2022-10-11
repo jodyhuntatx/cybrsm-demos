@@ -1,0 +1,44 @@
+---
+# Subscription 1 policy
+- !policy
+  id: apps
+  body:
+  - !group
+
+  - &hosts
+    - !host
+      id: rgrp1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+
+    - !host
+      id: rgrp1-sid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+        authn-azure/system-assigned-identity: 48268f7c-9470-4aff-97a9-fa6c736479f1
+
+    - !host
+      id: rgrp1-uid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+        authn-azure/user-assigned-identity: JodyID
+
+    - !host
+      id: rgrp2-uid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: DAP-Demo
+        authn-azure/user-assigned-identity: DAP-demo-UA-Identity
+
+  - !grant
+    role: !group
+    members: *hosts
+
+# grant role that enables subscription identities to authenticate
+- !grant
+  role: !group conjur/authn-azure/jdemo/apps
+  members:
+  - !group apps

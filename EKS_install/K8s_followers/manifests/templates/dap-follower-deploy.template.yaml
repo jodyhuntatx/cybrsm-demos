@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: conjur-follower
+  labels:
+    app: conjur-follower
+spec:
+  ports:
+  - port: 443
+    name: https
+  selector:
+    app: conjur-follower
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: conjur-follower
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: conjur-follower
+        name: conjur-follower
+        role: follower
+    spec:
+      serviceAccountName: {{ CONJUR_SERVICEACCOUNT_NAME }}
+      hostAliases:
+      - ip: "{{ CONJUR_MASTER_HOST_IP }}"
+        hostnames:
+        - "{{ CONJUR_MASTER_HOST_NAME }}"
+      volumes:
+      - name: follower-bootstrap
+        secret:
+          secretName: {{ FOLLOWER_BOOTSTRAP_SECRET }}
+          items:
+          - key: FOLLOWER_START_SCRIPT
+            path: start-follower.sh
+            mode: 511
+          - key: FOLLOWER_SEED_FILE
+            path: follower-seed.tar
+            mode: 420
+      containers:
+      - name: conjur-appliance
+        image: {{ CONJUR_APPLIANCE_IMAGE }}
+        imagePullPolicy: {{ IMAGE_PULL_POLICY }}
+        volumeMounts:
+          - name: follower-bootstrap
+            mountPath: /tmp/seedfile
+            readOnly: true
+        command: ["/tmp/seedfile/start-follower.sh"]
+        env:
+
+          # from CONJUR_CONFIG_MAP
+          - name: CONJUR_MASTER_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ CONJUR_CONFIG_MAP }}
+                key: CONJUR_MASTER_PORT
+
+          # from FOLLOWER_CONFIG_MAP
+          - name: SEEDFILE_DIR
+            valueFrom:
+              configMapKeyRef:
+                name: {{ FOLLOWER_CONFIG_MAP }}
+                key: SEED_FILE_DIR
+
+          - name: CONJUR_AUTHENTICATORS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ FOLLOWER_CONFIG_MAP }}
+                key: CONJUR_AUTHENTICATORS
+        ports:
+        - containerPort: 443
+          name: https
+        - containerPort: 5432
+          name: pg-main
+        - containerPort: 1999
+          name: pg-audit
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 443
+            scheme: HTTPS
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: 500m
+            memory: 2Gi
