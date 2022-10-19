@@ -1,9 +1,9 @@
 - !policy
-  id: tower
+  id: aap
   body:
   - !host project1
 
 - !grant
   role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
   members:
-  - !host tower/project1
+  - !host aap/project1

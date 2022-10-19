@@ -1,0 +1,18 @@
+---
+# This policy whitelists the service account identity for the 
+# application example that uses the secrets provider for k8s
+# to push secrets to a file volume.
+# It annotates the host identity w/ k8s attributes
+# and grants it roles to authenticate and access to secrets.
+
+- !host
+  id: system:serviceaccount:user1:app-example-authnjwt
+  annotations:
+    authn-jwt/user1/sub: system:serviceaccount:user1:app-example-authnjwt
+
+# Grant authn-k8s & safe access roles to app identity
+- !grant
+  roles:
+  - !group consumers			# group w/ authentication & secrets access permissions
+  members:
+  - !host system:serviceaccount:user1:app-example-authnjwt

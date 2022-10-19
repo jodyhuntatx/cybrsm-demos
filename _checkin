@@ -2,8 +2,9 @@
 DEMO_DIRS=$(ls -d */)
 
 main() {
-  echo "Space before cleaning: $(du -sh -I .git .)"
+  BEFORE=$(du -sh -I .git .)
   clean
+  echo "Space before cleaning: $BEFORE"
   echo "Space after cleaning: $(du -sh -I .git .)"
   echo
   echo "Directories >1M:"
@@ -12,6 +13,7 @@ main() {
   echo
   echo "Archive files:"
   find . | grep z$
+  find . | grep tar$
   echo
   echo -n "Press <enter> to proceed, <ctrl-C> to exit..."
   read foo
