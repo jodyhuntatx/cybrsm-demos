@@ -1,8 +1,9 @@
 #!/bin/bash
 echo "Cleaning $PWD..."
-for i in $(ls -l 1-setup | grep ^d | awk '{print $9}'); do
-  rm $i/manifests/*
-done
+./stop
+pushd 3-operator
+  ./stop
+popd
 for i in $(ls -l 2-use-cases | grep ^d | awk '{print $9}'); do
   rm $i/*.yaml
 done

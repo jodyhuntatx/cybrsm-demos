@@ -2,7 +2,7 @@
 # Conjur service configuration
 export REMOTE_CONJUR_LEADER=false
 export CONJUR_FOLLOWERS_IN_CLUSTER=true
-export CONJUR_VERSION=12.4.0
+export CONJUR_VERSION=12.7.0.1
 
 ######################
 # SSH values to execute scripts if remote Conjur master host

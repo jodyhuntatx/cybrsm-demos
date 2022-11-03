@@ -1,0 +1,29 @@
+apiVersion: conjur.cyberark.com/v1
+kind: ConjurFollower
+metadata:
+  name: my-conjur-follower
+  namespace: cyberark
+  labels:
+    app: conjur-follower
+spec:
+  replicas: 1
+  configFileFrom:
+    configMapKeyRef:
+      name: follower-authn-config
+      key: follower-authn-cm.yaml
+  master:
+    hostname: conjur-master-minikube
+    account: dev
+    authenticatorID: mac-k8s
+    authnLogin: host/conjur-follower
+    caCertificateFrom:
+      configMapKeyRef:
+        name: conjur-cert
+        key: conjur-ca.pem
+  images:
+    configurator: cyberark/conjur-kubernetes-follower-configurator:2.1.5-c1d57e0
+    conjur: cyberark/conjur-kubernetes-follower-conjur:2.1.5-c1d57e0
+    info: cyberark/conjur-kubernetes-follower-info:2.1.5-c1d57e0
+    nginx: cyberark/conjur-kubernetes-follower-nginx:2.1.5-c1d57e0
+    postgres: cyberark/conjur-kubernetes-follower-postgres:2.1.5-c1d57e0
+    syslogNg: cyberark/conjur-kubernetes-follower-syslog-ng:2.1.5-c1d57e0

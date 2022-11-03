@@ -1,0 +1,160 @@
+NAME                                                                   CREATED AT
+admin                                                                  2022-03-28T13:47:06Z
+cluster-admin                                                          2022-03-28T13:47:06Z
+conjur-authn-role                                                      2022-11-03T13:26:43Z
+conjur-cm-access-role                                                  2022-11-03T13:26:43Z
+conjur-follower-operator-conjurfollower-editor-role                    2022-11-03T18:34:36Z
+conjur-follower-operator-conjurfollower-viewer-role                    2022-11-03T18:34:36Z
+conjur-follower-operator-manager-role                                  2022-11-03T18:34:36Z
+edit                                                                   2022-03-28T13:47:06Z
+kubeadm:get-nodes                                                      2022-03-28T13:47:07Z
+kubernetes-dashboard                                                   2022-07-13T12:22:29Z
+secrets-access                                                         2022-03-28T13:54:14Z
+system:aggregate-to-admin                                              2022-03-28T13:47:06Z
+system:aggregate-to-edit                                               2022-03-28T13:47:06Z
+system:aggregate-to-view                                               2022-03-28T13:47:06Z
+system:auth-delegator                                                  2022-03-28T13:47:06Z
+system:basic-user                                                      2022-03-28T13:47:06Z
+system:certificates.k8s.io:certificatesigningrequests:nodeclient       2022-03-28T13:47:06Z
+system:certificates.k8s.io:certificatesigningrequests:selfnodeclient   2022-03-28T13:47:06Z
+system:certificates.k8s.io:kube-apiserver-client-approver              2022-03-28T13:47:06Z
+system:certificates.k8s.io:kube-apiserver-client-kubelet-approver      2022-03-28T13:47:06Z
+system:certificates.k8s.io:kubelet-serving-approver                    2022-03-28T13:47:06Z
+system:certificates.k8s.io:legacy-unknown-approver                     2022-03-28T13:47:06Z
+system:controller:attachdetach-controller                              2022-03-28T13:47:06Z
+system:controller:certificate-controller                               2022-03-28T13:47:06Z
+system:controller:clusterrole-aggregation-controller                   2022-03-28T13:47:06Z
+system:controller:cronjob-controller                                   2022-03-28T13:47:06Z
+system:controller:daemon-set-controller                                2022-03-28T13:47:06Z
+system:controller:deployment-controller                                2022-03-28T13:47:06Z
+system:controller:disruption-controller                                2022-03-28T13:47:06Z
+system:controller:endpoint-controller                                  2022-03-28T13:47:06Z
+system:controller:endpointslice-controller                             2022-03-28T13:47:06Z
+system:controller:endpointslicemirroring-controller                    2022-03-28T13:47:06Z
+system:controller:ephemeral-volume-controller                          2022-03-28T13:47:06Z
+system:controller:expand-controller                                    2022-03-28T13:47:06Z
+system:controller:generic-garbage-collector                            2022-03-28T13:47:06Z
+system:controller:horizontal-pod-autoscaler                            2022-03-28T13:47:06Z
+system:controller:job-controller                                       2022-03-28T13:47:06Z
+system:controller:namespace-controller                                 2022-03-28T13:47:06Z
+system:controller:node-controller                                      2022-03-28T13:47:06Z
+system:controller:persistent-volume-binder                             2022-03-28T13:47:06Z
+system:controller:pod-garbage-collector                                2022-03-28T13:47:06Z
+system:controller:pv-protection-controller                             2022-03-28T13:47:06Z
+system:controller:pvc-protection-controller                            2022-03-28T13:47:06Z
+system:controller:replicaset-controller                                2022-03-28T13:47:06Z
+system:controller:replication-controller                               2022-03-28T13:47:06Z
+system:controller:resourcequota-controller                             2022-03-28T13:47:06Z
+system:controller:root-ca-cert-publisher                               2022-03-28T13:47:06Z
+system:controller:route-controller                                     2022-03-28T13:47:06Z
+system:controller:service-account-controller                           2022-03-28T13:47:06Z
+system:controller:service-controller                                   2022-03-28T13:47:06Z
+system:controller:statefulset-controller                               2022-03-28T13:47:06Z
+system:controller:ttl-after-finished-controller                        2022-03-28T13:47:06Z
+system:controller:ttl-controller                                       2022-03-28T13:47:06Z
+system:coredns                                                         2022-03-28T13:47:08Z
+system:discovery                                                       2022-03-28T13:47:06Z
+system:heapster                                                        2022-03-28T13:47:06Z
+system:kube-aggregator                                                 2022-03-28T13:47:06Z
+system:kube-controller-manager                                         2022-03-28T13:47:06Z
+system:kube-dns                                                        2022-03-28T13:47:06Z
+system:kube-scheduler                                                  2022-03-28T13:47:06Z
+system:kubelet-api-admin                                               2022-03-28T13:47:06Z
+system:monitoring                                                      2022-03-28T13:47:06Z
+system:node                                                            2022-03-28T13:47:06Z
+system:node-bootstrapper                                               2022-03-28T13:47:06Z
+system:node-problem-detector                                           2022-03-28T13:47:06Z
+system:node-proxier                                                    2022-03-28T13:47:06Z
+system:persistent-volume-provisioner                                   2022-03-28T13:47:06Z
+system:public-info-viewer                                              2022-03-28T13:47:06Z
+system:service-account-issuer-discovery                                2022-03-28T13:47:06Z
+system:volume-scheduler                                                2022-03-28T13:47:06Z
+view                                                                   2022-03-28T13:47:06Z
+NAME                                                   ROLE                                                                               AGE
+cluster-admin                                          ClusterRole/cluster-admin                                                          220d
+conjur-follower-operator-manager-rolebinding           ClusterRole/conjur-follower-operator-manager-role                                  11s
+kubeadm:get-nodes                                      ClusterRole/kubeadm:get-nodes                                                      220d
+kubeadm:kubelet-bootstrap                              ClusterRole/system:node-bootstrapper                                               220d
+kubeadm:node-autoapprove-bootstrap                     ClusterRole/system:certificates.k8s.io:certificatesigningrequests:nodeclient       220d
+kubeadm:node-autoapprove-certificate-rotation          ClusterRole/system:certificates.k8s.io:certificatesigningrequests:selfnodeclient   220d
+kubeadm:node-proxier                                   ClusterRole/system:node-proxier                                                    220d
+kubernetes-dashboard                                   ClusterRole/kubernetes-dashboard                                                   113d
+minikube-rbac                                          ClusterRole/cluster-admin                                                          220d
+oidc-reviewer                                          ClusterRole/system:service-account-issuer-discovery                                5h8m
+storage-provisioner                                    ClusterRole/system:persistent-volume-provisioner                                   220d
+system:basic-user                                      ClusterRole/system:basic-user                                                      220d
+system:controller:attachdetach-controller              ClusterRole/system:controller:attachdetach-controller                              220d
+system:controller:certificate-controller               ClusterRole/system:controller:certificate-controller                               220d
+system:controller:clusterrole-aggregation-controller   ClusterRole/system:controller:clusterrole-aggregation-controller                   220d
+system:controller:cronjob-controller                   ClusterRole/system:controller:cronjob-controller                                   220d
+system:controller:daemon-set-controller                ClusterRole/system:controller:daemon-set-controller                                220d
+system:controller:deployment-controller                ClusterRole/system:controller:deployment-controller                                220d
+system:controller:disruption-controller                ClusterRole/system:controller:disruption-controller                                220d
+system:controller:endpoint-controller                  ClusterRole/system:controller:endpoint-controller                                  220d
+system:controller:endpointslice-controller             ClusterRole/system:controller:endpointslice-controller                             220d
+system:controller:endpointslicemirroring-controller    ClusterRole/system:controller:endpointslicemirroring-controller                    220d
+system:controller:ephemeral-volume-controller          ClusterRole/system:controller:ephemeral-volume-controller                          220d
+system:controller:expand-controller                    ClusterRole/system:controller:expand-controller                                    220d
+system:controller:generic-garbage-collector            ClusterRole/system:controller:generic-garbage-collector                            220d
+system:controller:horizontal-pod-autoscaler            ClusterRole/system:controller:horizontal-pod-autoscaler                            220d
+system:controller:job-controller                       ClusterRole/system:controller:job-controller                                       220d
+system:controller:namespace-controller                 ClusterRole/system:controller:namespace-controller                                 220d
+system:controller:node-controller                      ClusterRole/system:controller:node-controller                                      220d
+system:controller:persistent-volume-binder             ClusterRole/system:controller:persistent-volume-binder                             220d
+system:controller:pod-garbage-collector                ClusterRole/system:controller:pod-garbage-collector                                220d
+system:controller:pv-protection-controller             ClusterRole/system:controller:pv-protection-controller                             220d
+system:controller:pvc-protection-controller            ClusterRole/system:controller:pvc-protection-controller                            220d
+system:controller:replicaset-controller                ClusterRole/system:controller:replicaset-controller                                220d
+system:controller:replication-controller               ClusterRole/system:controller:replication-controller                               220d
+system:controller:resourcequota-controller             ClusterRole/system:controller:resourcequota-controller                             220d
+system:controller:root-ca-cert-publisher               ClusterRole/system:controller:root-ca-cert-publisher                               220d
+system:controller:route-controller                     ClusterRole/system:controller:route-controller                                     220d
+system:controller:service-account-controller           ClusterRole/system:controller:service-account-controller                           220d
+system:controller:service-controller                   ClusterRole/system:controller:service-controller                                   220d
+system:controller:statefulset-controller               ClusterRole/system:controller:statefulset-controller                               220d
+system:controller:ttl-after-finished-controller        ClusterRole/system:controller:ttl-after-finished-controller                        220d
+system:controller:ttl-controller                       ClusterRole/system:controller:ttl-controller                                       220d
+system:coredns                                         ClusterRole/system:coredns                                                         220d
+system:discovery                                       ClusterRole/system:discovery                                                       220d
+system:kube-controller-manager                         ClusterRole/system:kube-controller-manager                                         220d
+system:kube-dns                                        ClusterRole/system:kube-dns                                                        220d
+system:kube-scheduler                                  ClusterRole/system:kube-scheduler                                                  220d
+system:monitoring                                      ClusterRole/system:monitoring                                                      220d
+system:node                                            ClusterRole/system:node                                                            220d
+system:node-proxier                                    ClusterRole/system:node-proxier                                                    220d
+system:public-info-viewer                              ClusterRole/system:public-info-viewer                                              220d
+system:service-account-issuer-discovery                ClusterRole/system:service-account-issuer-discovery                                220d
+system:volume-scheduler                                ClusterRole/system:volume-scheduler                                                220d
+NAMESPACE              NAME                                             CREATED AT
+kube-public            kubeadm:bootstrap-signer-clusterinfo             2022-03-28T13:47:08Z
+kube-public            system:controller:bootstrap-signer               2022-03-28T13:47:06Z
+kube-system            extension-apiserver-authentication-reader        2022-03-28T13:47:06Z
+kube-system            kube-proxy                                       2022-03-28T13:47:08Z
+kube-system            kubeadm:kubelet-config-1.23                      2022-03-28T13:47:06Z
+kube-system            kubeadm:nodes-kubeadm-config                     2022-03-28T13:47:06Z
+kube-system            system::leader-locking-kube-controller-manager   2022-03-28T13:47:06Z
+kube-system            system::leader-locking-kube-scheduler            2022-03-28T13:47:06Z
+kube-system            system:controller:bootstrap-signer               2022-03-28T13:47:06Z
+kube-system            system:controller:cloud-provider                 2022-03-28T13:47:06Z
+kube-system            system:controller:token-cleaner                  2022-03-28T13:47:06Z
+kube-system            system:persistent-volume-provisioner             2022-03-28T13:47:10Z
+kubernetes-dashboard   kubernetes-dashboard                             2022-07-13T12:22:29Z
+NAMESPACE              NAME                                                ROLE                                                  AGE
+cyberark               conjur-follower-access-grant                        ClusterRole/conjur-authn-role                         5h8m
+cyberark               project-admin-access-binding                        ClusterRole/admin                                     5h8m
+kube-public            kubeadm:bootstrap-signer-clusterinfo                Role/kubeadm:bootstrap-signer-clusterinfo             220d
+kube-public            system:controller:bootstrap-signer                  Role/system:controller:bootstrap-signer               220d
+kube-system            kube-proxy                                          Role/kube-proxy                                       220d
+kube-system            kubeadm:kubelet-config-1.23                         Role/kubeadm:kubelet-config-1.23                      220d
+kube-system            kubeadm:nodes-kubeadm-config                        Role/kubeadm:nodes-kubeadm-config                     220d
+kube-system            system::extension-apiserver-authentication-reader   Role/extension-apiserver-authentication-reader        220d
+kube-system            system::leader-locking-kube-controller-manager      Role/system::leader-locking-kube-controller-manager   220d
+kube-system            system::leader-locking-kube-scheduler               Role/system::leader-locking-kube-scheduler            220d
+kube-system            system:controller:bootstrap-signer                  Role/system:controller:bootstrap-signer               220d
+kube-system            system:controller:cloud-provider                    Role/system:controller:cloud-provider                 220d
+kube-system            system:controller:token-cleaner                     Role/system:controller:token-cleaner                  220d
+kube-system            system:persistent-volume-provisioner                Role/system:persistent-volume-provisioner             220d
+kubernetes-dashboard   kubernetes-dashboard                                Role/kubernetes-dashboard                             113d
+user1                  conjur-authn-service                                ClusterRole/conjur-authn-role                         22h
+user1                  conjur-follower-access-grant                        ClusterRole/conjur-authn-role                         20h
+user1                  namespace-admin                                     ClusterRole/admin                                     220d

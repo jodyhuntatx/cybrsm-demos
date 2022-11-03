@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # NOTE: Synch policy has to be appended the first time, then patched thereafter.
-FIRST_TIME=false
+FIRST_TIME=true
 
 if [[ $# != 1 ]]; then
   echo "Usage: $0 [ mac | aws | azure ]"
@@ -65,4 +65,4 @@ echo "  Conjur URL: $CONJUR_APPLIANCE_URL"
 echo "  Conjur Account: $CONJUR_ACCOUNT"
 echo
 
-rm ./vault-sync-policy.yml
+#rm ./vault-sync-policy.yml

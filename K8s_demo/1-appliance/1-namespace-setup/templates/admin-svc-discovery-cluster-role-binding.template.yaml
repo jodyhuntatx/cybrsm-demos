@@ -1,0 +1,14 @@
+---
+# Grant cluster admin user ability to discover service account issuer resources
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+#  name: service-account-issuer-discovery-{{ APP_NAMESPACE_ADMIN }}
+  name: service-account-issuer-discovery-minikube
+roleRef:
+  kind: ClusterRole
+  name: system:service-account-issuer-discovery
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: User
+  name: system:anonymous

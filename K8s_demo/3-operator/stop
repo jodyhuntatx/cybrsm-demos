@@ -1,0 +1,19 @@
+#!/bin/bash
+if [[ -z "${CONJUR_HOME}" ]]; then
+  echo "Set CONJUR_HOME to demo base directory."; exit -1
+fi
+source $CONJUR_HOME/config/conjur.config
+
+CLUSTER_MANIFESTS="crds.yaml operator.yaml "
+for i in $CLUSTER_MANIFESTS; do
+  kubectl delete -f ./manifests/$i --ignore-not-found 
+  rm ./manifests/$i
+done
+
+NAMESPACE_MANIFESTS="follower-deployment.yaml conjur-cm-manifest.yaml"
+for i in $NAMESPACE_MANIFESTS; do
+  kubectl delete -f ./manifests/$i -n $CYBERARK_NAMESPACE_NAME --ignore-not-found 
+  rm ./manifests/$i
+done
+$CLI delete cm conjur-cert -n $CYBERARK_NAMESPACE_NAME
+$CLI delete cm follower-authn-config -n $CYBERARK_NAMESPACE_NAME

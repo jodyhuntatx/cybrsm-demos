@@ -1,0 +1,2 @@
+authenticators: 
+  - authn-k8s/mac-k8s
