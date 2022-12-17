@@ -1,0 +1,5 @@
+- !revoke
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  member: !host bamboo_bot
+- !delete
+  record: !host bamboo_bot

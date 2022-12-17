@@ -10,6 +10,8 @@ main() {
     ./build.sh
   popd
   start_bamboo
+  gen_bamboo_host_id
+  display_config_info
 }
 
 ########################################
@@ -24,7 +26,7 @@ start_bamboo() {
       -e "CONJUR_AUTHN_API_KEY=$CONJUR_AUTHN_API_KEY"			\
       -e "CONJUR_CERT_FILE=/conjur-cert.pem"				\
       -e "BAMBOO_HOME=/home/bamboo"					\
-      -e "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"			\
+      -e "JAVA_HOME=$JAVA_HOME"						\
       -e "TERM=xterm" 							\
       -p "$BAMBOO_PORT:8085"						\
       --restart always 							\
@@ -40,26 +42,35 @@ start_bamboo() {
 
   $DOCKER exec $BAMBOO_DEMO_CONTAINER      \
 	bash -c "/opt/bamboo/current/bin/start-bamboo.sh start"
+}
 
-  echo "- !host bamboo_bot" > tmp
+########################################
+gen_bamboo_host_id() {
+  echo "	\
+- !host $BAMBOO_HOST_ID
+- !grant
+  role: !group $VAULT_NAME/$LOB_NAME/$SAFE_NAME/delegation/consumers
+  member: !host $BAMBOO_HOST_ID"	\
+  > tmp
   cybr conjur append-policy -b root -f tmp
-  bot_api_key=$(cybr conjur rotate-api-key -l host/bamboo_bot)
+  rm tmp
+  bot_api_key=$(cybr conjur rotate-api-key -l host/$BAMBOO_HOST_ID)
+}
 
+########################################
+display_config_info() {
   echo "Waiting for Bamboo to start up..."
   sleep 15
-  echo
-  echo
-  echo
+  clear
   echo
   echo "======== Configuration info ========="
   echo
   echo "Bamboo URL: http://$BAMBOO_PUB_DNS:$BAMBOO_PORT"
   echo
-  echo
   echo "Conjur plugin config values:"
   echo "  Account: $CONJUR_ACCOUNT"
   echo "  Appliance URL: $CONJUR_APPLIANCE_URL"
-  echo "  Plugin host ID: bamboo_bot"
+  echo "  Plugin host ID: $BAMBOO_HOST_ID"
   echo "  Plugin API key: $bot_api_key"
   echo
   echo

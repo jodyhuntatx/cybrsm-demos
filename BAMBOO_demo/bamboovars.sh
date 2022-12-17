@@ -1,4 +1,4 @@
-# OSS Jenkins demo vars
+# Bamboo Datacenter demo vars
 export DOCKER=docker
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export BAMBOO_HOME=/opt/bamboo
@@ -7,10 +7,10 @@ export BAMBOO_DEMO_CONTAINER=bambooserver
 export BAMBOO_AGENT_IMAGE=bamboogent
 export BAMBOO_AGENT_CONTAINER=bambooagent
 export KEYSTORE=$JAVA_HOME/lib/security/cacerts
-export WORKDIR=/tmp
 export BAMBOO_HOST_PVT_IP=$CONJUR_LEADER_HOST_IP
 export BAMBOO_PUB_DNS=$CONJUR_LEADER_HOSTNAME
 export BAMBOO_PORT=8085
+export BAMBOO_HOST_ID=bamboo_bot
 
 ######################
 # Vault policy parameters & secrets
@@ -18,11 +18,3 @@ export VAULT_NAME=DemoVault
 export LOB_NAME=CICD
 export SAFE_NAME=CICD_Secrets
 export ACCOUNT_NAME=MySQL
-
-export MYSQL_ROOT_PASSWORD=Cyberark1
-export MYSQL_SERVER=mysql-server
-export MYSQL_PORT=3306
-export MYSQL_USERNAME=test_user1
-export MYSQL_PASSWORD=UHGMLk1
-export MYSQL_DBNAME=petclinic
-export MYSQL_URL=$CONJUR_LEADER_HOSTNAME
