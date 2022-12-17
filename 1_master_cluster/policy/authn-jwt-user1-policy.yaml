@@ -9,7 +9,7 @@
   body:
 
   # vars for ocp/k8s api url & access creds
-  - !variable jwks-uri
+  - !variable public-keys
   - !variable issuer
   - !variable token-app-property
   - !variable identity-path

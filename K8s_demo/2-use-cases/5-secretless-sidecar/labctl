@@ -52,9 +52,9 @@ create_yaml_files() {
   > ./app-secretless-policy.yaml
 
   # DAP service config map
-  $CLI get cm dap-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
   | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
-  > ./dap-config-cm.yaml
+  > ./conjur-config-cm.yaml
 
   # Secretless config map
   cat ./templates/secretless-cm.template.yaml			\
@@ -76,8 +76,8 @@ create_yaml_files() {
 ########################
 deploy_app() {
   conjur_append_policy $APP_NAMESPACE_NAME ./app-secretless-policy.yaml
-  if [[ "$($CLI get cm dap-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
-    $CLI apply -f ./dap-config-cm.yaml -n $APP_NAME_SPACE_NAME
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAME_SPACE_NAME
   fi
   $CLI create cm secretless-config --from-file=secretless.yaml -n $APP_NAMESPACE_NAME
   $CLI apply -f ./app-secretless-manifest.yaml -n $APP_NAMESPACE_NAME

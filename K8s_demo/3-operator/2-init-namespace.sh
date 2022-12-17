@@ -17,25 +17,11 @@ main() {
     exit 0
   fi
 
-  $CLI get clusterrole > before.txt
-  $CLI get clusterrolebindings >> before.txt
-  $CLI get roles --all-namespaces >> before.txt
-  $CLI get rolebindings --all-namespaces >> before.txt
-
   mkdir -p ./manifests
   init_namespace
   create_lab_namespaces
   create_secrets_access_clusterrole
   load_namespace_policies
-
-  $CLI get clusterrole > after.txt
-  $CLI get clusterrolebindings >> after.txt
-  $CLI get roles --all-namespaces >> after.txt
-  $CLI get rolebindings --all-namespaces >> after.txt
-  echo
-  echo "                RBAC before                                             RBAC after"
-  sdiff -s before.txt after.txt
-  echo
 
   if [[ "$PLATFORM" == "openshift" ]]; then
     update_htpasswd_file
@@ -163,6 +149,10 @@ grant_user_access_to_conjur_cm() {
 
 #############################
 load_namespace_policies() {
+  cat ./templates/follower-policy.template.yml	\
+  > ./manifests/follower-policy.yml
+  conjur_append_policy root ./manifests/follower-policy.yml
+  
   for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))	# apply manifest for namespace and user 
   do
     uname=$(echo user${unum})

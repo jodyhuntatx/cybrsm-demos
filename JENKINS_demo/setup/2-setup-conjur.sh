@@ -18,8 +18,7 @@ initialize_authn_jwt() {
 
   cybr conjur update-policy -b root -f ./policy/authn-jwt-jenkins.yml
 
-# using local authn-jwt policy - need to update the one used for lab build
-#    ~/cybrlab/repo/cyberark/conjur/policy/use_case_model/authenticators/authn-jwt-jenkins.yml
+  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
 
   cybr conjur set-secret -i conjur/authn-jwt/$SERVICE_ID/audience -v $JWT_AUDIENCE
   cybr conjur set-secret -i conjur/authn-jwt/$SERVICE_ID/issuer -v $JWT_ISSUER

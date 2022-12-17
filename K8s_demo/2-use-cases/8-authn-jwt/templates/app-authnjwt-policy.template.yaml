@@ -8,7 +8,7 @@
 - !host
   id: system:serviceaccount:{{ APP_NAMESPACE_NAME }}:app-example-authnjwt
   annotations:
-    authn-jwt/{{ APP_NAMESPACE_NAME }}/sub: system:serviceaccount:{{ APP_NAMESPACE_NAME }}:app-example-authnjwt
+    authn-jwt/{{ AUTHN_JWT_ID }}/sub: system:serviceaccount:{{ APP_NAMESPACE_NAME }}:app-example-authnjwt
 
 # Grant authn-k8s & safe access roles to app identity
 - !grant

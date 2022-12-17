@@ -9,6 +9,7 @@ export WORKDIR=/tmp
 export JENKINS_HOST_PVT_IP=$CONJUR_LEADER_HOST_IP
 export JENKINS_PUB_DNS=$CONJUR_LEADER_HOSTNAME
 export JENKINS_PORT=8081
+export JENKINS_HTTPS_PORT=1443
 
 ######################
 # Vault policy parameters & secrets

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Doc for agent
+# https://github.com/JetBrains/teamcity-docker-images#agent-jetbrainsteamcity-agent
+# https://www.jetbrains.com/help/teamcity/build-agents-configuration-and-maintenance.html
+
+echo "Wait until server finishes configuration before starting agent..."
+read -p "Press Enter to continue, Ctrl-C to exit."
+
+docker pull jetbrains/teamcity-agent
+
+THIS_HOST_PVT_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+export TC_SERVER_HOST=$(aws ec2 describe-instances						\
+	                | jq -r ".Reservations[].Instances[]					\
+			| select(.PrivateIpAddress==\"$THIS_HOST_PVT_IP\").PublicDnsName")
+export TC_SERVER_PORT=8111
+
+echo "Starting Team City agent..."
+docker run -d							\
+	--name tc_agent						\
+	-e SERVER_URL=http://$TC_SERVER_HOST:$TC_SERVER_PORT	\
+	jetbrains/teamcity-agent
+docker logs tc_agent -f

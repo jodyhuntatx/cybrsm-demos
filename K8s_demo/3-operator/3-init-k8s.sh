@@ -13,26 +13,12 @@ main() {
   fi
   mkdir -p ./manifests
 
-  $CLI get clusterrole > before.txt
-  $CLI get clusterrolebindings >> before.txt
-  $CLI get roles --all-namespaces >> before.txt
-  $CLI get rolebindings --all-namespaces >> before.txt
-  
   create_follower_cert_cm
   create_follower_authn_cm
   initialize_k8s_api_secrets
   verify_k8s_api_secrets 
   initialize_authn_jwt_secrets
   create_app_cm
-
-  $CLI get clusterrole > after.txt
-  $CLI get clusterrolebindings >> after.txt
-  $CLI get roles --all-namespaces >> after.txt
-  $CLI get rolebindings --all-namespaces >> after.txt
-  echo
-  echo "                RBAC before                                             RBAC after"
-  sdiff -s before.txt after.txt
-  echo
 }
 
 ########################
@@ -123,11 +109,12 @@ initialize_authn_jwt_secrets() {
 
   # values obtained from K8s cluster configuration
   jwks_uri=$($CLI get --raw /.well-known/openid-configuration | jq -r '.jwks_uri')
+  public_keys=$($CLI get --raw $jwks_uri)
   issuer=$($CLI get --raw /.well-known/openid-configuration | jq -r '.issuer')
 
   conjur_set_variable						\
-  	conjur/authn-jwt/$APP_NAMESPACE_NAME/jwks-uri		\
-	$jwks_uri
+  	conjur/authn-jwt/$APP_NAMESPACE_NAME/public-keys	\
+        "{\"type\":\"jwks\", \"value\":$public_keys}"
 
   conjur_set_variable						\
   	conjur/authn-jwt/$APP_NAMESPACE_NAME/issuer		\

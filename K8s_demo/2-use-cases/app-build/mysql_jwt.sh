@@ -1,11 +1,10 @@
 #!/bin/bash
 
 export JWT=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
-export JWT_SERVICE_ID=$(cat /run/secrets/kubernetes.io/serviceaccount/namespace)
-export REST_ENDPOINT=$CONJUR_APPLIANCE_URL/authn-jwt/$JWT_SERVICE_ID/$CONJUR_ACCOUNT/authenticate
+export AUTHN_JWT_ENDPOINT=$CONJUR_APPLIANCE_URL/authn-jwt/$JWT_SERVICE_ID/$CONJUR_ACCOUNT/authenticate
 
 main() {
-  AUTHN_TOKEN=$(curl -sk "$REST_ENDPOINT"			\
+  AUTHN_TOKEN=$(curl -sk "$AUTHN_JWT_ENDPOINT"			\
 	-H 'Content-Type: application/x-www-form-urlencoded'	\
 	-H "Accept-Encoding: base64" 				\
 	--data-urlencode "jwt=$JWT")

@@ -50,9 +50,9 @@ main() {
 create_yaml_files() {
   echo "creating YAML files..."
 
-  $CLI get cm dap-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
   | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
-  > ./dap-config-cm.yaml
+  > ./conjur-config-cm.yaml
 
   cat ./templates/k8s-provider-rolebinding.template.yaml	\
   | sed -e "s#{{ APP_NAMESPACE_NAME }}#$APP_NAMESPACE_NAME#g"	\
@@ -93,8 +93,8 @@ create_yaml_files() {
 ########################
 # apply manifests & policies that deploys app
 deploy_app() {
-  if [[ "$($CLI get cm dap-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
-    $CLI apply -f ./dap-config-cm.yaml -n $APP_NAMESPACE_NAME
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAMESPACE_NAME
   fi
   $CLI apply -f ./k8s-provider-rolebinding.yaml -n $APP_NAMESPACE_NAME
   $CLI apply -f ./db-credentials.yaml -n $APP_NAMESPACE_NAME

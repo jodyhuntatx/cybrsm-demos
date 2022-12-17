@@ -1,0 +1,20 @@
+JWT Token:
+{
+    "sub": "admin",
+    "jenkins_parent_url_child_prefix": "job",
+    "jenkins_parent_full_name": "mb-test",
+    "jenkins_parent_task_noun": "Scan",
+    "jenkins_full_name": "branch2",
+    "iss": "http://conjur-master-minikube:8081",
+    "aud": "demo",
+    "jenkins_name": "branch2",
+    "nbf": 1670888266,
+    "jenkins_parent_name": "mb-test",
+    "name": "admin",
+    "jenkins_task_noun": "Build",
+    "exp": 1670888416,
+    "iat": 1670888296,
+    "jenkins_pronoun": "Branch",
+    "jti": "82e8899613a34961b4399862521c6ce0",
+    "jenkins_job_buildir": "/var/lib/jenkins/jobs/mb-test/branches/branch2/builds"
+}

@@ -47,24 +47,24 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
 
-        # values from DAP config map
+        # values from Conjur config map
           - name: CONJUR_VERSION
             valueFrom:
               configMapKeyRef:
-                name: dap-config
+                name: conjur-config
                 key: CONJUR_VERSION
           - name: CONJUR_APPLIANCE_URL
             valueFrom:
               configMapKeyRef:
-                name: dap-config
+                name: conjur-config
                 key: CONJUR_APPLIANCE_URL
           - name: CONJUR_ACCOUNT
             valueFrom:
               configMapKeyRef:
-                name: dap-config
+                name: conjur-config
                 key: CONJUR_ACCOUNT
           - name: CONJUR_SSL_CERTIFICATE
             valueFrom:
               configMapKeyRef:
-                name: dap-config
+                name: conjur-config
                 key: CONJUR_FOLLOWER_CERTIFICATE

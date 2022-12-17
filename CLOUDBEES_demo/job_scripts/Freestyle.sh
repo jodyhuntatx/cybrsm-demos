@@ -1,4 +1,5 @@
-echo >> /demo/demo.out
-echo "Freestyle shell step:" >> /tmp/demo.out
-echo "DB_UNAME:" $DB_UNAME >> /tmp/demo.out
-echo "DB_PWD:" $DB_PWD >> /tmp/demo.out
+echo "Freestyle shell step:"
+sh "echo -n DB_UNAME="
+sh "echo $DB_UNAME | sed 's/./& /g'"
+sh "echo -n DB_PWD="
+sh "echo $DB_PWD | sed 's/./& /g'"

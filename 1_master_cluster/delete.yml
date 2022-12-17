@@ -1,0 +1,2 @@
+- !delete
+  record: !variable conjur/authn-jwt/user1/jwks-uri

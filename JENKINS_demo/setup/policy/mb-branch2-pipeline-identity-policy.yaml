@@ -4,13 +4,13 @@
 # it membership in the authenticators group, enabling it to authenticate.
 
 - !host
-  id: CICD_Secrets-mb-branch2-pipeline
+  id: CICD_Secrets/mb-branch2-pipeline
   annotations:
-    authn-jwt/jenkins/jenkins_full_name: CICD_Secrets-mb-branch2-pipeline
+    authn-jwt/jenkins/jenkins_full_name: CICD_Secrets/mb-branch2-pipeline
 
 # Grant authentication permission to app identity
 - !grant
   roles:
   - !group authenticators
   members:
-  - !host CICD_Secrets-mb-branch2-pipeline
+  - !host CICD_Secrets/mb-branch2-pipeline

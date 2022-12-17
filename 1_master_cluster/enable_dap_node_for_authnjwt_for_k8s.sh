@@ -30,14 +30,7 @@ configure_authn_jwt() {
 
   conjur_append_policy root ./policy/authn-jwt-$APP_NAMESPACE_NAME-policy.yaml delete
 
-  current_authns=$($DOCKER exec $CONJUR_LEADER_CONTAINER_NAME      \
-        evoke variable list | grep CONJUR_AUTHENTICATORS | cut -d = -f2)
-
-  echo "Allow-listing new JWT authenticator..."
-
-  $DOCKER exec $CONJUR_LEADER_CONTAINER_NAME      \
-        evoke variable set CONJUR_AUTHENTICATORS "$current_authns,authn-jwt/$APP_NAMESPACE_NAME"
-
+  # authn-jwt pre-enabled via conjur.yml file in leader
 }
 
 ############################

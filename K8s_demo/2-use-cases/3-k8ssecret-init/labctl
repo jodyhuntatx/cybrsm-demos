@@ -43,9 +43,9 @@ main() {
 ########################
 create_yaml_files() {
   echo "creating YAML files..."
-  $CLI get cm dap-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
     | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
-    > ./dap-config-cm.yaml
+    > ./conjur-config-cm.yaml
 
   cat ./templates/provider-k8ssecrets-manifest.template.yaml	\
   | sed -e "s#{{ APP_NAMESPACE_NAME }}#$APP_NAMESPACE_NAME#g"	\
@@ -74,8 +74,8 @@ create_yaml_files() {
 # instantiate and apply manifest that deploys app
 deploy_app() {
   conjur_append_policy $APP_NAMESPACE_NAME ./app-k8ssecrets-policy.yaml
-  if [[ "$($CLI get cm dap-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
-    $CLI apply -f ./dap-config-cm.yaml -n $APP_NAMESPACE_NAME
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAMESPACE_NAME
   fi
   $CLI apply -f ./provider-k8ssecrets-manifest.yaml -n $APP_NAMESPACE_NAME
   $CLI apply -f ./db-credentials.yaml -n $APP_NAMESPACE_NAME

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 source $CONJUR_HOME/config/conjur.config
 source ../jenkinsvars.sh
 
@@ -29,11 +30,32 @@ start_jenkins() {
       -e "CONJUR_CERT_FILE=/conjur-cert.pem"				\
       -e "TERM=xterm" 							\
       -p "$JENKINS_PORT:8080"						\
+      -p "$JENKINS_HTTPS_PORT:443"					\
       --restart always 							\
       --entrypoint "sh" 						\
       $JENKINS_DEMO_IMAGE						\
       -c "sleep infinity"
-    docker cp $CONJUR_CERT_FILE $JENKINS_DEMO_CONTAINER:/conjur-cert.pem
+
+    $DOCKER cp $CONJUR_CERT_FILE $JENKINS_DEMO_CONTAINER:/conjur-cert.pem
+
+    # create keystore for HTTPS certificate
+    $DOCKER exec -it $JENKINS_DEMO_CONTAINER bash -c	\
+	"cd /tmp;
+	openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem;
+	openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12;
+	keytool -importkeystore -srckeystore ./certificate.p12 -srcstoretype pkcs12 -destkeystore jenkins.jks -deststoretype JKS;
+	cp jenkins.jks /var/lib/jenkins;
+	chown jenkins:jenkins /var/lib/jenkins/jenkins.jks"
+
+    # change service file to enable HTTPS
+    $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
+	sed -i "/^#Environment=\"JENKINS_HTTPS_PORT/s/.*/Environment=\"JENKINS_HTTPS_PORT=443\"/g" /etc/systemd/system/multi-user.target.wants/jenkins.service
+
+    $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
+	sed -i "/^#Environment=\"JENKINS_HTTPS_KEYSTORE=/s/.*/Environment=\"JENKINS_HTTPS_KEYSTORE=\/var\/lib\/jenkins\/jenkins.jks\"/g" /etc/systemd/system/multi-user.target.wants/jenkins.service
+
+    $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
+	sed -i "/^#Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD/s/.*/Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD=changeit\"/g" /etc/systemd/system/multi-user.target.wants/jenkins.service
 
     $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
 	service jenkins start

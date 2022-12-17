@@ -1,0 +1,20 @@
+JWT Token:
+{
+    "sub": "admin",
+    "jenkins_parent_url_child_prefix": "job",
+    "jenkins_parent_full_name": "mb-pipeline",
+    "jenkins_parent_task_noun": "Scan",
+    "jenkins_full_name": "branch2",
+    "iss": "http://conjur-master-minikube:8081",
+    "aud": "demo",
+    "jenkins_name": "branch2",
+    "nbf": 1670887521,
+    "jenkins_parent_name": "mb-pipeline",
+    "name": "admin",
+    "jenkins_task_noun": "Build",
+    "exp": 1670887671,
+    "iat": 1670887551,
+    "jenkins_pronoun": "Branch",
+    "jti": "4b775a47823d453eaa75a08d0b6f0489",
+    "jenkins_job_buildir": "/var/lib/jenkins/jobs/mb-pipeline/branches/branch2/builds"
+}

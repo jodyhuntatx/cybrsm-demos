@@ -49,9 +49,9 @@ create_yaml_files() {
   | sed -e "s#{{ SECRETS_ACCESS_ROLE }}#$SECRETS_ACCESS_ROLE#g"	\
   > ./app-init-policy.yaml
 
-  $CLI get cm dap-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
     | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
-    > ./dap-config-cm.yaml
+    > ./conjur-config-cm.yaml
 
   sed -e "s#{{ APP_IMAGE }}#$APP_IMAGE#g"				\
 	./templates/app-init-manifest.template.yaml			\
@@ -66,8 +66,8 @@ create_yaml_files() {
 # apply manifests to deploy app
 deploy_app() {
   conjur_append_policy $APP_NAMESPACE_NAME ./app-init-policy.yaml
-  if [[ "$($CLI get cm dap-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
-    $CLI apply -f ./dap-config-cm.yaml -n $APP_NAMESPACE_NAME
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAMESPACE_NAME
   fi
   $CLI apply -f ./app-init-manifest.yaml -n $APP_NAMESPACE_NAME
 }

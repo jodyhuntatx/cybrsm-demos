@@ -5,4 +5,4 @@
   roles:
   - !group CICD/CICD_Secrets/delegation/consumers
   members:
-  - !host /apps/CICD_Secrets-mb-branch2-pipeline
+  - !host /apps/CICD_Secrets/mb-branch2-pipeline

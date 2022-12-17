@@ -28,6 +28,12 @@ spec:
         name: test-app
         env:
 
+          - name: AUTHN_JWT_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: AUTHN_JWT_ID
+
           - name: DB_HOSTNAME_ID
             valueFrom:
               configMapKeyRef:

@@ -97,11 +97,12 @@ initialize_authn_jwt_secrets() {
 
   # values obtained from K8s cluster configuration
   jwks_uri=$($CLI get --raw /.well-known/openid-configuration | jq -r '.jwks_uri')
+  public_keys=$($CLI get --raw $jwks_uri)
   issuer=$($CLI get --raw /.well-known/openid-configuration | jq -r '.issuer')
 
-  conjur_set_variable						\
-  	conjur/authn-jwt/$APP_NAMESPACE_NAME/jwks-uri		\
-	$jwks_uri
+  conjur_set_variable                                           \
+        conjur/authn-jwt/$APP_NAMESPACE_NAME/public-keys        \
+        "{\"type\":\"jwks\", \"value\":$public_keys}"
 
   conjur_set_variable						\
   	conjur/authn-jwt/$APP_NAMESPACE_NAME/issuer		\

@@ -4,13 +4,15 @@ node {
 	conjurSecretCredential(credentialsId: 'DemoVault-CICD-CICD_Secrets-MySQL-username', variable: 'DB_UNAME'),
         conjurSecretCredential(credentialsId: 'DemoVault-CICD-CICD_Secrets-MySQL-password', variable: 'DB_PWD')
 	]) {
-		sh "echo >> /tmp/demo.out"
-		sh "echo Pipeline job: >> /tmp/demo.out"
-		sh "date >> /tmp/demo.out"
-		sh "echo Test: >> /tmp/demo.out"
-		sh "echo DB_UNAME=$DB_UNAME >> /tmp/demo.out"
-		sh "echo DB_PWD=$DB_PWD >> /tmp/demo.out"
-		sh "echo >> /tmp/demo.out"
+		sh "echo"
+		sh "echo Pipeline job:"
+		sh "date"
+		sh "echo Test:"
+        	sh "echo -n DB_UNAME="
+        	sh "echo $DB_UNAME | sed 's/./& /g'"
+		sh "echo -n DB_PWD="
+		sh "echo $DB_PWD | sed 's/./& /g'"
+		sh "echo"
        }
    }
 

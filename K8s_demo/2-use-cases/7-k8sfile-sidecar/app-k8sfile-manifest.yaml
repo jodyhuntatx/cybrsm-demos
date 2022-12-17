@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: app-example-file
+  name: app-example-file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-example-file
+  template:
+    metadata:
+      labels:
+        app: app-example-file
+      annotations:
+        conjur.org/container-mode: sidecar
+        conjur.org/secrets-refresh-interval: 10s
+        conjur.org/secrets-refresh-enabled: 'true'
+        conjur.org/secrets-destination: file
+        conjur.org/debug-logging: 'true'
+        conjur.org/authn-identity: host/user1/app-example-k8sfile
+        conjur.org/conjur-secrets.user1: |
+          - db-hostname: DemoVault/CICD/PetClinicDev/MySQL/address
+          - db-name: DemoVault/CICD/PetClinicDev/MySQL/database
+          - username: DemoVault/CICD/PetClinicDev/MySQL/username
+          - password: DemoVault/CICD/PetClinicDev/MySQL/password
+        conjur.org/secret-file-path.user1: secrets.json
+        conjur.org/secret-file-format.user1: json
+    spec:
+
+      containers:
+      - image: k8s-app:alpine
+        imagePullPolicy: IfNotPresent
+        name: test-app
+        env:
+
+        volumeMounts:
+          - name: conjur-secrets
+            mountPath: /conjur/secrets
+
+#        resources:
+#          requests:
+#            cpu: 50m
+#            memory: 250Mi
+#          limits:
+#            cpu: 50m
+#            memory: 250Mi
+
+      - image: cyberark/secrets-provider-for-k8s:latest
+        imagePullPolicy: IfNotPresent
+        name: secrets-provider
+        env:
+        # hardcoded values
+
+        # values from pod metadata
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+
+          - name: CONJUR_AUTHN_URL
+            value: https://conjur-follower.cyberark.svc.cluster.local/api/authn-k8s/mac-k8s
+
+        # values from Conjur config map
+          - name: CONJUR_VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_VERSION
+          - name: CONJUR_APPLIANCE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_APPLIANCE_URL
+          - name: CONJUR_ACCOUNT
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_ACCOUNT
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_FOLLOWER_CERTIFICATE
+
+        volumeMounts:
+          - name: podinfo
+            mountPath: /conjur/podinfo
+          - name: conjur-secrets
+            mountPath: /conjur/secrets
+
+#        resources:
+#          requests:
+#            cpu: 200m
+#            memory: 16Mi
+#          limits:
+#            cpu: 200m
+#            memory: 16Mi
+
+
+      volumes:
+        - name: podinfo
+          downwardAPI:
+            items:
+              - path: annotations
+                fieldRef:
+                  fieldPath: metadata.annotations
+        - name: conjur-secrets
+          emptyDir:
+            medium: Memory

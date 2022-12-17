@@ -11,5 +11,8 @@
   # groups w/ authentication permissions in cluster
   - !group conjur/authn-jwt/{{ APP_NAMESPACE_NAME }}/consumers	
   - !group conjur/authn-k8s/{{ CLUSTER_AUTHN_ID }}/consumers
+  # gropus w/ access to default secrets
+  - !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  - !group DemoVault/CICD/PetClinicDev/delegation/consumers
   members:
   - !group {{ APP_NAMESPACE_NAME }}/consumers

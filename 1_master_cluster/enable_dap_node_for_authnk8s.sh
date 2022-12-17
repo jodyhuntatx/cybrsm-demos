@@ -69,10 +69,9 @@ $DOCKER exec $CLI_CONTAINER_NAME		\
 $DOCKER exec $CLI_CONTAINER_NAME 		\
 	conjur variable values add conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/cert "$(cat ca.cert)"
 
-$DOCKER exec $CONJUR_LEADER_CONTAINER_NAME	\
-        evoke variable set CONJUR_AUTHENTICATORS authn-k8s/$CLUSTER_AUTHN_ID
-
 #EOF
+
+  # authn-jwt pre-enabled via conjur.yml file in leader
 
 rm ca.cert ca.key
 

@@ -225,7 +225,6 @@ follower_up() {
     --name $CONJUR_FOLLOWER_CONTAINER_NAME \
     --label role=conjur_node \
     -p "$CONJUR_FOLLOWER_PORT:443" \
-    -e "CONJUR_AUTHENTICATORS=$CONJUR_AUTHENTICATORS" \
     --restart always \
     --security-opt seccomp:unconfined \
     $CONJUR_APPLIANCE_IMAGE
