@@ -1,6 +1,6 @@
 # OSS Jenkins demo vars
 export DOCKER=docker
-export JAVA_HOME=/user/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export BAMBOO_HOME=/opt/bamboo
 export BAMBOO_DEMO_IMAGE=bambooserver
 export BAMBOO_DEMO_CONTAINER=bambooserver
