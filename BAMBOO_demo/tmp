@@ -1,4 +1,0 @@
-	- !host bamboo_bot
-- !grant
-  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
-  member: !host bamboo_bot
