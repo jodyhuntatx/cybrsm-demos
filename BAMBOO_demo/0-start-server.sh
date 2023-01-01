@@ -16,26 +16,33 @@ main() {
 
 ########################################
 start_bamboo() {
-  $DOCKER run -d 							\
+  	# create volume for persistence of state across container instances
+  if [[ "$($DOCKER volume ls | grep $BAMBOO_DEMO_VOLUME)" == "" ]]; then
+    $DOCKER volume create $BAMBOO_DEMO_VOLUME 
+  fi
+
+  if [[ "$($DOCKER ps | grep $BAMBOO_DEMO_CONTAINER)" == "" ]]; then
+    $DOCKER run -d 							\
       --hostname $BAMBOO_DEMO_CONTAINER					\
       --name $BAMBOO_DEMO_CONTAINER 					\
-      -e "CONJUR_LEADER_HOSTNAME=$CONJUR_CORE_URL"			\
-      -e "CONJUR_ACCOUNT=$CONJUR_ACCOUNT"				\
-      -e "CONJUR_APPLIANCE_URL=$CONJUR_APPLIANCE_URL"			\
-      -e "CONJUR_AUTHN_LOGIN=admin"					\
-      -e "CONJUR_AUTHN_API_KEY=$CONJUR_AUTHN_API_KEY"			\
-      -e "CONJUR_CERT_FILE=/conjur-cert.pem"				\
-      -e "BAMBOO_HOME=/home/bamboo"					\
+      -e "BAMBOO_HOME=$BAMBOO_HOME"					\
       -e "JAVA_HOME=$JAVA_HOME"						\
       -e "TERM=xterm" 							\
       -p "$BAMBOO_PORT:8085"						\
+      -v "$BAMBOO_DEMO_VOLUME:$BAMBOO_HOME" 				\
       --restart always 							\
       --entrypoint "sh" 						\
       $BAMBOO_DEMO_IMAGE						\
       -c "sleep infinity"
-
+  fi
 
   $DOCKER cp $CONJUR_CERT_FILE $BAMBOO_DEMO_CONTAINER:/conjur-cert.pem
+
+  echo
+  echo
+  echo "Keystore Password is: changeit"
+  echo
+  echo
 
   $DOCKER exec -itu root $BAMBOO_DEMO_CONTAINER      \
         keytool -importcert -alias conjur -keystore $KEYSTORE -file /conjur-cert.pem
@@ -46,8 +53,8 @@ start_bamboo() {
 
 ########################################
 gen_bamboo_host_id() {
-  echo "	\
-- !host $BAMBOO_HOST_ID
+  echo \
+"- !host $BAMBOO_HOST_ID
 - !grant
   role: !group $VAULT_NAME/$LOB_NAME/$SAFE_NAME/delegation/consumers
   member: !host $BAMBOO_HOST_ID"	\

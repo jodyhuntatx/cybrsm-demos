@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source ../gitlabvars.sh
+
+$DOCKER stop $GITLAB_SERVER_CONTAINER
+$DOCKER rm $GITLAB_SERVER_CONTAINER
+$DOCKER volume rm $GITLAB_CONFIG_VOLUME
+$DOCKER volume rm $GITLAB_LOGS_VOLUME
+$DOCKER volume rm $GITLAB_DATA_VOLUME
+$DOCKER system prune -f

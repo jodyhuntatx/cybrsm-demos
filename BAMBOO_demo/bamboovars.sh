@@ -4,6 +4,7 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export BAMBOO_HOME=/opt/bamboo
 export BAMBOO_DEMO_IMAGE=bambooserver
 export BAMBOO_DEMO_CONTAINER=bambooserver
+export BAMBOO_DEMO_VOLUME=bamboovolume
 export BAMBOO_AGENT_IMAGE=bamboogent
 export BAMBOO_AGENT_CONTAINER=bambooagent
 export KEYSTORE=$JAVA_HOME/lib/security/cacerts

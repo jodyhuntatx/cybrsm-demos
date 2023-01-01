@@ -7,12 +7,14 @@ main() {
   pushd build
     ./build.sh
   popd
+  start_container
+#  setup_https
   start_jenkins
-#  config_plugin
+  display_config_info
 }
 
 ########################################
-start_jenkins() {
+start_container() {
   	# create volume for persistence of state across container instances
   if [[ "$($DOCKER volume ls | grep $JENKINS_DEMO_VOLUME)" == "" ]]; then
     $DOCKER volume create $JENKINS_DEMO_VOLUME 
@@ -38,6 +40,20 @@ start_jenkins() {
 
     $DOCKER cp $CONJUR_CERT_FILE $JENKINS_DEMO_CONTAINER:/conjur-cert.pem
 
+    echo
+    echo
+    echo "Keystore Password is: changeit"
+    echo
+    echo
+						# shell for keytool must be interactive
+    $DOCKER exec -itu root $JENKINS_DEMO_CONTAINER	\
+	keytool -importcert -alias conjur -keystore $KEYSTORE -file /conjur-cert.pem
+  fi
+}
+
+
+########################################
+setup_https() {
     # create keystore for HTTPS certificate
     $DOCKER exec -it $JENKINS_DEMO_CONTAINER bash -c	\
 	"cd /tmp;
@@ -56,21 +72,19 @@ start_jenkins() {
 
     $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
 	sed -i "/^#Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD/s/.*/Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD=changeit\"/g" /etc/systemd/system/multi-user.target.wants/jenkins.service
+}
 
+########################################
+start_jenkins() {
     $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
 	service jenkins start
 
-    echo
-    echo
-    echo "Keystore Password is: changeit"
-    echo
-    echo
-						# shell for keytool must be interactive
-    $DOCKER exec -itu root $JENKINS_DEMO_CONTAINER	\
-	keytool -importcert -alias conjur -keystore $KEYSTORE -file /conjur-cert.pem
-  fi
   echo "Waiting for Jenkins to start up..."
   sleep 20 
+}
+
+########################################
+display_config_info() {
   echo
   echo
   echo
@@ -92,56 +106,6 @@ start_jenkins() {
   echo
   echo
   echo
-}
-
-
-########################################
-config_plugin() {
-  pluginFolder=$(mktemp -d)
-
-  # Download plugins
-  JENKINS_UC=https://updates.jenkins.io REF="${pluginFolder}" \
-		install-plugins.sh \
-		conjur-credentials:1.0.12
-
-  PLUGIN_PATH=${1}
-
-  STATUS=$(curlJenkins --fail -L -o /dev/null --write-out '%{http_code}' \
-          "-F file=@${PLUGIN_PATH}" \
-          "${JENKINS_URL}/pluginManager/uploadPlugin") && EXIT_STATUS=$? || EXIT_STATUS=$?
-  if [ $EXIT_STATUS != 0 ]
-    then
-      echo "Installing Plugin failed with exit code: curl: ${EXIT_STATUS}, ${STATUS}"
-      exit $EXIT_STATUS
-  fi
-
-  echo "${STATUS}"
-
-  # Install all downloaded plugin files via HTTP
-  for pluginFile in "${pluginFolder}/plugins"/*; do 
-	curl -i -F "file=@${pluginFile}" http://${JENKINS_URL}/pluginManager/uploadPlugin 
-  done
-
-cat << END_CONFIG > tmp
-<?xml version='1.1' encoding='UTF-8'?>
-<org.conjur.jenkins.configuration.GlobalConjurConfiguration plugin="conjur-credentials@1.0.12">
-  <conjurConfiguration>
-    <applianceURL>https://ec2-35-183-89-55.ca-central-1.compute.amazonaws.com</applianceURL>
-    <account>cybrlab</account>
-    <credentialID></credentialID>
-    <certificateCredentialID></certificateCredentialID>
-  </conjurConfiguration>
-  <enableJWKS>true</enableJWKS>
-  <authWebServiceId>jenkins1</authWebServiceId>
-  <jwtAudience>demo</jwtAudience>
-  <keyLifetimeInMinutes>60</keyLifetimeInMinutes>
-  <tokenDurarionInSeconds>120</tokenDurarionInSeconds>
-  <enableContextAwareCredentialStore>true</enableContextAwareCredentialStore>
-  <identityFormatFieldsFromToken>jenkins_full_name</identityFormatFieldsFromToken>
-  <identityFieldsSeparator>-</identityFieldsSeparator>
-  <identityFieldName>jenkins_full_name</identityFieldName>
-</org.conjur.jenkins.configuration.GlobalConjurConfiguration>
-END_CONFIG
 }
 
 main "$@"

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eou pipefail
 
+CONJUR_HOME=${CONJUR_HOME:-~/Conjur/cybrsm-demos} 
+
 source $CONJUR_HOME/config/conjur.config
 source $CONJUR_HOME/config/dockerdesktop.k8s
 

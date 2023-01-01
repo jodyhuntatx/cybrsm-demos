@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Starts external agent in separate container
+
 CONJUR_HOME=${CONJUR_HOME:-~/Conjur/cybrsm-demos} 
 
 source $CONJUR_HOME/config/conjur.config
