@@ -5,4 +5,4 @@
   roles:
   - !group {{ LOB_NAME }}/{{ SAFE_NAME }}/delegation/consumers
   members:
-  - !host /apps/{{ APP_IDENTITY }}
+  - !host /apps/{{ CONJUR_IDENTITY }}

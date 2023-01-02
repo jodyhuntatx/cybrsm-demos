@@ -4,7 +4,7 @@
 #  - https://docs.gitlab.com/ee/install/docker.html
 #  - https://docs.gitlab.com/runner/register/index.html#docker
 
-# Procedure
+# Procedure implemented:
 # - start runner container
 # - download server cert
 # - register runner
@@ -37,11 +37,9 @@ start_container() {
       -v /var/run/docker.sock:/var/run/docker.sock	  	\
       --mount "src=$GITLAB_RUNNER_VOLUME,dst=/etc/gitlab-runner"  	\
       $GITLAB_RUNNER_IMAGE
-
-    $DOCKER network connect $GITLAB_NETWORK $GITLAB_RUNNER_CONTAINER
   fi
 
-  # download server ssl cert
+  # download server ssl cert to suppress self-signed cert error
   # see "read a PEM certificate" at
   # https://docs.gitlab.com/runner/configuration/tls-self-signed.html#supported-options-for-self-signed-certificates-targeting-the-gitlab-server
   $DOCKER exec $GITLAB_RUNNER_CONTAINER bash -c "				\
@@ -84,8 +82,11 @@ set_ssh_key() {
 
   echo
   echo
-  echo "Add the following public SSH key as a deploy key."
+  echo "##############################################################"
+  echo "Add the following public SSH key as a Deploy key for the pipeline."
   echo "Navigation: <Project> -> Settings -> Repository -> Deploy keys"
+  echo "##############################################################"
+  echo
   $DOCKER exec $GITLAB_RUNNER_CONTAINER		\
 	cat $GL_RUNNER_HOME/.ssh/id_rsa.pub
 }
@@ -97,7 +98,12 @@ generate_ci_file() {
   | sed -e "s#{{ SERVICE_ID }}#$SERVICE_ID#"                      \
   | sed -e "s#{{ CONJUR_ACCOUNT }}#$CONJUR_ACCOUNT#"              \
   | sed -e "s#{{ RETRIEVE_VAR_NAME }}#$RETRIEVE_VAR_NAME#"        \
-  > ../.gitlab-ci.yml
+  > ./.gitlab-ci.yml
+  echo
+  echo
+  echo "##############################################################"
+  echo "Use $PWD/.gitlab-ci.yml for pipeline."
+  echo "##############################################################"
 }
 
 main "$@"

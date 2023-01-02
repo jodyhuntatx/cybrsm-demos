@@ -34,6 +34,10 @@ export JWT_ISSUER=$GITLAB_HOST_NAME
 # the URI "https://<host>/~/jwks" returns correct keys in AWS, but for
 # self-hosted gitlab it not accessible without authentication.
 # "https://<host>/oauth/discovery/keys" seems to work for self-hosted.
-export JWKS_URI=https://$GITLAB_HOST_NAME:$GITLAB_HTTP_PORT/oauth/discovery/keys
+export JWKS_URI=https://$GITLAB_HOST_NAME:$GITLAB_HTTPS_PORT/oauth/discovery/keys
 
-RETRIEVE_VAR_NAME=DemoVault/CICD/CICD_Secrets/AwsAccessKeys/awsaccesskeyid
+###########################
+export VAULT_NAME=DemoVault
+export LOB_NAME=CICD
+export SAFE_NAME=CICD_Secrets
+export RETRIEVE_VAR_NAME=$VAULT_NAME/$LOB_NAME/$SAFE_NAME/AwsAccessKeys/awsaccesskeyid

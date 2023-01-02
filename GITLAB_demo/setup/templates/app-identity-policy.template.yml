@@ -4,7 +4,7 @@
 # it membership in the authenticators group, enabling it to authenticate.
 
 - !host
-  id: {{ APP_IDENTITY }}
+  id: {{ CONJUR_IDENTITY }}
   annotations:
     authn-jwt/{{ SERVICE_ID }}/{{ JWT_CLAIM1_NAME }}: {{ JWT_CLAIM1_VALUE }}
 
@@ -13,4 +13,4 @@
   roles:
   - !group authenticators
   members:
-  - !host {{ APP_IDENTITY }}
+  - !host {{ CONJUR_IDENTITY }}

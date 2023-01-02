@@ -1421,7 +1421,7 @@ external_url "https://{{ GITLAB_HOST_NAME }}:{{ GITLAB_HTTPS_PORT }}"
 
 nginx['enable'] = true
 nginx['client_max_body_size'] = '250m'
-# nginx['redirect_http_to_https'] = false
+#nginx['redirect_http_to_https'] = false
 # nginx['redirect_http_to_https_port'] = 80
 
 ##! Most root CA's are included by default
@@ -1478,7 +1478,6 @@ nginx['listen_https'] = true
 ##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#configuring-proxy-protocol
 # nginx['proxy_protocol'] = false
 
-nginx['custom_gitlab_server_config'] = "listen 80;"
 # nginx['custom_nginx_config'] = "include /etc/nginx/conf.d/example.conf;"
 # nginx['proxy_read_timeout'] = 3600
 # nginx['proxy_connect_timeout'] = 300

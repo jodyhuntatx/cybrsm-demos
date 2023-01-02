@@ -9,7 +9,7 @@ source ../gitlabvars.sh
 
 main() {
   start_container
-  start_gitlab
+  configure_gitlab
   generate_ssl_certs
   reconfigure_gitlab
   display_config_info
@@ -24,10 +24,6 @@ start_container() {
     $DOCKER volume create $GITLAB_DATA_VOLUME
   fi
 
-  if [[ "$($DOCKER network ls | grep $GITLAB_NETWORK)" == "" ]]; then
-    $DOCKER network create $GITLAB_NETWORK
-  fi
-
   if [[ "$($DOCKER ps | grep $GITLAB_SERVER_CONTAINER)" == "" ]]; then
     $DOCKER run --detach 					\
       --hostname gitlab						\
@@ -36,18 +32,17 @@ start_container() {
       --publish $GITLAB_SSH_PORT:22 				\
       --name $GITLAB_SERVER_CONTAINER				\
       --restart always 						\
-      --mount "src=$GITLAB_CONFIG_VOLUME,dst=/etc/gitlab"  	\
-      --mount "src=$GITLAB_LOGS_VOLUME,dst=/var/log/gitlab"  	\
-      --mount "src=$GITLAB_DATA_VOLUME,dst=/var/opt/gitlab"  	\
+      --mount src=$GITLAB_CONFIG_VOLUME,dst=/etc/gitlab  	\
+      --mount src=$GITLAB_LOGS_VOLUME,dst=/var/log/gitlab  	\
+      --mount src=$GITLAB_DATA_VOLUME,dst=/var/opt/gitlab  	\
       --shm-size $GITLAB_SHM_SIZE				\
       $GITLAB_SERVER_IMAGE
-
-    $DOCKER network connect $GITLAB_NETWORK $GITLAB_SERVER_CONTAINER
   fi
 }
 
 ########################################
-start_gitlab() {
+# post-startup configuration stuff
+configure_gitlab() {
   echo
   echo
   echo
@@ -55,7 +50,7 @@ start_gitlab() {
   read -rsp $'Press any key to start monitoring logs. Use Ctrl-C to exit log streaming...\n' -n1 key
   $DOCKER logs -f $GITLAB_SERVER_CONTAINER --since 5m
 
-  # stop redis from saving RDB snapshots
+  # stop redis from filling up disk with RDB snapshots
   $DOCKER exec $GITLAB_SERVER_CONTAINER \
 	redis-cli -s /var/opt/gitlab/redis/redis.socket config set stop-writes-on-bgsave-error no
 }
@@ -125,7 +120,6 @@ display_config_info() {
   echo "  Account: $CONJUR_ACCOUNT"
   echo "  Appliance URL: $CONJUR_APPLIANCE_URL"
   echo "  Auth WebService ID: $SERVICE_ID"
-  echo "  JWT Audience: $JWT_AUDIENCE"
   echo "  Identity Field Name: $TOKEN_APP_PROPERTY"
   echo
   echo
