@@ -9,7 +9,6 @@ main() {
   load_policy
   generate_identity_files
   build_image
-set -x
   start_container
   initialize_demo
   docker exec -it $CICD_DEMO_CONTAINER bash
@@ -68,25 +67,24 @@ initialize_demo() {
   rm ./conjur*
   docker exec -it $CICD_DEMO_CONTAINER terraform init
   docker cp ./demo/. $CICD_DEMO_CONTAINER:/demo/
-  cybr conjur
 }
 
 # this will return the authorization header used for api calls for other methods
 function conjur_authenticate {
-    api_key=$(curl --fail -s -k --user "admin:$CONJUR_ADMIN_PASSWORD" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/login)
-	session_token=$(curl $CONJUR_VERBOSE --fail -s -k --data "$api_key" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/admin/authenticate)
-	token=$(echo -n $session_token | base64 | tr -d '\r\n')
-	header="Authorization: Token token=\"$token\""
-	echo "$header"
+  api_key=$(curl --fail -s -k --user "admin:$CONJUR_ADMIN_PASSWORD" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/login)
+  session_token=$(curl $CONJUR_VERBOSE --fail -s -k --data "$api_key" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/admin/authenticate)
+  token=$(echo -n $session_token | base64 | tr -d '\r\n')
+  header="Authorization: Token token=\"$token\""
+  echo "$header"
 }
 
 function conjur_rotate_api_key {
-	local kind=$1; shift
-	local id=$1; shift
-	$util_defaults
-	header=$(conjur_authenticate)
-	api_key=$(curl -X PUT -k -s -H "$header" "$CONJUR_APPLIANCE_URL/authn/${CONJUR_ACCOUNT}/api_key?role=$CONJUR_ACCOUNT:${kind}:${id}")
-	echo $api_key
+  local kind=$1; shift
+  local id=$1; shift
+  $util_defaults
+  header=$(conjur_authenticate)
+  api_key=$(curl -X PUT -k -s -H "$header" "$CONJUR_APPLIANCE_URL/authn/${CONJUR_ACCOUNT}/api_key?role=$CONJUR_ACCOUNT:${kind}:${id}")
+  echo $api_key
 }
 
 main $@

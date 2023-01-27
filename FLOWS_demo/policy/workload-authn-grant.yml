@@ -1,0 +1,5 @@
+# applied at branch "conjur/authn-jwt"
+# grants permission to authenticate
+- !grant
+  role: !group {{ SERVICE_ID }}/consumers
+  member: !host /{{ ID_PATH }}/{{ WORKLOAD_ID }}

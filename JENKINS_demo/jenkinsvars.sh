@@ -15,7 +15,7 @@ export JENKINS_HTTPS_PORT=1443
 # Vault policy parameters & secrets
 export VAULT_NAME=DemoVault
 export LOB_NAME=CICD
-export SAFE_NAME=CICD_Secrets
+export SAFE_NAME=PetClinicDev
 export ACCOUNT_NAME=MySQL
 
 export MYSQL_ROOT_PASSWORD=Cyberark1

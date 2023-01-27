@@ -10,3 +10,7 @@
   role: !host client/node
   privileges: [ read, execute ]
   resource: !variable cicd-secrets/aws-creds-template
+
+- !grant
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  member: !host client/node

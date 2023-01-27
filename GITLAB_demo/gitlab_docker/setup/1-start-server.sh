@@ -110,7 +110,7 @@ display_config_info() {
   echo
   echo "======== Configuration info ========="
   echo
-  echo "GitLab URL: http://$GITLAB_HOST_NAME:$GITLAB_HTTP_PORT"
+  echo "GitLab URL: http://$GITLAB_HOST_NAME:$GITLAB_HTTPS_PORT"
   echo
   init_root_pwd=$($DOCKER exec -it $GITLAB_SERVER_CONTAINER grep Password: /etc/gitlab/initial_root_password | awk '{print $2}')
   echo "Admin login: root"

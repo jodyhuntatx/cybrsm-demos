@@ -1,0 +1,9 @@
+---
+# This policy is applied to the /conjur/authn-jwt branch. It grants
+# permission to the workload to authenticate to the authn-jwt endpoint.
+
+# Grant authentication permission to workload identity
+- !permit
+  role: !host /{{ ID_PATH }}/{{ WORKLOAD_ID }}
+  privileges: [ read, authenticate ]
+  resource: !webservice {{ SERVICE_ID }}

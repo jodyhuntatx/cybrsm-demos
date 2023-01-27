@@ -1,0 +1,23 @@
+jwt-echo:
+  script: echo ${CI_JOB_JWT} | cat > gitlab.jwt
+  # write out the jwt to artifacts for manual inspection
+  artifacts:
+    paths:
+      - gitlab.jwt
+    expire_in: 1 week
+
+get-secrets:
+  stage: test
+  variables:
+    CONJUR_HOSTNAME: "{{ CONJUR_APPLIANCE_URL }}"
+    CONJUR_AUTHENTICATE_URL: "$CONJUR_HOSTNAME/authn-jwt/{{ SERVICE_ID }}/{{ CONJUR_ACCOUNT }}/authenticate"
+    CONJUR_RETRIEVE_URL: "$CONJUR_HOSTNAME/secrets/dev/variable"
+    RETRIEVE_VARIABLE_NAME: "{{ RETRIEVE_VAR_NAME }}"
+  script:
+    - echo "Authenticating with Job's JWT to Conjur"
+    - echo ""
+    - export ACCESS_TOKEN=$(curl -sk -X POST $CONJUR_AUTHENTICATE_URL -H "Content-Type:application/x-www-form-urlencoded" -H "Accept-Encoding:base64" --data-urlencode "jwt=${CI_JOB_JWT}")
+    - echo ""
+    - export VAR_VALUE=$(curl -sk -H "Authorization:Token token=\"${ACCESS_TOKEN}\"" $CONJUR_RETRIEVE_URL/$RETRIEVE_VARIABLE_NAME)
+    - echo ""
+    - echo "Retrieved $RETRIEVE_VARIABLE_NAME as $VAR_VALUE"

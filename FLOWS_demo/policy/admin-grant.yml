@@ -1,0 +1,3 @@
+- !grant
+  role: !user /jody_hunt@cyberark.cloud.3357
+  member: !host jody_bot@cyberark.cloud.3357

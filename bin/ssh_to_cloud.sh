@@ -1,6 +1,8 @@
 #!/bin/bash
 export CONJUR_HOME=~/Conjur/cybrsm-demos
 
+echo "Current IP address: $(curl -sk https://checkip.amazonaws.com)"
+
 case $1 in
   aws)
 	source $CONJUR_HOME/config/aws.config

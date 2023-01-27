@@ -1,0 +1,8 @@
+---
+# This policy is applied to the /data branch.
+# It grants the safe access role to workload identity.
+- !grant
+  roles:
+  - !group vault/JodyDemo/delegation/consumers
+  members:
+  - !host jodyhuntatx1/conjur-demo

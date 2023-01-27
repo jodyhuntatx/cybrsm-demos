@@ -1,0 +1,8 @@
+---
+# This policy is applied to the /data branch.
+# It grants the safe access role to workload identity.
+- !grant
+  roles:
+  - !group {{ VAULT_NAME }}/{{ SAFE_NAME }}/delegation/consumers
+  members:
+  - !host {{ WORKLOAD_ID }}

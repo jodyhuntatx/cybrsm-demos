@@ -1,0 +1,10 @@
+---
+# This policy is applied to the /apps branch. It creates a new identity
+# in the /apps branch, annotated with values for authn-jwt, and grants
+# it membership in the authenticators group, enabling it to authenticate.
+
+- !host
+  id: {{ WORKLOAD_ID }}
+  annotations:
+    authn-jwt/{{ SERVICE_ID }}/{{ APP_PROPERTY }}: {{ WORKLOAD_ID }}
+    authn/api-key: true

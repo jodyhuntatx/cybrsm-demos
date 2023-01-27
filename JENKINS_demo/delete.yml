@@ -1,2 +1,2 @@
 - !delete
-  record: !host apps/CICD_Secrets-mb-branch2-pipeline
+  record: !variable conjur/authn-jwt/\{\{\ \}\}/audience

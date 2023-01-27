@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 pushd setup
   ./1-setup-demos.sh
   ./2-setup-conjur.sh

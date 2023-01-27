@@ -25,7 +25,8 @@ set -x
   # create credfile
   docker exec -it $DEMO_CONTAINER \
 	/tmp/CreateCredFile $CP_INSTALL_DIR/$CREDFILE_NAME \
-	Password -Username $VAULT_USERNAME -Password $VAULT_PASSWORD
+	Password -Username $VAULT_USERNAME -Password $VAULT_PASSWORD \
+	-Hostname -Entropyfile
 
   # install package & start credential provider
   DEBFILE=$(docker exec $DEMO_CONTAINER bash -c "ls /tmp/CARKaim*")

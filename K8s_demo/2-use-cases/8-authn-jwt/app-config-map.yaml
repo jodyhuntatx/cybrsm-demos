@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config-map
+data:
+  AUTHN_JWT_ID: user1
+  DB_HOSTNAME_ID: DemoVault/CICD/PetClinicDev/MySQL/address
+  DB_NAME_ID: DemoVault/CICD/PetClinicDev/MySQL/database
+  DB_UNAME_ID:  DemoVault/CICD/PetClinicDev/MySQL/username
+  DB_PWD_ID:  DemoVault/CICD/PetClinicDev/MySQL/password

@@ -1,3 +1,5 @@
+export CONJUR_HOME=${CONJUR_HOME:-~/Conjur/cybrsm-demos}
+
 ###########################
 # GitLab demo container variables
 export DOCKER=docker
@@ -5,7 +7,8 @@ export GITLAB_HOST_NAME=conjur-master-minikube
 export GITLAB_NETWORK=gitlab-network
 
 # server vars
-export GITLAB_SERVER_IMAGE=gitlab/gitlab-ee:latest
+export GITLAB_SERVER_VERSION=15.7.5-ee.0
+export GITLAB_SERVER_IMAGE=gitlab/gitlab-ee:$GITLAB_SERVER_VERSION
 export GITLAB_SERVER_CONTAINER=gitlab-server
 export GITLAB_HTTPS_PORT=10443
 export GITLAB_HTTP_PORT=1080

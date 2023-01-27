@@ -20,7 +20,7 @@ initialize_authn_jwt() {
 
   cybr conjur update-policy -b root -f ./policy/authn-jwt-gitlab.yml
 
-  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
+#  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
 
   pub_keys=$(curl -k $JWKS_URI)
   cybr conjur set-secret 					\
