@@ -2,7 +2,7 @@
 # Conjur service configuration
 export REMOTE_CONJUR_LEADER=false
 export CONJUR_FOLLOWERS_IN_CLUSTER=true
-export CONJUR_VERSION=12.7.0.1
+export CONJUR_VERSION=12.9.0
 
 ######################
 # SSH values to execute scripts if remote Conjur master host
@@ -71,7 +71,7 @@ export DB_URL=mysql-db.$CYBERARK_NAMESPACE_NAME.svc.cluster.local
 
 ######################
 # Common resource images
-export APPLIANCE_IMAGE=conjur-appliance:$CONJUR_VERSION
+export APPLIANCE_IMAGE=cyberark/conjur-appliance:$CONJUR_VERSION
 export SEEDFETCHER_IMAGE=cyberark/dap-seedfetcher:latest
 
 ######################

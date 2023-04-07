@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if [[ -z "${CONJUR_HOME}" ]]; then
   echo "Set CONJUR_HOME to demo base directory."; exit -1
@@ -16,6 +16,7 @@ main() {
   create_follower_cert_cm
   create_follower_authn_cm
   initialize_k8s_api_secrets
+exit
   verify_k8s_api_secrets 
   initialize_authn_jwt_secrets
   create_app_cm
@@ -40,7 +41,7 @@ create_follower_authn_cm() {
 ########################
 initialize_k8s_api_secrets() {
   SA_TOKEN_NAME="$($CLI get secrets -n $CYBERARK_NAMESPACE_NAME \
-    | grep "conjur-follower.*service-account-token" \
+    | grep "conjur-authn-service.*service-account-token" \
     | head -n1 \
     | awk '{print $1}')" && echo $SA_TOKEN_NAME
 

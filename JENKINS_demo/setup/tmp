@@ -1,0 +1,4 @@
+- !permit
+  role: !group /apps/authenticators
+  privileges: [ authenticate ]
+  resource: !webservice conjur/authn-jwt/user1

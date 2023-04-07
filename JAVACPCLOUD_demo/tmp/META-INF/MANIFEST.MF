@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Created-By: 1.8.0_121 (Oracle Corporation)
+
+Name: NuGet/netstandardpasswordsdk.12.1.0-59-release-aam.59.nupkg
+SHA-256-Digest: VOWIatBdkbCAwIhanxrni3efjbgNQvSFddsQ6c7LywQ=
+
+Name: icudt58l.dat
+SHA-256-Digest: PGnGbsvqIcs8/QjY0kjPfYqtsfgxlxY5I+tflFZPiNI=
+
+Name: Vault.ini
+SHA-256-Digest: 8kyfV7+e2gZwNPagylVPgKhVTfUvxtNx+QFlqccffOg=
+
+Name: EULA
+SHA-256-Digest: fJ5XMFaiQFzD82J3JeUtxp7v6xaSWdpnXNJvtp2rMWo=
+
+Name: NuGet/netcoreaamgetappinfo.12.1.0-59-release-aam.59.nupkg
+SHA-256-Digest: im+D4yKuJShDB/tLRS6iOgoqiHmb3R95K95RwnqAylo=
+
+Name: CreateCredFile
+SHA-256-Digest: DBkZtBpkBZprlc/FHp1tS1yq2XO6FXvrsiBKaig+VNY=
+
+Name: GPG-KEY-CyberArk
+SHA-256-Digest: ZNDDPO69xtjaKtSlsYpAStslB+R4T3dziNFXyrh4brc=
+
+Name: aimparms.sample
+SHA-256-Digest: yNAh5NmXhsYeqvnQHwusb1JPOzWipXf4JAjPw2sZsMA=
+
+Name: CARKaim-12.01.0.50.amd64.deb
+SHA-256-Digest: aMHdpXN2FHkLJ2gkB8k0Y0dU5ZtryfsC8zbWx35ysLU=
+

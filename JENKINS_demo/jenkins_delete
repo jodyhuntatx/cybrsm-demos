@@ -1,2 +1,2 @@
 #!/bin/bash
-docker stop ossjenkins && docker rm ossjenkins && docker volume rm ossjenkins
+docker stop ossjenkins && docker rm ossjenkins

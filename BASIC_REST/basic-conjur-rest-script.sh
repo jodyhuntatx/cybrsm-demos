@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ "$CONJUR_APPLIANCE_URL" == "" ]]; then
+  echo "Set env var CONJUR_APPLIANCE_URL."
+  exit -1
+fi
+if [[ "$CONJUR_ACCOUNT" == "" ]]; then
+  echo "Set env var CONJUR_ACCOUNT."
+  exit -1
+fi
+
 main() {
   if [[ $# != 3 ]]; then
     echo "Usage: $0 <conjur-host-name> <conjur-api-key> <variable-name-to-retrieve-value>"

@@ -21,3 +21,5 @@ echo "AAP start/stop: automation-controller-service start/stop/restart"
 echo
 echo "CCP query format: Safe=<safe-name>;Object=<object-name>"
 echo
+echo "VM login: root/demo"
+echo

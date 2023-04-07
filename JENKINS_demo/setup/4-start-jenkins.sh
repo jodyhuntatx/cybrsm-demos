@@ -15,11 +15,6 @@ main() {
 
 ########################################
 start_container() {
-  	# create volume for persistence of state across container instances
-  if [[ "$($DOCKER volume ls | grep $JENKINS_DEMO_VOLUME)" == "" ]]; then
-    $DOCKER volume create $JENKINS_DEMO_VOLUME 
-  fi
-
   if [[ "$($DOCKER ps | grep $JENKINS_DEMO_CONTAINER)" == "" ]]; then
     $DOCKER run -d 							\
       --hostname $JENKINS_DEMO_CONTAINER				\

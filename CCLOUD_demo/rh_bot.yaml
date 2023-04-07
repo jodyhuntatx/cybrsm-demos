@@ -1,0 +1,8 @@
+- !host
+  id: rh_bot
+  annotations:
+    authn/api-key: true
+
+- !grant
+  role: !group vault/rh_bot/delegation/consumers
+  member: !host rh_bot

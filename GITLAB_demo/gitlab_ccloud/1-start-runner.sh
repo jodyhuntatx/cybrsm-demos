@@ -10,6 +10,9 @@
 # - register runner
 # - add SSH key for runner: ./opt/gitlab/embedded/service/gitlab-rails/doc/ci/ssh_keys
 
+CONJUR_HOME=${CONJUR_HOME:-~/Conjur/cybrsm-demos} 
+
+source $CONJUR_HOME/config/conjur.config
 source ./gitlabvars.sh
 
 main() {
@@ -35,15 +38,6 @@ start_container() {
       --mount "src=$GITLAB_RUNNER_VOLUME,dst=/etc/gitlab-runner"  	\
       $GITLAB_RUNNER_IMAGE
   fi
-
-  # download server ssl cert to suppress self-signed cert error
-  # see "read a PEM certificate" at
-  # https://docs.gitlab.com/runner/configuration/tls-self-signed.html#supported-options-for-self-signed-certificates-targeting-the-gitlab-server
-  $DOCKER exec $GITLAB_RUNNER_CONTAINER bash -c "				\
-	openssl s_client -showcerts 						\
-		-connect $GITLAB_HOST_NAME					\
-		-servername $GITLAB_HOST_NAME < /dev/null 2>/dev/null		\
-	| openssl x509 -outform PEM > /etc/gitlab-runner/certs/$GITLAB_HOST_NAME.crt"
 }
 
 ########################################

@@ -2,9 +2,6 @@
 
 source ./gitlabvars.sh
 
-$BIN_DIR/ccloud-cli.sh list
-exit
-
 main() {
   setupAuthnJwt
   createWorkloadIdentity

@@ -17,6 +17,7 @@ export GITLAB_HOST_NAME=gitlab.com
 # runner vars
 export GITLAB_RUNNER_IMAGE=gitlab/gitlab-runner:latest
 export GITLAB_RUNNER_CONTAINER=gitlab-runner
+export GITLAB_RUNNER_VOLUME=gitlab-volume
 
 ###########################
 # authn-jwt config values

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 ENV TF_VERSION=0.11.14
 ENV TF_PROVIDER_VERSION=0.2.0
@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update -y             \
     && apt-get install -y python3 python3-pip ansible \
     && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
+#RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools requests
 
 RUN curl -LO https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 \
@@ -60,11 +60,6 @@ RUN cd /tmp \
 
 # install AWS CLI
 RUN pip install awscli --upgrade --user
-
-# install Gitlab Runner
-RUN curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64 \
-    && chmod +x /usr/local/bin/gitlab-runner \
-    && gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
 
 RUN echo "root:demo" | chpasswd		# set demo as root password
 

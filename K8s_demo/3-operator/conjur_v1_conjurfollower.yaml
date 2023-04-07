@@ -1,0 +1,25 @@
+apiVersion: conjur.cyberark.com/v1
+kind: ConjurFollower
+metadata:
+  name: my-conjur-follower
+  namespace: my-follower-namespace
+  labels:
+    app: conjur-follower
+spec:
+  replicas: 1
+  master:
+    hostname: conjur.my-company.net
+    account: my-company
+    authenticatorID: conjur-openshift-follower
+    authnLogin: host/conjur-openshift-follower
+    caCertificateFrom:
+      configMapKeyRef:
+        name: follower
+        key: conjur.master-cert
+  images:
+    configurator: docker-registry.default.svc:5000/my-follower-namespace/configurator
+    conjur: docker-registry.default.svc:5000/my-follower-namespace/conjur
+    info: docker-registry.default.svc:5000/my-follower-namespace/info
+    nginx: docker-registry.default.svc:5000/my-follower-namespace/nginx
+    postgres: docker-registry.default.svc:5000/my-follower-namespace/postgres
+    syslogNg: docker-registry.default.svc:5000/my-follower-namespace/syslog-ng

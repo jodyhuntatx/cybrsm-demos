@@ -8,13 +8,16 @@
 # Creates a Synchronizer compatible policy with variables.
 # All secrets for the project are in CICD_Secrets
 
+- !group DemoVault-admins
+
 #########################
 # Vault RBAC
 # - updates vault policy with LOB admin group
 - !policy
   id: DemoVault
+  owner: !group DemoVault-admins
   body:
-  - !group DemoVault-admins
+  - !group CICD-admins
 
   #########################
   # LOB RBAC
@@ -22,7 +25,7 @@
   # - creates safe admin group
   - !policy
     id: CICD
-    owner: !group /DemoVault/DemoVault-admins
+    owner: !group /DemoVault/CICD-admins
     body:
     - !group CICD_Secrets-admins
 

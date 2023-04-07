@@ -9,7 +9,7 @@ main() {
   pushd build/server
     ./build.sh
   popd
-  start_bamboo
+#  start_bamboo
   gen_bamboo_host_id
   display_config_info
 }
@@ -32,6 +32,7 @@ start_bamboo() {
       -v "$BAMBOO_DEMO_VOLUME:$BAMBOO_HOME" 				\
       --restart always 							\
       --entrypoint "sh" 						\
+      --shm-size $BAMBOO_SHM_SIZE					\
       $BAMBOO_DEMO_IMAGE						\
       -c "sleep infinity"
   fi
@@ -59,6 +60,7 @@ gen_bamboo_host_id() {
   role: !group $VAULT_NAME/$LOB_NAME/$SAFE_NAME/delegation/consumers
   member: !host $BAMBOO_HOST_ID"	\
   > tmp
+  cybr conjur logon-non-interactive
   cybr conjur append-policy -b root -f tmp
   rm tmp
   bot_api_key=$(cybr conjur rotate-api-key -l host/$BAMBOO_HOST_ID)

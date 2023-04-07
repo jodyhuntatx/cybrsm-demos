@@ -1,0 +1,10 @@
+---
+# This policy is applied to the /data branch. It creates a new identity
+# in the /data branch, annotated with values for authn-jwt, and grants
+# it membership in the authenticators group, enabling it to authenticate.
+
+- !host
+  id: jodyhuntatx1/conjur-demo
+  annotations:
+    authn-jwt/gitlab/project_path: jodyhuntatx1/conjur-demo
+    authn/api-key: true

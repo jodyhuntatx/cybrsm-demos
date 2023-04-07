@@ -1,0 +1,2 @@
+#!/bin/bash
+rm exports/* generics/* imports/*

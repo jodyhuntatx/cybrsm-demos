@@ -4,8 +4,9 @@
 # ccloud-cli.sh - a bash script CLI for Conjur Cloud
 ####################################################
 
-# use 'curl -vk' and 'set -x' for verbose debugging 
-export CURL="curl -sk"
+# With Conjur Cloud, the server cert and -k flag are not required.
+# use 'curl -v' and 'set -x' for verbose debugging 
+export CURL="curl -s"
 util_defaults="set -u"
 
 showUsage() {

@@ -6,6 +6,9 @@ $DOCKER stop $MYSQL_SERVER > /dev/null && $DOCKER rm $MYSQL_SERVER > /dev/null
 if [[ "$1" == "clean" ]]; then
   exit 0
 fi
+
+$DOCKER pull $MYSQL_IMAGE
+
 $DOCKER run -d 						\
     --name $MYSQL_SERVER				\
     -e "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"	\

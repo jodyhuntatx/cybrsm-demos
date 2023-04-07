@@ -1,0 +1,15 @@
+- !host user1-admin
+- !policy
+  id: user1
+  owner: !host user1-admin
+  body:
+  - !group consumers
+
+# Grant authn-k8s & safe access roles to namespace consumer rol
+- !grant
+  roles:
+  # groups w/ authentication permissions in cluster
+  - !group conjur/authn-jwt/user1/consumers	
+  - !group conjur/authn-k8s/mac-k8s/consumers
+  members:
+  - !group user1/consumers

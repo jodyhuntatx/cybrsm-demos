@@ -52,7 +52,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
-# Cluster role to enable other projects to access and copy the DAP config map
+# Cluster role to enable other projects to access and copy the Conjur config map
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

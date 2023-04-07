@@ -12,7 +12,9 @@ source ../bin/conjur_utils.sh
 
 #################
 main() {
+set -x
   configure_authn_k8s
+set +x
   wait_till_node_is_responsive
   curl -k $CONJUR_LEADER_URL/info
   update_follower_cert
@@ -65,9 +67,9 @@ openssl req -x509 -new -nodes -key ca.key -sha1 -days 3650 -set_serial 0x0 -out 
 #openssl x509 -in ca.cert -text -noout
 
 $DOCKER exec $CLI_CONTAINER_NAME		\
-	conjur variable values add conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/key "$(cat ca.key)"
+	conjur variable set -i conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/key -v "$(cat ca.key)"
 $DOCKER exec $CLI_CONTAINER_NAME 		\
-	conjur variable values add conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/cert "$(cat ca.cert)"
+	conjur variable set -i conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/cert -v "$(cat ca.cert)"
 
 #EOF
 

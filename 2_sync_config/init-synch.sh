@@ -1,7 +1,4 @@
-#!/bin/bash -x
-
-# NOTE: Synch policy has to be appended the first time, then patched thereafter.
-FIRST_TIME=false
+#!/bin/bash
 
 if [[ $# != 1 ]]; then
   echo "Usage: $0 [ mac | aws | azure ]"

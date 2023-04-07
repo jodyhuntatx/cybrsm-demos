@@ -11,7 +11,7 @@ export CONJUR_BACKUP_KEY=./key
 #   logged into the CLI as the admin user.
 
 #################
-main() {
+xxmain() {
   ./precheck_master.sh
   ./stop
   while [[ "$($DOCKER ps -a | grep $CONJUR_LEADER_CONTAINER_NAME)" != "" ]]; do
@@ -20,9 +20,10 @@ main() {
   done
 #  configure_networking
   shared_volumes_up
-set -x
   master_up
   cli_up
+}
+main() {
   ./enable_dap_node_for_authnk8s.sh
   ./enable_dap_node_for_authnjwt_for_k8s.sh
   $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
@@ -100,12 +101,12 @@ cli_up() {
     -c "sleep infinity"
 
   # Initialize connection to service (create .conjurrc and conjur-xx.pem cert)
-  $DOCKER exec $CLI_CONTAINER_NAME \
-    bash -c "echo yes | conjur init -u $CONJUR_APPLIANCE_URL -a $CONJUR_ACCOUNT"
+  $DOCKER exec -it $CLI_CONTAINER_NAME \
+    sh -c "conjur init -s -u $CONJUR_APPLIANCE_URL -a $CONJUR_ACCOUNT"
 
   # Login as admin
   $DOCKER exec $CLI_CONTAINER_NAME \
-    conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
+    conjur login -i admin -p $CONJUR_ADMIN_PASSWORD
 }
 
 #################
@@ -118,7 +119,7 @@ store_config_files_in_cache_dir() {
   echo "Caching DAP Follower certificate..."
   rm -f $FOLLOWER_CERT_FILE
 #  $DOCKER exec $CONJUR_LEADER_CONTAINER_NAME \
-#	bash -c "evoke ca issue conjur-follower $CONJUR_LEADER_HOSTNAME"
+#	sh -c "evoke ca issue conjur-follower $CONJUR_LEADER_HOSTNAME"
   $DOCKER exec $CONJUR_LEADER_CONTAINER_NAME cat /opt/conjur/etc/ssl/conjur-follower.pem > $FOLLOWER_CERT_FILE
 
   echo "Caching Conjur Follower seed file..."
@@ -140,7 +141,7 @@ follower_up() {
   if $NO_DNS; then
     # add entry to follower's /etc/hosts so $CONJUR_LEADER_HOSTNAME resolves
     $DOCKER exec -it $CONJUR_FOLLOWER_CONTAINER_NAME \
-	bash -c "echo \"$CONJUR_LEADER_HOST_IP $CONJUR_LEADER_HOSTNAME\" >> /etc/hosts"
+	sh -c "echo \"$CONJUR_LEADER_HOST_IP $CONJUR_LEADER_HOSTNAME\" >> /etc/hosts"
   fi
 
   echo "Initializing Conjur Follower"
