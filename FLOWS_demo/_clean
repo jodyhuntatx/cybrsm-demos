@@ -1,2 +1,2 @@
 #!/bin/bash
-rm exports/* generics/* imports/*
+rm exports/* generified/* imports/*

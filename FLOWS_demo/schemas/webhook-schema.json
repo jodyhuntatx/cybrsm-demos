@@ -1,0 +1,12 @@
+{
+  "adminId": "string",
+  "adminPassword": "string",
+  "appId": "string",
+  "safeName": "string",
+  "requestorEmail": "string",
+  "sshAcctName": "string",
+  "sshUser": "string",
+  "sshPkey": "string",
+  "sshAddress": "string"
+  "
+}

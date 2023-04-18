@@ -1,0 +1,9 @@
+# - cybrlab_policy_metadata
+# branch: data
+# mode: append-policy
+---
+- !policy
+  id: workloads
+  body:
+  # Group for granting access to authn service
+  - !group authn-jwt-k8s-eks

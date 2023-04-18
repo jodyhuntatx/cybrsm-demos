@@ -1,0 +1,45 @@
+# - cybrlab_policy_metadata
+# branch: conjur/authn-jwt
+# mode: append-policy
+---
+# Create a policy stub
+
+- !policy
+  id: k8s-eks
+  body:
+  # authentication endpoint (AKA authnId) - takes the name of the policy
+  - !webservice
+
+  # Uncomment one of following variables depending on the public availability
+  # of the Service Account Issuer Discovery service in Kubernetes
+  # If the service is publicly available, uncomment 'jwks-uri'.
+  # If the service is not available, uncomment 'public-keys'
+  #- !variable jwks-uri
+  - !variable public-keys
+
+  - !variable issuer
+  - !variable token-app-property
+  - !variable identity-path
+  - !variable audience
+
+  # Group of applications that can authenticate using this JWT Authenticator
+  - !group workloads
+
+  - !grant
+    role: !group workloads
+    members: !group /data/workloads/authn-jwt-k8s-eks
+
+  - !permit
+    role: !group workloads
+    privilege: [ read, authenticate ]
+    resource: !webservice
+
+  - !webservice status
+
+  # Group of users who can check the status of the JWT Authenticator
+  - !group operators
+
+  - !permit
+    role: !group operators
+    privilege: [ read ]
+    resource: !webservice status

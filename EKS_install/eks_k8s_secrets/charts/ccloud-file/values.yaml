@@ -1,0 +1,12 @@
+namespace: conjur-cloud-clients
+
+conjur_account: conjur
+conjur_fqdn: SetWithHelm
+conjur_cert: SetWitHelm
+
+conjur_authn_id: k8s-eks
+
+conjur_app_service_account: k8s-secrets-service-account
+
+app_safe_secret_id_01: data/vault/ConjurTest/TestAccount/username
+app_safe_secret_id_02: data/vault/ConjurTest/TestAccount/password

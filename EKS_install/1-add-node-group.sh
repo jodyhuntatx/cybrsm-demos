@@ -12,10 +12,11 @@ if [[ "$EKS_NODEGROUP_NAMES" != "" ]]; then
   exit -1
 fi
 
+#	--version auto			\
+
 eksctl create nodegroup			\
 	--cluster $EKS_CLUSTER_NAME	\
 	--region $EKS_CLUSTER_REGION	\
-	--version auto			\
 	--name $EKS_CLUSTER_NAME-ng-$(openssl rand -hex 2)	\
 	--node-type $EKS_NODE_TYPE	\
 	--nodes $EKS_NODEGROUP_SIZE	\

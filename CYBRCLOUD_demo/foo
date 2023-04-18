@@ -1,0 +1,10 @@
+{
+"memberName": "string",
+"memberType": "string",
+"permissions": {
+  "useAccounts": "string",
+  "retrieveAccounts": "string",
+  "listAccounts": "string",
+  "accessWithoutConfirmation": "string"
+  }                                       
+}

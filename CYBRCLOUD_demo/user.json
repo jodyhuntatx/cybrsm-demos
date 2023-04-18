@@ -1,0 +1,19 @@
+{
+  "Users": [
+    {
+      "id": int,
+      "username": "string",
+      "source": "string",
+      "userType": "string",
+      "componentUser": boolean,
+      "vaultAuthorization": [],
+      "location": "",
+      "personalDetails": {
+        "firstName": "",
+        "middleName": "",
+        "lastName": ""
+      }
+    }
+  ],
+  "Total": ""
+}

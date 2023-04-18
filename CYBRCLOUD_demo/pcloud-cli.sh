@@ -6,11 +6,10 @@ identityAdminUrl=https://aao4987.id.cyberark.cloud
 ###############################
 showUsage() {
     echo "Usage:"
-    echo "     $0 [ safes | users | apps ]"
-    echo "     $0 [ safe <safe-name> | userInfo <user-name> | user <user-app-name> | app <app-id> ]"
-    echo "     $0 [ app-add <app-id> ]"
-    echo "     $0 [ app-delete <unique-user-id> ]"
-    echo "     $0 [ safe-member-add <unique-safe-id> <member-name> ]"
+    echo "  $0 [ safes | safe <safe-name> | safe-member-add <safe-name> <member-name> ]"
+    echo "  $0 [ accts | acct <account-name> ]"
+    echo "  $0 [ users | user <user-name> | userId <unique-id> | userFromISPSS <user-name> ]"
+    echo "  $0 [ apps | app <app-name> | app-add <app-name> | app-delete <unique-id> ]"
     exit -1
 }
 
@@ -19,9 +18,9 @@ main() {
   local command=$1
 
   case $command in
-    safes | users | apps)
+    safes | accts | users | apps)
 	;;
-    safe | userInfo | user | app | app-add | app-delete)
+    safe | acct | userFromISPSS | user | app | app-add | app-delete | userId)
 	if [ $# != 2 ]; then
 	  showUsage
 	fi
@@ -31,7 +30,7 @@ main() {
 	if [ $# != 3 ]; then
 	  showUsage
 	fi
-	safeId=$2
+	safeName=$2
 	memberName=$3
 	;;
     *)	showUsage
@@ -48,15 +47,6 @@ main() {
           --header "Authorization: Bearer $jwToken"	\
 	| jq .
 	;;
-    users)
-        jwToken=$(./cybrid-cli.sh token)
-        curl -sk \
-          --request GET \
-          $pcloudUrl/PasswordVault/API/Users/		\
-          --header "Content-Type: application/json"	\
-          --header "Authorization: Bearer $jwToken"	\
-	| jq .
-        ;;
     safe)
 	jwToken=$(./cybrid-cli.sh token)
 	curl -sk \
@@ -66,16 +56,52 @@ main() {
           --header "Authorization: Bearer $jwToken"	\
 	| jq .
 	;;
-    user)
-	jwToken=$(./cybrid-cli.sh token)
+    accts)
+        jwToken=$(./cybrid-cli.sh token)
+        curl -sk \
+          --request GET \
+          $pcloudUrl/PasswordVault/API/Accounts/	\
+          --header "Content-Type: application/json"     \
+          --header "Authorization: Bearer $jwToken"     \
+        | jq .
+        ;;
+    acct)
+        jwToken=$(./cybrid-cli.sh token)
+        curl -sk \
+          --request GET \
+          $pcloudUrl/PasswordVault/API/Accounts?Search=$nameSpec	\
+          --header "Content-Type: application/json"     		\
+          --header "Authorization: Bearer $jwToken"     		\
+        | jq .
+        ;;
+    users)
+        jwToken=$(./cybrid-cli.sh token)
         curl -sk \
           --request GET \
           $pcloudUrl/PasswordVault/API/Users/		\
           --header "Content-Type: application/json"	\
           --header "Authorization: Bearer $jwToken"	\
-	| jq -r ".Users[] | select(.username==\"$nameSpec\")"
+	| jq .
+        ;;
+    user)
+	jwToken=$(./cybrid-cli.sh token)
+        curl -sk \
+          --request GET \
+          $pcloudUrl/PasswordVault/API/Users?Search=$nameSpec	\
+          --header "Content-Type: application/json"	\
+          --header "Authorization: Bearer $jwToken"	\
+	| jq .
 	;;
-    userInfo)
+    userId)
+	jwToken=$(./cybrid-cli.sh token)
+        curl -sk \
+          --request GET \
+          $pcloudUrl/PasswordVault/API/Users/$nameSpec	\
+          --header "Content-Type: application/json"	\
+          --header "Authorization: Bearer $jwToken"	\
+	| jq .
+	;;
+    userFromISPSS)
 	jwToken=$(./cybrid-cli.sh token)
 	curl -sk \
           --request POST				\
@@ -135,7 +161,7 @@ main() {
 	jwToken=$(./cybrid-cli.sh token)
 	curl -sk \
           --request POST					\
-	  $pcloudUrl/PasswordVault/API/Safes/${safeId}/Members/ \
+	  $pcloudUrl/PasswordVault/API/Safes/${safeName}/Members/ \
 	  --header 'Content-Type: application/json'		\
 	  --header "Authorization: Bearer $jwToken"		\
 	  --data "{						\
