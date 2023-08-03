@@ -160,37 +160,25 @@ cli_up() {
 
   announce "Creating CLI container."
 
-  start_cli
-  configure_cli
-}
-
-############################
-start_cli() {
   $DOCKER run -d \
     --name $CLI_CONTAINER_NAME \
     --label role=cli \
     --restart always \
+    --add-host "$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP" \
     --security-opt seccomp:unconfined \
     --entrypoint sh \
     $CLI_IMAGE \
     -c "sleep infinity" 
 
-  echo "CLI container launched."
-}
-
-############################
-configure_cli() {
-  if [[ $NO_DNS ]]; then
-    # add entry to cli container's /etc/hosts so $CONJUR_LEADER_HOSTNAME resolves
-    $DOCKER exec -it $CLI_CONTAINER_NAME bash -c "echo \"$CONJUR_LEADER_HOST_IP    $CONJUR_LEADER_HOSTNAME\" >> /etc/hosts"
-  fi
-
   wait_till_master_is_responsive
-	# initialize cli connection to master & login as admin
-  $DOCKER exec -it $CLI_CONTAINER_NAME bash -c "echo yes | conjur init -a $CONJUR_ACCOUNT -u $CONJUR_APPLIANCE_URL --force=true"
 
-  $DOCKER exec $CLI_CONTAINER_NAME conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
-  $DOCKER exec $CLI_CONTAINER_NAME mkdir /policy
+  # Initialize connection to service (create .conjurrc and conjur-xx.pem cert)
+  $DOCKER exec -it $CLI_CONTAINER_NAME \
+	bash -c "echo yes | conjur init -a $CONJUR_ACCOUNT -u $CONJUR_APPLIANCE_URL --force=true"
+  $DOCKER exec $CLI_CONTAINER_NAME \
+	conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
+  $DOCKER exec $CLI_CONTAINER_NAME \
+	mkdir /policy
 
   echo "CLI container configured."
 }
@@ -225,15 +213,10 @@ follower_up() {
     --name $CONJUR_FOLLOWER_CONTAINER_NAME \
     --label role=conjur_node \
     -p "$CONJUR_FOLLOWER_PORT:443" \
+    --add-host "$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP" \
     --restart always \
     --security-opt seccomp:unconfined \
     $CONJUR_APPLIANCE_IMAGE
-
-  if $NO_DNS; then
-    # add entry to follower's /etc/hosts so $CONJUR_LEADER_HOSTNAME resolves
-    $DOCKER exec -it $CONJUR_FOLLOWER_CONTAINER_NAME \
-	bash -c "echo \"$CONJUR_LEADER_HOST_IP $CONJUR_LEADER_HOSTNAME\" >> /etc/hosts"
-  fi
 
   echo "Initializing Conjur Follower"
   $DOCKER cp $FOLLOWER_SEED_FILE \

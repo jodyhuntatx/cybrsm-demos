@@ -3,7 +3,7 @@
 # Creates resources needed for all demos
 
 source $CONJUR_HOME/config/conjur.config
-	
+
 main() {
   cybr conjur logon-non-interactive
   create_base_policy_for_apps	# Conjur base policy

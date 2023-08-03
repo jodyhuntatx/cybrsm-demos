@@ -1,2 +1,0 @@
-- !delete
-  record: !variable conjur/authn-jwt/\{\{\ \}\}/audience

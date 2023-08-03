@@ -19,7 +19,7 @@ initialize_authn_jwt() {
   cybr conjur update-policy -b root -f ./policy/authn-jwt-jenkins.yml
 
   echo ">>>>>>>>>> Authenticator enabling disable <<<<<<<<<<"
-#  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
+  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
 
   cybr conjur set-secret -i conjur/authn-jwt/$SERVICE_ID/audience -v $JWT_AUDIENCE
   cybr conjur set-secret -i conjur/authn-jwt/$SERVICE_ID/issuer -v $JWT_ISSUER

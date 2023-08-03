@@ -16,8 +16,8 @@ export GITLAB_HOST_NAME=gitlab.com
 
 # runner vars
 export GITLAB_RUNNER_IMAGE=gitlab/gitlab-runner:latest
-export GITLAB_RUNNER_CONTAINER=gitlab-runner
-export GITLAB_RUNNER_VOLUME=gitlab-volume
+export GITLAB_RUNNER_CONTAINER=gitlab-docker
+export GITLAB_RUNNER_VOLUME=gitlab-docker
 
 ###########################
 # authn-jwt config values
@@ -28,7 +28,7 @@ export IDENTITY_PATH=data
 export JWT_ISSUER=$GITLAB_HOST_NAME
 
 # project_path value is the gitlab-account/project-name - it is the JWT claim for authn-jwt
-export WORKLOAD_ID=jodyhuntatx1/conjur-demo
+export WORKLOAD_ID=jodyhuntatx1/conjur-demo2
 
 # according to: https://gitlab.com/gitlab-org/gitlab/-/issues/333595
 # the URI "https://<host>/~/jwks" returns correct keys in AWS, but for

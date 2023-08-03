@@ -11,26 +11,36 @@ export CONJUR_BACKUP_KEY=./key
 #   logged into the CLI as the admin user.
 
 #################
-xxmain() {
-  ./precheck_master.sh
-  ./stop
-  while [[ "$($DOCKER ps -a | grep $CONJUR_LEADER_CONTAINER_NAME)" != "" ]]; do
-    echo -n '.'
-    sleep 3
-  done
-#  configure_networking
-  shared_volumes_up
-  master_up
-  cli_up
-}
 main() {
-  ./enable_dap_node_for_authnk8s.sh
-  ./enable_dap_node_for_authnjwt_for_k8s.sh
-  $CONJUR_HOME/bin/enable_all_configured_authenticators.sh
-  store_config_files_in_cache_dir	# do AFTER k8s config
-#  follower_up
-  load_demo_policy
-  ./exec-into-cli.sh
+  case $1 in
+    cli)
+	$DOCKER stop $CLI_CONTAINER_NAME
+	$DOCKER rm $CLI_CONTAINER_NAME
+	cli_up
+	;;
+    all)
+	./precheck_master.sh
+	./stop
+	while [[ "$($DOCKER ps -a | grep $CONJUR_LEADER_CONTAINER_NAME)" != "" ]]; do
+	  echo -n '.'
+	  sleep 3
+	done
+#	 configure_networking
+	shared_volumes_up
+	master_up
+	cli_up
+	./enable_dap_node_for_authnk8s.sh
+	./enable_dap_node_for_authnjwt_for_k8s.sh
+	$CONJUR_HOME/bin/enable_all_configured_authenticators.sh
+	store_config_files_in_cache_dir	# do AFTER k8s config
+#	 follower_up
+	load_demo_policy
+	./exec-into-cli.sh
+	;;
+      *)
+	echo "Usage: $0 [ all | cli ]"
+	;;
+    esac
 }
 
 #################
@@ -102,11 +112,10 @@ cli_up() {
 
   # Initialize connection to service (create .conjurrc and conjur-xx.pem cert)
   $DOCKER exec -it $CLI_CONTAINER_NAME \
-    sh -c "conjur init -s -u $CONJUR_APPLIANCE_URL -a $CONJUR_ACCOUNT"
-
+        bash -c "echo yes | conjur init -a $CONJUR_ACCOUNT -u $CONJUR_APPLIANCE_URL --force=true"
   # Login as admin
-  $DOCKER exec $CLI_CONTAINER_NAME \
-    conjur login -i admin -p $CONJUR_ADMIN_PASSWORD
+  $DOCKER exec -it $CLI_CONTAINER_NAME \
+        conjur authn login -u admin -p $CONJUR_ADMIN_PASSWORD
 }
 
 #################

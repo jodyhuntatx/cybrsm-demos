@@ -18,8 +18,11 @@ RUN apt-get update -y \
     && apt install -y git
 
 # add key to local repo
-RUN echo "deb http://pkg.jenkins.io/debian-stable binary/" >> /etc/apt/sources.list.d/jenkins.list \
-    && wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
+RUN curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key	\
+    | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null		\
+    && echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]	\
+    https://pkg.jenkins.io/debian-stable binary/ | tee			\
+    /etc/apt/sources.list.d/jenkins.list > /dev/null
 
 # install cloudbees jenkins
 RUN apt-get update -y \

@@ -1,0 +1,29 @@
+Running with gitlab-runner 16.0.2 (85586bd1)
+  on gitlab-docker EbLuv-2T9, system ID: r_fZSnbLUT2ZeU
+Preparing the "docker" executor
+00:02
+Using Docker executor with image jodyhuntatx/anun-gitlab-tracer:latest ...
+Pulling docker image jodyhuntatx/anun-gitlab-tracer:latest ...
+Using docker image sha256:dd81b917a378dc7ddbb148336a9c3572e153326cb20a277ab16eedd231663e2d for jodyhuntatx/anun-gitlab-tracer:latest with digest jodyhuntatx/anun-gitlab-tracer@sha256:c0792074015f662b421d88138464c3a566da0ae8e12642bbd0824c9906b07400 ...
+Preparing environment
+00:00
+Running on runner-ebluv-2t9-project-43927204-concurrent-0 via gitlab-docker...
+Getting source from Git repository
+00:02
+Fetching changes with git depth set to 20...
+Reinitialized existing Git repository in /builds/jodyhuntatx1/anun-demo/.git/
+Checking out 59edd841 as detached HEAD (ref is main)...
+Skipping Git submodules setup
+Executing "step_script" stage of the job script
+00:19
+Using docker image sha256:dd81b917a378dc7ddbb148336a9c3572e153326cb20a277ab16eedd231663e2d for jodyhuntatx/anun-gitlab-tracer:latest with digest jodyhuntatx/anun-gitlab-tracer@sha256:c0792074015f662b421d88138464c3a566da0ae8e12642bbd0824c9906b07400 ...
+$ env | grep ANUN
+ANUN_SECRET=****************************************************************
+$ sleep 3
+$ nc -l4 1080 &
+$ sleep 10
+$ cat /tmp/anun.log
+cat: /tmp/anun.log: No such file or directory
+Cleaning up project directory and file based variables
+00:01
+ERROR: Job failed: exit code 1

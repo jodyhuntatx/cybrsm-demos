@@ -1,0 +1,31 @@
+data/vault/rh_bot/Flows-SSH/address
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/Flows-SSH/password
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/Flows-SSH/username
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/rh_bot_vault_creds/password
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/rh_bot_vault_creds/username
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/test-ssh-acct/address
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+data/vault/rh_bot/test-ssh-acct/password
+Secret
+read, execute
+conjur:group:data/vault/rh_bot/delegation/consumers
+
+data/vault/rh_bot/test-ssh-acct/username
+

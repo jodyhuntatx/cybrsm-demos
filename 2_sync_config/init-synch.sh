@@ -7,7 +7,7 @@ fi
 
 case $1 in
   mac)
-	export MASTER_PLATFORM=minikube
+	export MASTER_PLATFORM=dockerdesktop
 	export SYNC_HOST=Sync_WIN-6COKN51MA8P
 	export VAULT_NAME=DemoVault
 	;;

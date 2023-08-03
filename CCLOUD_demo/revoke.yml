@@ -1,0 +1,5 @@
+- !revoke
+  role: !group vault/rh_bot/delegation/consumers
+  members:
+    - !host jodyhuntatx1/conjur-demo
+    - !host py-app1

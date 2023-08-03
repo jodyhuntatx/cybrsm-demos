@@ -1,0 +1,24 @@
+#!/bin/bash
+source ./anun-vars.sh
+
+if [[ "$($DOCKER images -q $ANUN_DEMO_IMAGE)" == "" ]]; then
+  pushd build
+    ./build.sh
+  popd
+fi
+
+if [[ "$($DOCKER ps | grep $ANUN_DEMO)" == "" ]]; then
+  $DOCKER run -d 			\
+    --platform linux/amd64 	\
+    --name $ANUN_DEMO		\
+    -e "TERM=xterm" 		\
+    -e "ANUN_TENANT=$ANUN_TENANT" 		\
+    -e "ANUN_APIKEY=$ANUN_APIKEY" 		\
+    -e "GITHUB_PTOKEN=$GITHUB_PTOKEN" 		\
+    -e "GITHUB_PTOKEN=$GITHUB_PTOKEN" 		\
+    --entrypoint "sh" 		\
+    $ANUN_DEMO_IMAGE		\
+    -c "sleep infinity"
+fi
+
+$DOCKER exec -it $ANUN_DEMO bash

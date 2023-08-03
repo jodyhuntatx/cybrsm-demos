@@ -4,7 +4,7 @@
 # it membership in the authenticators group, enabling it to authenticate.
 
 - !host
-  id: jodyhuntatx1/conjur-demo
+  id: jodyhuntatx1/conjur-demo2
   annotations:
-    authn-jwt/gitlab/project_path: jodyhuntatx1/conjur-demo
+    authn-jwt/gitlab/project_path: jodyhuntatx1/conjur-demo2
     authn/api-key: true

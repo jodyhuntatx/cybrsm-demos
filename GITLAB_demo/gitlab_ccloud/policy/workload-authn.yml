@@ -4,6 +4,6 @@
 
 # Grant authentication permission to workload identity
 - !permit
-  role: !host /data/jodyhuntatx1/conjur-demo
+  role: !host /data/jodyhuntatx1/conjur-demo2
   privileges: [ read, authenticate ]
   resource: !webservice gitlab

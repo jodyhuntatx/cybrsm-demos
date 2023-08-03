@@ -1,0 +1,31 @@
+---
+# loaded at /data/vault
+# referenced in Flows datastore by End2End-Provision flow as:
+#  	conjur-policy-delegation-consumers
+#
+# Pre-loads Safe admin & Delegation policies for a Safe.
+# Loading this policy with values for {{ SAFE_NAME }} and applying
+# it at /data/vault enables permission grants to safe secrets
+# before Conjur Sync runs.
+
+- !group {{ SAFE_NAME }}-admins
+
+#########################
+# Safe RBAC
+# - creates empty sub-policy for safe
+# - creates delegation sub-policy w/ consumers group
+- !policy
+  id: {{ SAFE_NAME }}
+  owner: !group /data/vault/{{ SAFE_NAME }}-admins
+  body:
+  - !policy
+    id: delegation
+    owner: !group /data/vault/{{ SAFE_NAME }}-admins
+    body:
+    - !group consumers
+
+- !permit
+  role: !group {{ SAFE_NAME }}-admins
+  privileges: [ create , read , update ]
+  resource: !policy {{ SAFE_NAME }}
+

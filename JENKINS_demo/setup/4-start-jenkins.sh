@@ -14,6 +14,16 @@ main() {
 }
 
 ########################################
+start_jenkins() {
+    $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
+	service jenkins start
+
+  echo "Waiting for Jenkins to start up..."
+  sleep 20 
+  init_jenkins
+}
+
+########################################
 start_container() {
   if [[ "$($DOCKER ps | grep $JENKINS_DEMO_CONTAINER)" == "" ]]; then
     $DOCKER run -d 							\
@@ -32,18 +42,21 @@ start_container() {
       --entrypoint "sh" 						\
       $JENKINS_DEMO_IMAGE						\
       -c "sleep infinity"
-
-    $DOCKER cp $CONJUR_CERT_FILE $JENKINS_DEMO_CONTAINER:/conjur-cert.pem
-
-    echo
-    echo
-    echo "Keystore Password is: changeit"
-    echo
-    echo
-						# shell for keytool must be interactive
-    $DOCKER exec -itu root $JENKINS_DEMO_CONTAINER	\
-	keytool -importcert -alias conjur -keystore $KEYSTORE -file /conjur-cert.pem
   fi
+}
+
+########################################
+init_jenkins() {
+  $DOCKER cp $LEADER_CERT_FILE $JENKINS_DEMO_CONTAINER:/conjur-cert.pem
+
+  echo
+  echo
+  echo "Keystore Password is: changeit"
+  echo
+  echo
+						# shell for keytool must be interactive
+  $DOCKER exec -itu root $JENKINS_DEMO_CONTAINER	\
+	keytool -importcert -alias conjur -keystore $KEYSTORE -file /conjur-cert.pem
 }
 
 
@@ -67,15 +80,6 @@ setup_https() {
 
     $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
 	sed -i "/^#Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD/s/.*/Environment=\"JENKINS_HTTPS_KEYSTORE_PASSWORD=changeit\"/g" /etc/systemd/system/multi-user.target.wants/jenkins.service
-}
-
-########################################
-start_jenkins() {
-    $DOCKER exec $JENKINS_DEMO_CONTAINER 	\
-	service jenkins start
-
-  echo "Waiting for Jenkins to start up..."
-  sleep 20 
 }
 
 ########################################

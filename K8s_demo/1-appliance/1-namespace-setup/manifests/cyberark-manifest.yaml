@@ -64,7 +64,7 @@ rules:
   verbs: ["get", "list"]
 
 ---
-# Grant namespace admin role to user minikube
+# Grant namespace admin role to user bar
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -72,7 +72,7 @@ metadata:
   namespace: cyberark
 subjects:
 - kind: User
-  name: minikube
+  name: bar
 roleRef:
   kind: ClusterRole
   name: admin

@@ -18,6 +18,7 @@ showUsage() {
   echo "      $0 [ update <policy-branch> <policy-file-name> ]"
   echo "      $0 [ enable <authn-type> <service-id> ]"
   echo "      $0 [ status <authn-type> <service-id> ]"
+  echo "      $0 [ rotate <workload-id> ]"
   exit -1
 }
 
@@ -67,6 +68,13 @@ main() {
 	authnType=$2
 	serviceId=$3
 	;;
+    rotate)
+	if [[ $# != 2 ]]; then
+	  showUsage
+	fi
+	command=$1
+	workloadId=$2
+	;;
     *)
 	showUsage
 	;;
@@ -102,6 +110,9 @@ main() {
     status)
 	conjur_authn_status $authnType $serviceId
 	;;
+    rotate)
+	conjur_rotate_workload_api_key $workloadId
+	;;
 
 	# apparently these functions are not implemented in Conjur Cloud
     info)
@@ -120,7 +131,6 @@ main() {
 
   exit 0
 
-#conjur_rotate_api_key 
 
 }
 
@@ -247,16 +257,13 @@ function conjur_authn_status {
 }
 
 #####################################
-# prob does not work for users - now managed in Identity
-# not tested as of 1/27/23
-function conjur_rotate_api_key {
-	local kind=$1; shift		# user or host
+function conjur_rotate_workload_api_key {
 	local id=$1; shift
 	$util_defaults
 	api_key=$($CURL						\
 		-X PUT						\
 		-H "$authHeader"				\
-		"$CONJUR_CLOUD_URL/authn/${CONJUR_ACCOUNT}/api_key?role=conjur:${kind}:${id}")
+		"$CONJUR_CLOUD_URL/authn/conjur/api_key?role=host:${id}")
 	echo $api_key
 }
 

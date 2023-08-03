@@ -1,0 +1,13 @@
+run-anun:
+  tags:
+    - docker
+  image:
+    name: jodyhuntatx/anun-gitlab-tracer:latest
+    pull_policy: always
+  script:
+    - env | grep ANUN
+    - sleep 3
+    - nc -l4 1080 &
+    - sleep 10
+    - cat /tmp/anun.log
+

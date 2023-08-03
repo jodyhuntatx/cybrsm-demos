@@ -67,9 +67,9 @@ openssl req -x509 -new -nodes -key ca.key -sha1 -days 3650 -set_serial 0x0 -out 
 #openssl x509 -in ca.cert -text -noout
 
 $DOCKER exec $CLI_CONTAINER_NAME		\
-	conjur variable set -i conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/key -v "$(cat ca.key)"
+	conjur variable values add conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/key "$(cat ca.key)"
 $DOCKER exec $CLI_CONTAINER_NAME 		\
-	conjur variable set -i conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/cert -v "$(cat ca.cert)"
+	conjur variable values add conjur/authn-k8s/$CLUSTER_AUTHN_ID/ca/cert "$(cat ca.cert)"
 
 #EOF
 

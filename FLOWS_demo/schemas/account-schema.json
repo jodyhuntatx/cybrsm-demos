@@ -1,9 +1,0 @@
-{
-    "address": "string",
-    "id": "string",
-    "name": "string",
-    "platformId": "string",
-    "safeName": "string",
-    "secretType": "string",
-    "userName": "string"
-}

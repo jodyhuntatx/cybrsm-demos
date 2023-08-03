@@ -3,6 +3,6 @@
 # It grants the safe access role to app identity.
 - !grant
   roles:
-  - !group CICD/CICD_Secrets/delegation/consumers
+  - !group CICD/PetClinicDev/delegation/consumers
   members:
   - !host /apps/my-jenkins-job

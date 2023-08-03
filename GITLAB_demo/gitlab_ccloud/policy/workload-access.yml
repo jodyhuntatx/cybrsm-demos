@@ -5,4 +5,4 @@
   roles:
   - !group vault/JodyDemo/delegation/consumers
   members:
-  - !host jodyhuntatx1/conjur-demo
+  - !host jodyhuntatx1/conjur-demo2
