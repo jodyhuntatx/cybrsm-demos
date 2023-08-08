@@ -12,8 +12,21 @@ esac
 
 source ./demo-vars.sh
 
-export PLATFORM_IDS="MySQL MSSql Oracle SAPHANA Sybase"
-#export PLATFORM_IDS="DB2UnixSSH InformixUnixSSH"
+export CLOUD_PLATFORM_IDS="AWSAccessKeys"
+export SSH_PLATFORM_IDS="UnixSSHKeys InformixUnixSSH DB2UnixSSH"
+export DB_PLATFORM_IDS="MySQL MSSql Oracle SAPHANA Sybase"
+
+declare -a ALL_PLATFORM_IDS=(
+AWSAccessKeys
+UnixSSHKeys
+InformixUnixSSH
+DB2UnixSSH
+MySQL
+MSSql
+Oracle
+SAPHANA
+Sybase)
+
 export SAFE_NAME=PendingAccounts
 export SERVER_ADDRESS=192.168.0.254
 export SERVER_PORT=3306
@@ -22,8 +35,28 @@ export USERNAME=root
 export PASSWORD=Cyberark1
 export SSH_KEY="$(cat ~/.ssh/id_oshift)"
 
+export AWS_SECRET_KEY="ME98kJQKXpFnaVdpJroLi5ebe6w+Gv3H2dEk"
+export AWS_REGION="us-east-1"
+export AWS_ACCESS_KEY="ASIAW5PALCL6UZJT"
+export AWS_ACCOUNT_ID="1234567"
+export AWS_ACCOUNT_ALIAS="Onboarding testing"
+
 case $command in
   provision)
+    # provision AWS Access Keys account
+    platformId=AWSAccessKeys
+    ACCOUNT_NAME=${platformId}-Onboarded
+    ./pcloud-cli.sh account_create_aws 		\
+			"$SAFE_NAME"		\
+			"$platformId"		\
+			"$ACCOUNT_NAME"		\
+			"$USERNAME"		\
+			"$AWS_SECRET_KEY"	\
+			"$AWS_REGION"		\
+			"$AWS_ACCESS_KEY"	\
+			"$AWS_ACCOUNT_ID"	\
+			"$AWS_ACCOUNT_ALIAS"
+
     # provision SSH account
     platformId=UnixSSHKeys
     ACCOUNT_NAME=${platformId}-Onboarded
@@ -34,36 +67,50 @@ case $command in
 			"$SERVER_ADDRESS"	\
 			"$USERNAME"		\
 			"$SSH_KEY"
-	exit
+
+    # provision Informix via SSH account
+    platformId=InformixUnixSSH
+    ACCOUNT_NAME=${platformId}-Onboarded
+    ./pcloud-cli.sh account_create_ssh          \
+                        "$SAFE_NAME"            \
+                        "$platformId"           \
+                        "$ACCOUNT_NAME"         \
+                        "$SERVER_ADDRESS"       \
+                        "$USERNAME"             \
+                        "$SSH_KEY"
+
+    # provision DB2 via SSH account
+    platformId=DB2UnixSSH
+    ACCOUNT_NAME=${platformId}-Onboarded
+    ./pcloud-cli.sh account_create_ssh          \
+                        "$SAFE_NAME"            \
+                        "$platformId"           \
+                        "$ACCOUNT_NAME"         \
+                        "$SERVER_ADDRESS"       \
+                        "$USERNAME"             \
+                        "$SSH_KEY"
 
     # provision DB accounts
-    for platformId in $PLATFORM_IDS; do
-      ACCOUNT_NAME=${platformId}-Onboarded
+    for platformId in $DB_PLATFORM_IDS; do
+      accountName=${platformId}-Onboarded
       ./pcloud-cli.sh account_create_db \
 			$SAFE_NAME	\
 			$platformId	\
-			$ACCOUNT_NAME	\
+			$accountName	\
 			$SERVER_ADDRESS	\
 			$USERNAME	\
 			$PASSWORD	\
 			$DATABASE_NAME	\
 			$SERVER_PORT
 
-      ./pcloud-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME
     done
     ;;
 
   deprovision)
-    platformId=UnixSSHKeys
-    ACCOUNT_NAME=${platformId}-Onboarded
-    ./pcloud-cli.sh account_delete "$SAFE_NAME" "$ACCOUNT_NAME"
-
-    exit
-
-    for platformId in $PLATFORM_IDS; do
-      ACCOUNT_NAME=${platformId}-Onboarded
-      ./pcloud-cli.sh account_delete $SAFE_NAME $ACCOUNT_NAME
-      ./pcloud-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME
+    for platformId in "${ALL_PLATFORM_IDS[@]}"; do
+      accountName=${platformId}-Onboarded
+      ./pcloud-cli.sh account_delete $SAFE_NAME "$accountName"
+#      ./pcloud-cli.sh account_get $SAFE_NAME "$accountName"
     done
     ;;
 

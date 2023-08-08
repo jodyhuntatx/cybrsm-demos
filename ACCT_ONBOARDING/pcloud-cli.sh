@@ -20,16 +20,17 @@ showUsage() {
   echo "  Account commands:"
   echo "    $0 account_get <safe-name> <account-name>"
   echo "    $0 account_delete <safe-name> <account-name>"
-  echo "    $0 account_create_db <safe-name> <platform-id> <account-name>"
-  echo "                      <server-address> <username> <password>"
-  echo "                      <database-name> <server-port>"
-  echo "    $0 account_create_ssh <safe-name> <platform-id> <account-name>"
-  echo "                      <server-address> <username> <private-key-string>"
+  echo "    $0 account_create_db <safe-name> <platform-id> <account-name> <username> <password>"
+  echo "                      [ <server-address> ] [ <database-name> ] [ <server-port> ]"
+  echo "    $0 account_create_ssh <safe-name> <platform-id> <account-name> <username> <private-key>"
+  echo "                      <server-address>"
+  echo "    $0 account_create_aws <safe-name> <platform-id> <account-name> <username> <secret-key>"
+  echo "                      <access-key-id> <account-id> [ <region> ] [ <account-alias> ]"
   echo "  Authn commands:"
   echo "    $0 auth_token_get"
   exit -1
 
-# Commands below are only half-implemented
+# Commands below are partially implemented and mostly don't work.
   echo "    $0 pending_accts_get"
   echo "    $0 pending_accts_set_db "
   echo "    $0 onboarding_rules_get"
@@ -45,12 +46,6 @@ main() {
   checkDependencies
 
   case $1 in
-    auth_token_get)
-	command=$1
-  	pcloud_authenticate
-	echo $jwToken
-	exit
-	;;
     pending_accts_get | onboarding_rules_get | safes_list)
 	command=$1
 	;;
@@ -78,18 +73,9 @@ main() {
 	fi
 	command=$1
 	safeName=$(urlify "$2")
-	memberName="$3"
+	memberName=$(urlify "$3")
 	;;
-    account_get)
-	if [[ $# != 3 ]]; then
-	  echo "Incorrect number of arguments."
-	  showUsage
-	fi
-	command=$1
-	safeName=$(urlify "$2")
-	accountName=$(urlify "$3")
-	;;
-    account_delete)
+    account_get | account_delete)
 	if [[ $# != 3 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
@@ -107,11 +93,11 @@ main() {
 	safeName=$(urlify "$2")
 	platformId=$(urlify "$3")
 	accountName=$(urlify "$4")
-	address=$(urlify "$5")
-	username=$(urlify "$6")
-	secret=$(urlify "$7")
-	dbName=$(urlify "$8")
-	dbPort=$(urlify "$9")
+	username="$5"
+	secret="$6"
+	address="$7"
+	dbName="$8"
+	dbPort="$9"
 	;;
     account_create_ssh)
 	if [[ $# != 7 ]]; then
@@ -119,12 +105,35 @@ main() {
 	  showUsage
 	fi
 	command=$1
+        safeName=$(urlify "$2")
+        platformId=$(urlify "$3")
+        accountName=$(urlify "$4")
+        username="$5"
+        secret="$6"
+	address="$7"
+	;;
+    account_create_aws)
+	if [[ $# != 10 ]]; then
+	  echo "Incorrect number of arguments."
+	  echo $@
+	  showUsage
+	fi
+	command=$1
 	safeName=$(urlify "$2")
 	platformId=$(urlify "$3")
 	accountName=$(urlify "$4")
-	address=$(urlify "$5")
-	username=$(urlify "$6")
-	secret=$(urlify "$7")
+	username="$5"
+	secret="$6"
+	accessKeyId="$7"
+	accountId="$8"
+	region="$9"
+	accountAlias="${10}"
+	;;
+    auth_token_get)
+	command=$1
+  	pcloud_authenticate
+	echo $jwToken
+	exit
 	;;
     *)
 	echo "Unrecognized command: $1"
@@ -134,43 +143,49 @@ main() {
 
   pcloud_authenticate	# sets global variable authHeader
 
+	# Note that for the function calls below, arguments are accessed globally.
+	# They are included here for documentation purpose but not actually passed
+	# as function arguments. At some point it may be useful to actually pass 
+	# them as parameters.
   case $command in
-    pending_accts_get)
-	pending_accts_get
-	;;
-    onboarding_rules_get)
-	onboarding_rules_get
-	;;
-    onboarding_rules_set)
-	onboarding_rules_set
-	;;
+
     safes_list)
 	safes_list
 	;;
+
     safe_get)
 	safe_get "$safeName"
 	;;
+
     safe_create)
 	safe_create "$safeName" "$description"
 	;;
+
     safe_member_get)
 	safe_member_get "$safeName" "$memberName"
 	;;
+
     safe_member_add)
 	safe_member_add "$safeName" "$memberName"
 	;;
+
     safe_member_delete)
 	safe_member_delete "$safeName" "$memberName"
 	;;
+
     safe_admin_add)
 	safe_admin_add "$safeName" "$memberName"
 	;;
+
     account_get)
+	INTERACTIVE=true
 	account_get "$safeName" "$accountName"
 	;;
+
     account_delete)
 	account_delete "$safeName" "$accountName"
 	;;
+
     account_create_db)
 	account_create_db	"$safeName"	\
         			"$platformId"	\
@@ -181,6 +196,7 @@ main() {
       		 		"$dbName"	\
        	 			"$dbPort"	\
 	;;
+
     account_create_ssh)
 	account_create_ssh	"$safeName"	\
         			"$platformId"	\
@@ -189,6 +205,31 @@ main() {
         			"$username"	\
         			"$secret"
 	;;
+
+    account_create_aws)
+        account_create_aws 	"$safeName"	\
+        			"$platformId"	\
+        			"$accountName"	\
+        			"$username"	\
+        			"$secret"	\
+        			"accessKeyId"	\
+        			"accountId"	\
+        			"$region"	\
+        			"$accountAlias"
+	;;
+
+    pending_accts_get)
+	pending_accts_get
+	;;
+
+    onboarding_rules_get)
+	onboarding_rules_get
+	;;
+
+    onboarding_rules_set)
+	onboarding_rules_set
+	;;
+
     *)
 	showUsage
 	;;
@@ -199,14 +240,14 @@ main() {
 # sets the global authorization header used in api calls for other methods
 function pcloud_authenticate() {
   $util_defaults
-  echo "Authenticating user $PCLOUD_ADMIN_USER..."
+  echo "Authenticating user $CYBERARK_ADMIN_USER..."
   jwToken=$($CURL 					\
         -X POST \
         https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
         -H "Content-Type: application/x-www-form-urlencoded"      	\
         --data-urlencode "grant_type"="client_credentials"              \
-        --data-urlencode "client_id"="$PCLOUD_ADMIN_USER"               \
-        --data-urlencode "client_secret"="$PCLOUD_ADMIN_PWD"		\
+        --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
+        --data-urlencode "client_secret"="$CYBERARK_ADMIN_PWD"		\
 	| jq -r .access_token)
   authHeader="Authorization: Bearer $jwToken"
 }
@@ -293,12 +334,10 @@ function safe_get() {
 function safe_create() {
   $util_defaults
 
-#	--write-out '%{http_code}'	\
-#	--output /dev/null		\
-#  retCode=$(
-set -x
-	$CURL 						\
+  retCode=$($CURL 					\
 	-X POST						\
+	--write-out '%{http_code}'			\
+	--output /dev/null				\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
 	"${PCLOUD_URL}/Safes"				\
@@ -306,14 +345,11 @@ set -x
 		\"SafeName\":\"$safeName\",		\
 		\"NumberOfDaysRetention\":0,		\
 		\"Description\":\"$description\"	\
-	    }"
-#  )
-
-exit
+	    }")
 
   case $retCode in
     201)
-        echo "Safe created."
+        echo "Safe $safeName created."
        ;;
     400)
         echo "$0:safe_create()"
@@ -322,7 +358,7 @@ exit
     403)
         echo "$0:safe_create()"
         echo "  Unable to create safe $safeName."
-        echo "  Check user $PCLOUD_ADMIN_USER is has sufficient permissions."
+        echo "  Check user $CYBERARK_ADMIN_USER is has sufficient permissions."
         exit -1
         ;;
     *)
@@ -405,7 +441,6 @@ function safe_admin_add() {
 function safe_member_delete() {
   $util_defaults
 
-set -x
   $CURL 				\
 	-X DELETE			\
 	-H "$authHeader"		\
@@ -426,7 +461,7 @@ function account_get {
 	-H "$authHeader"		\
 	"${PCLOUD_URL}/Accounts?$filter" \
 	| jq "$query")
-  if [[ "$response" == "" ]]; then
+  if [[ "$response" == "" && "$INTERACTIVE" == "true" ]]; then
     echo "Account $accountName not found in safe $safeName."
     exit -1
   fi
@@ -437,6 +472,7 @@ function account_get {
 function account_delete {
   $util_defaults
 
+  INTERACTIVE=false
   accountInfo=$(account_get $safeName $accountName)
   if [[ "$accountInfo" == "" ]]; then
     echo "Account $accountName not found in safe $safeName."
@@ -444,19 +480,31 @@ function account_delete {
   fi
 
   accountId=$(echo $accountInfo | jq -r .id)
-#  retCode=$(
-#	--write-out '%{http_code}'	\
-#	--output /dev/null		\
-$CURL 			\
+  platformId=$(echo $accountInfo | jq -r .platformId)
+
+	# For reasons unknown, you can only delete SSH key accounts
+	# with the V1 REST API
+  if [[ "$platformId" == "UnixSSHKeys" ]]; then
+    retCode=$($CURL 			\
 	-X DELETE			\
+	--write-out '%{http_code}'	\
+	--output /dev/null		\
+	-H "$authHeader"		\
+	"${PCLOUD_URL_V1}/Accounts/$accountId"
+    )
+  else
+    retCode=$($CURL 			\
+	-X DELETE			\
+	--write-out '%{http_code}'	\
+	--output /dev/null		\
 	-H "$authHeader"		\
 	"${PCLOUD_URL}/Accounts/$accountId"
-#)
+    )
+  fi
 
-exit
   case $retCode in
-    204)
-        echo "Account deleted."
+    200 | 204)
+        echo "Deleted account $accountName in safe $safeName."
        ;;
     400)
         echo "$0:account_delete()"
@@ -465,7 +513,7 @@ exit
     403)
         echo "$0:account_delete()"
 	echo "  Unable to delete account $accountName in safe $safeName."
-	echo "  Check user $PCLOUD_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
         exit -1
         ;;
     405)
@@ -493,13 +541,13 @@ function account_create_db {
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
 			  \"name\": \"$accountName\",		\
-			  \"address\": \"$dbAddress\",		\
+			  \"address\": \"$address\",		\
 			  \"platformAccountProperties\": {	\
 			    \"Port\": \"$dbPort\",		\
 			    \"Database\": \"$dbName\"		\
 			  },					\
-			  \"userName\": \"$dbUsername\",	\
-			  \"secret\": \"$dbPassword\",		\
+			  \"userName\": \"$username\",		\
+			  \"secret\": \"$secret\",		\
 			  \"secretType\": \"password\",		\
 			  \"secretManagement\": {		\
 			    \"automaticManagementEnabled\": false,	\
@@ -511,7 +559,7 @@ function account_create_db {
 
   case $retCode in
     201)
-        echo "Account created."
+        echo "Created account $accountName in safe $safeName."
        ;;
     400)
         echo "$0:account_create_db()"
@@ -524,7 +572,7 @@ function account_create_db {
     403)
         echo "$0:account_create_db()"
 	echo "  Unable to create account $accountName in safe $safeName."
-	echo "  Check user $PCLOUD_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
         exit -1
         ;;
     *)
@@ -563,7 +611,7 @@ function account_create_ssh {
 
   case $retCode in
     201)
-        echo "Account created."
+        echo "Created account $accountName in safe $safeName."
        ;;
     400)
         echo "$0:account_create_ssh()"
@@ -576,11 +624,68 @@ function account_create_ssh {
     403)
         echo "$0:account_create_ssh()"
 	echo "  Unable to create account $accountName in safe $safeName."
-	echo "  Check user $PCLOUD_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
         exit -1
         ;;
     *)
         echo "$0:account_create_ssh: Unknown return code: $retCode"
+        exit -1
+        ;;
+  esac
+}
+
+#####################################
+function account_create_aws {
+  $util_defaults
+
+  retCode=$($CURL 					\
+	-X POST						\
+	--output /dev/null				\
+	--write-out '%{http_code}'			\
+        -H 'Content-Type: application/json'		\
+	-H "$authHeader"				\
+	"${PCLOUD_URL}/Accounts"			\
+	-d		"{				\
+			  \"platformId\": \"$platformId\",	\
+			  \"safeName\": \"$safeName\",		\
+			  \"name\": \"$accountName\",		\
+			  \"userName\": \"$username\",		\
+			  \"secret\": \"$secret\",		\
+			  \"secretType\": \"key\",		\
+                          \"platformAccountProperties\": {      		\
+				\"AWSAccountAliasName\": \"$accountAlias\",	\
+				\"Region\": \"$region\",			\
+				\"AWSAccessKeyID\": \"$accessKeyId\",		\
+				\"AWSAccountID\": \"$accountId\"		\
+                          },							\
+			  \"secretManagement\": {			\
+			    \"automaticManagementEnabled\": false,	\
+		 	    \"manualManagementReason\": 		\
+					\"Auto-onboarding test\"	\
+			  }						\
+			}"
+	)
+
+  case $retCode in
+    201)
+        echo "Created account $accountName in safe $safeName."
+       ;;
+    400)
+        echo "$0:account_create_aws()"
+	echo "  Unable to create account $accountName in safe $safeName with platform $platformId."
+	echo "  Check if requested platform $platformId is activated in the vault."
+        ;;
+    409)
+        echo "Account already exists. Please confirm values in vault are correct."
+        ;;
+    403)
+        echo "$0:account_create_aws()"
+	echo "  Unable to create account $accountName in safe $safeName."
+	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
+        exit -1
+        ;;
+    *)
+        echo "$0:account_create_aws: Unknown return code: $retCode"
         exit -1
         ;;
   esac
@@ -620,16 +725,16 @@ function checkDependencies() {
     echo "  PCLOUD_URL must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
     all_env_set=false
   fi
-  if [[ "$PCLOUD_ADMIN_USER" == "" ]]; then
+  if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then
     echo
-    echo "  PCLOUD_ADMIN_USER must be set - e.g. foo_bar@cyberark.cloud.7890"
+    echo "  CYBERARK_ADMIN_USER must be set - e.g. foo_bar@cyberark.cloud.7890"
     echo "    This MUST be a Service User and Oauth confidential client."
     echo "    This script will not work for human user identities."
     all_env_set=false
   fi
-  if [[ "$PCLOUD_ADMIN_PWD" == "" ]]; then
+  if [[ "$CYBERARK_ADMIN_PWD" == "" ]]; then
     echo
-    echo "  PCLOUD_ADMIN_PWD must be set to the $PCLOUD_ADMIN_USER password."
+    echo "  CYBERARK_ADMIN_PWD must be set to the $CYBERARK_ADMIN_USER password."
     all_env_set=false
   fi
   if ! $all_env_set; then

@@ -55,8 +55,6 @@ if [[ "$CYBERARK_ADMIN_PWD" == "" ]]; then
 fi
 
 export PCLOUD_URL=https://$CYBERARK_SUBDOMAIN_NAME.privilegecloud.cyberark.cloud/PasswordVault/api
-export PCLOUD_ADMIN_USER=$CYBERARK_ADMIN_USER
-export PCLOUD_ADMIN_PWD=$CYBERARK_ADMIN_PWD
-
+export PCLOUD_URL_V1=https://$CYBERARK_SUBDOMAIN_NAME.privilegecloud.cyberark.cloud/PasswordVault/WebServices/PIMServices.svc
 ##########################################################
 # END
