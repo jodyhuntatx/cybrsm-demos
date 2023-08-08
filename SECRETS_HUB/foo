@@ -1,0 +1,377 @@
+{
+    "secretStores": [
+        {
+            "id": "store-08181497-b41c-40c3-b1be-ca72a15153f0",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2023-07-11T20:44:31.778000",
+            "createdBy": "uzi_ailon@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "uziapi",
+                "accountId": "457431287614",
+                "regionId": "us-east-2",
+                "roleName": "SH-setup-AllowSecretsAccessRole-12IJJDH5EGDDJ"
+            },
+            "description": "tes api",
+            "name": "testAPIuzi",
+            "updatedAt": "2023-07-11T20:44:31.778000",
+            "updatedBy": "uzi_ailon@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-0ab13701-0b99-4c6a-901c-819983692c0a",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-05T18:47:56.299000",
+            "createdBy": "darren_khan@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "dk-dev-env",
+                "accountId": "475601244925",
+                "regionId": "us-east-2",
+                "roleName": "dk-secretshub-AllowSecretsAccessRole-2OC6DBN74GK9"
+            },
+            "name": "dk-dev-env - US East (Ohio)",
+            "updatedAt": "2022-08-09T17:48:17.122000",
+            "updatedBy": "darren_khan@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-0d33bc55-c9cd-432d-a9dc-5cf9e049b888",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-18T20:51:42.597000",
+            "createdBy": "joe_garcia@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "joeg-aws-lab",
+                "accountId": "735280068473",
+                "regionId": "us-east-1",
+                "roleName": "ConfigureNewSecretsHub-AllowSecretsAccessRole-L0ZIJ97QYTO6"
+            },
+            "description": "Joe Garcia AWS Lab",
+            "name": "joeg-aws-lab - US East (N. Virginia)",
+            "updatedAt": "2022-08-18T20:51:42.597000",
+            "updatedBy": "joe_garcia@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-11b46279-3ee2-4747-bff1-1a3f0a4eeafe",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-10-03T19:09:25.464000",
+            "createdBy": "sean_payne@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "cau-aws-us-east-1",
+                "accountId": "721942213424",
+                "regionId": "us-east-1",
+                "roleName": "CyberArkSecretsHubAllow-AllowSecretsAccessRole-MNB3PLD3QCQU"
+            },
+            "description": "CyberArk University Secrets Hub Test",
+            "name": "cau-aws-us-east-1 - US East (N. Virginia)",
+            "updatedAt": "2022-12-10T02:30:32.022000",
+            "updatedBy": "sean_payne@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-131e3da4-f62b-4d61-99dd-6778fc754b6d",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-22T14:46:48.151000",
+            "createdBy": "jeremy_patton@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "jpatt-us-west-2",
+                "accountId": "077316070733",
+                "regionId": "us-west-2",
+                "roleName": "SHub-Allow-Stack-AllowSecretsAccessRole-GBT00GJYTDCQ"
+            },
+            "name": "jpatt-us-west-2 - US West (Oregon)",
+            "updatedAt": "2022-08-22T14:46:48.151000",
+            "updatedBy": "jeremy_patton@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-21c60c65-7fea-4949-b811-9e1e96ef4e3f",
+            "type": "AZURE_AKV",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2023-06-02T18:44:09.394000",
+            "createdBy": "evan_litwak@cyberark.cloud.3357",
+            "data": {
+                "appClientDirectoryId": "032734d4-b0fe-4736-92df-d923b68c0316",
+                "azureVaultUrl": "https://el-sh-keyvault.vault.azure.net/",
+                "appClientId": "3475d434-cf56-47b1-9f0a-18daab56b0a3",
+                "connectionConfig": {
+                    "connectionType": "CONNECTOR",
+                    "connectorId": "ManagementAgent_ac589bf5-6650-41a7-a91d-949128427b2e"
+                }
+            },
+            "name": "el-sh-keyvault",
+            "updatedAt": "2023-06-02T18:44:09.394000",
+            "updatedBy": "evan_litwak@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-267df65b-a40f-49d6-8365-df6e16503469",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-29T14:17:12.133000",
+            "createdBy": "jeremy_patton@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "jpatt-us-east-1",
+                "accountId": "077316070733",
+                "regionId": "us-east-1",
+                "roleName": "SecretsHub-Allow-Stack-AllowSecretsAccessRole-B1E1XV0OUVAO"
+            },
+            "name": "jpatt-us-east-1 - US East (N. Virginia)",
+            "updatedAt": "2022-08-29T14:17:12.133000",
+            "updatedBy": "jeremy_patton@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-27425de0-200e-42e2-a264-f481d95a8dee",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-09-06T16:39:53.473000",
+            "createdBy": "joe_garcia@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "awesomewebinar",
+                "accountId": "735280068473",
+                "regionId": "ca-central-1",
+                "roleName": "ConfigureNewSecretsHub-AllowSecretsAccessRole-L0ZIJ97QYTO6"
+            },
+            "name": "awesomewebinar - Canada (Central)",
+            "updatedAt": "2022-09-15T14:22:35.655000",
+            "updatedBy": "joe_garcia@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-2b41a4a9-d934-4315-b09f-95b1a0315dd1",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-09-01T19:10:20.745000",
+            "createdBy": "dennis_mastin@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "dam-niwot",
+                "accountId": "749043713818",
+                "regionId": "us-west-1",
+                "roleName": "DAM-2022-09-01-SH-stack-AllowSecretsAccessRole-15CFG4AK4BANA"
+            },
+            "description": "DAM_SH_DEMO_NIWOT",
+            "name": "dam-niwot - US West (N. California)",
+            "updatedAt": "2022-09-29T17:27:32.071000",
+            "updatedBy": "dennis_mastin@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-2c40a8fa-89f0-4e16-bdf9-bfff08c221a5",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-16T21:42:30.728000",
+            "createdBy": "evan_litwak@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "cyberarkamerse",
+                "accountId": "475601244925",
+                "regionId": "us-west-2",
+                "roleName": "Evans-SH-Stack-AllowSecretsAccessRole-9PR2F0X0TNO3"
+            },
+            "description": "Evan Ls AWS Sync Target",
+            "name": "cyberarkamerse - US West (Oregon)",
+            "updatedAt": "2022-09-20T21:07:35.699000",
+            "updatedBy": "evan_litwak@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-344a8ac1-3b1e-4275-960d-76a5b75b08f9",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-16T17:39:02.333000",
+            "createdBy": "jody_hunt@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "jodyhuntatx-se-tenant",
+                "accountId": "475601244925",
+                "regionId": "ca-central-1",
+                "roleName": "JodySHstack-AllowSecretsAccessRole-QPAF2WPK3PTV"
+            },
+            "name": "jodyhuntatx-se-tenant - Canada (Central)",
+            "updatedAt": "2022-08-22T21:47:49.139000",
+            "updatedBy": "jody_hunt@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-512f2d9c-5716-40ab-bdf8-dc7a57703b98",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-09-14T14:06:49.986000",
+            "createdBy": "david_lang@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "dcnl-eu-west-1",
+                "accountId": "475601244925",
+                "regionId": "eu-west-1",
+                "roleName": "dcnl-sh-stack-AllowSecretsAccessRole-198BUVCTS2QLF"
+            },
+            "description": "David Lang Lab",
+            "name": "dcnl-eu-west-1 - Europe (Ireland)",
+            "updatedAt": "2023-03-30T17:35:09.544000",
+            "updatedBy": "david_lang@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-8e09bcda-28b9-4c6e-8a1f-70db17ad7ec7",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-12-10T02:38:08.208000",
+            "createdBy": "sean_payne@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "cau-aws-us-west2",
+                "accountId": "721942213424",
+                "regionId": "us-west-2",
+                "roleName": "CyberArkSecretsHubAllow-AllowSecretsAccessRole-MNB3PLD3QCQU"
+            },
+            "description": "CyberArk University Secrets Hub Test",
+            "name": "cau-aws-us-west2 - US West (Oregon)",
+            "updatedAt": "2022-12-10T02:38:08.208000",
+            "updatedBy": "sean_payne@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-9303f8b4-9031-4bb6-bfd6-9817ba0fbf3a",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-05T18:47:34.959000",
+            "createdBy": "darren_khan@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "dk-prod-env",
+                "accountId": "475601244925",
+                "regionId": "us-east-1",
+                "roleName": "dk-secretshub-prod-AllowSecretsAccessRole-1C1YRZ6BBUIQL"
+            },
+            "description": "DSF",
+            "name": "dk-prod-env - US East (N. Virginia)",
+            "updatedAt": "2022-08-09T17:50:45.823000",
+            "updatedBy": "darren_khan@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-a0ef8f83-be96-4780-9988-b1d6a292b92e",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-10-05T15:31:01.549000",
+            "createdBy": "aslan_ramos@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "asramos-sa-east-1",
+                "accountId": "475601244925",
+                "regionId": "sa-east-1",
+                "roleName": "SecretsHub-aslanramos-demo-AllowSecretsAccessRole-196W5Q3EQRCS1"
+            },
+            "description": "AWS Sao Paulo - Aslan Ramos",
+            "name": "asramos-sa-east-1 - South America (Sao Paulo)",
+            "updatedAt": "2022-10-05T15:31:01.549000",
+            "updatedBy": "aslan_ramos@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-a9b506a5-2764-4085-a8b8-2b1294f75b21",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-16T12:37:59.480000",
+            "createdBy": "garnet_merrill@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "secrethub-demo",
+                "accountId": "475601244925",
+                "regionId": "us-west-1",
+                "roleName": "GarnetDemo-AllowSecretsAccessRole-8CM2FXHKYD9Y"
+            },
+            "description": "Garnet Secrets Hub",
+            "name": "secrethub-demo - US West (N. California)",
+            "updatedAt": "2022-08-16T12:45:22.876000",
+            "updatedBy": "garnet_merrill@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-aeaa2dd3-7d99-47aa-9989-49f56f9f987f",
+            "type": "PAM_PCLOUD",
+            "behaviors": [
+                "SECRETS_SOURCE"
+            ],
+            "createdAt": "2022-08-03T20:20:16.811000",
+            "createdBy": "evan_litwak@cyberark.cloud.3357",
+            "data": {
+                "url": "https://cybr-secrets.privilegecloud.cyberark.cloud/PasswordVault",
+                "userName": "SecretsHub"
+            },
+            "description": "pam",
+            "name": "Privilege Cloud",
+            "updatedAt": "2022-08-03T20:20:16.811000",
+            "updatedBy": "evan_litwak@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-bfa2c082-1e8b-4cbb-aa1d-c196fdd904b8",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2023-03-15T03:33:28.445000",
+            "createdBy": "sean_payne@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "cau-ap-southeast-1",
+                "accountId": "721942213424",
+                "regionId": "ap-southeast-1",
+                "roleName": "CyberArkSecretsHubAllow-AllowSecretsAccessRole-1FFKLIJRBA0D8"
+            },
+            "description": "CyberArk University Secrets Hub TC Test",
+            "name": "cau-ap-southeast-1 - Asia Pacific (Singapore)",
+            "updatedAt": "2023-03-15T03:33:28.445000",
+            "updatedBy": "sean_payne@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-d296cfcc-fbfd-4409-8ea5-2157ae985fd7",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-09-20T19:58:10.950000",
+            "createdBy": "aslan_ramos@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "latam-se",
+                "accountId": "679180335467",
+                "regionId": "us-east-1",
+                "roleName": "roleIAMSecretsHub-AllowSecretsAccessRole-NNAN1FI22PN8"
+            },
+            "name": "latam-se - US East (N. Virginia)",
+            "updatedAt": "2023-03-27T18:41:55.965000",
+            "updatedBy": "aslan_ramos@cyberark.cloud.3357"
+        },
+        {
+            "id": "store-f2ef5ef7-5599-46cd-9a02-bffa574862d4",
+            "type": "AWS_ASM",
+            "behaviors": [
+                "SECRETS_TARGET"
+            ],
+            "createdAt": "2022-08-09T12:26:21.601000",
+            "createdBy": "uzi_ailon@cyberark.cloud.3357",
+            "data": {
+                "accountAlias": "awssh",
+                "accountId": "457431287614",
+                "regionId": "us-east-1",
+                "roleName": "newSHstack-AllowSecretsAccessRole-1DXMN3O2G9JXY"
+            },
+            "name": "awssh - US East (N. Virginia)",
+            "updatedAt": "2022-08-09T12:26:21.601000",
+            "updatedBy": "uzi_ailon@cyberark.cloud.3357"
+        }
+    ]
+}
