@@ -1,0 +1,9 @@
+#!/bin/bash
+
+con="false"
+
+if $con; then
+  echo "true"
+else
+  echo "false"
+fi

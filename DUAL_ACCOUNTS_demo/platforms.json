@@ -1,0 +1,2621 @@
+{
+  "Platforms": [
+    {
+      "general": {
+        "id": "RotationalGroup",
+        "name": "MySQL-RotationGroup",
+        "systemType": "MySQL-RotationGroup",
+        "active": true,
+        "description": "",
+        "platformBaseID": "RotationalGroup",
+        "platformType": "RotationalGroup"
+      },
+      "properties": {
+        "required": [],
+        "optional": [
+          {
+            "name": "CurrInd",
+            "displayName": "CurrInd"
+          },
+          {
+            "name": "Index",
+            "displayName": "Index"
+          },
+          {
+            "name": "DualAccountStatus",
+            "displayName": "DualAccountStatus"
+          },
+          {
+            "name": "VirtualUsername",
+            "displayName": "VirtualUsername"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "BusinessWebsite",
+        "name": "Business Website",
+        "systemType": "Website",
+        "active": true,
+        "description": "",
+        "platformBaseID": "BusinessWebsite",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "ItemName",
+            "displayName": "Item Name"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "URL",
+            "displayName": "URL"
+          },
+          {
+            "name": "Tags",
+            "displayName": "Tags"
+          },
+          {
+            "name": "Notes",
+            "displayName": "Notes"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": "BZ_I_*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "GenericWebApp",
+        "name": "Generic Web App",
+        "systemType": "Website",
+        "active": true,
+        "description": "",
+        "platformBaseID": "GenericWebApp",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "PSMSecureConnect",
+        "name": "",
+        "systemType": "PSM Secure Connect",
+        "active": false,
+        "description": "",
+        "platformBaseID": "PSMSecureConnect",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          },
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "UserDN",
+            "displayName": "User DN"
+          },
+          {
+            "name": "Location",
+            "displayName": "Location"
+          },
+          {
+            "name": "OwnerName",
+            "displayName": "Owner Name"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "Novell-eDirectory",
+        "name": "Novell eDirectory server",
+        "systemType": "Directory",
+        "active": false,
+        "description": "",
+        "platformBaseID": "Novell-eDirectory",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "UserDN",
+            "displayName": "User DN"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Port",
+            "displayName": "Port"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "SunOneDirectorySSL",
+        "name": "SunOne directory via SSL",
+        "systemType": "Directory",
+        "active": false,
+        "description": "",
+        "platformBaseID": "SunOneDirectorySSL",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "UserDN",
+            "displayName": "User DN"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Port",
+            "displayName": "Port"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "AWS",
+        "name": "Amazon Web Services - AWS",
+        "systemType": "Amazon web services",
+        "active": true,
+        "description": "This platform will enforce lifecycle management on privileged accounts in an AWS environment. Settings are based on a customized Master Policy that defines your unique requirements.",
+        "platformBaseID": "AmazonWebServices",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "AWSAccountID",
+            "displayName": "AWS Account ID Number"
+          }
+        ],
+        "optional": [
+          {
+            "name": "AWSARNRole",
+            "displayName": "AWS ARN Role"
+          },
+          {
+            "name": "AWSPolicy",
+            "displayName": "AWS Policy"
+          },
+          {
+            "name": "AWSAccountAliasName",
+            "displayName": "AWS Account Alias Name"
+          },
+          {
+            "name": "WebApplicationID",
+            "displayName": "Web Application ID"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "GCPGoogleAccount",
+        "name": "Google Cloud Platform - Google Account",
+        "systemType": "Cloud Service",
+        "active": true,
+        "description": "",
+        "platformBaseID": "GCPGoogleAccount",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "ProxyAddress",
+            "displayName": "Proxy Address"
+          },
+          {
+            "name": "BypassProxyOnLocal",
+            "displayName": "Bypass Proxy On Local"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "AzureApplicationKeys",
+        "name": "Microsoft Azure Application Keys Management",
+        "systemType": "Cloud Service",
+        "active": true,
+        "description": "This platform will enforce lifecycle key management of privileged accounts in Azure.",
+        "platformBaseID": "AzureApplicationKeys",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "ApplicationID",
+            "displayName": "Application Id"
+          },
+          {
+            "name": "ApplicationObjectID",
+            "displayName": "Application Object ID"
+          },
+          {
+            "name": "KeyID",
+            "displayName": "Key ID"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "ActiveDirectoryID",
+            "displayName": "Active Directory ID"
+          },
+          {
+            "name": "Duration",
+            "displayName": "Duration"
+          },
+          {
+            "name": "PopulateIfNotExist",
+            "displayName": "Populate If Not Exist"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "KeyDescription",
+            "displayName": "Key Description"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": null,
+          "displayName": "Application Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "AWSAccessKeys",
+        "name": "Amazon Web Services - AWS - Access Keys",
+        "systemType": "Amazon web services",
+        "active": true,
+        "description": "This platform will enforce lifecycle management on privileged access keys in an AWS environment. Settings are based on a customized Master Policy that defines your unique requirements.",
+        "platformBaseID": "AmazonWebServices-API",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "AWS IAM Username"
+          },
+          {
+            "name": "AWSAccessKeyID",
+            "displayName": "AWS Access Key ID"
+          },
+          {
+            "name": "AWSAccountID",
+            "displayName": "AWS Account ID Number"
+          }
+        ],
+        "optional": [
+          {
+            "name": "AWSAccountAliasName",
+            "displayName": "AWS Account Alias Name"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "GCPServiceAccount",
+        "name": "Google Cloud Platform - Service Account",
+        "systemType": "Cloud Service",
+        "active": true,
+        "description": "",
+        "platformBaseID": "GoogleCloudPlatform",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "KeyID",
+            "displayName": "Key ID"
+          },
+          {
+            "name": "Username",
+            "displayName": "Client Email"
+          }
+        ],
+        "optional": [
+          {
+            "name": "PopulateKey",
+            "displayName": "Populate Key"
+          },
+          {
+            "name": "ImpersonateUser",
+            "displayName": "Impersonate User"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": null,
+          "displayName": "Change Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "AzurePasswordManagement",
+        "name": "Microsoft Azure Password Management",
+        "systemType": "Cloud Service",
+        "active": true,
+        "description": "This platform will enforce lifecycle password management of privileged accounts in Azure.",
+        "platformBaseID": "AzurePasswordManagement",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "ActiveDirectoryID",
+            "displayName": "Active Directory ID"
+          }
+        ],
+        "optional": [
+          {
+            "name": "ApplicationID",
+            "displayName": "Application Id"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "WebApplicationID",
+            "displayName": "Web Application ID"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": null,
+          "displayName": "Application Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "Firewall1",
+        "name": "Check Point FireWall-1",
+        "systemType": "Security Appliance",
+        "active": false,
+        "description": "",
+        "platformBaseID": "Firewall1",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "ClientDN",
+            "displayName": "Client DN"
+          },
+          {
+            "name": "ServerDN",
+            "displayName": "Server DN"
+          }
+        ],
+        "optional": [
+          {
+            "name": "SicCertFile",
+            "displayName": "SIC cert file"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "GAiASSH",
+        "name": "Check Point GAiA via SSH",
+        "systemType": "Security Appliance",
+        "active": false,
+        "description": "",
+        "platformBaseID": "GAiASSH",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Type",
+            "displayName": "GAiA entity type"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Port",
+            "displayName": "Port"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WinLooselyDevice",
+        "name": "Windows Loosely Device",
+        "systemType": "Windows",
+        "active": false,
+        "description": "",
+        "platformBaseID": "WinLooselyDevice",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "Location",
+            "displayName": "Location"
+          },
+          {
+            "name": "OwnerName",
+            "displayName": "Owner Name"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": true,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "UnixSSHKeys",
+        "name": "Unix via SSH Keys",
+        "systemType": "*NIX",
+        "active": true,
+        "description": "",
+        "platformBaseID": "UnixSSHKeys",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Comment",
+            "displayName": "Comment"
+          },
+          {
+            "name": "ConnectionTimeout",
+            "displayName": "Connection Timeout"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "PublicSSHKeyPath",
+            "displayName": "PublicSSHKeyPath"
+          },
+          {
+            "name": "UseSudoOnReconcile",
+            "displayName": "Use Sudo On Reconcile"
+          },
+          {
+            "name": "StandardPrompt",
+            "displayName": "StandardPrompt"
+          },
+          {
+            "name": "PopulateIfNotExist",
+            "displayName": "Populate If Not Exist"
+          },
+          {
+            "name": "CommandExecutionTimeout",
+            "displayName": "Command Execution Timeout"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "OS390SSH",
+        "name": "OS390 via SSH",
+        "systemType": "Operating System",
+        "active": false,
+        "description": "",
+        "platformBaseID": "OS390SSH",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WinDesktopLocal",
+        "name": "Windows Desktop Local Accounts",
+        "systemType": "Windows",
+        "active": true,
+        "description": "",
+        "platformBaseID": "WinDesktopLocal",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "Location",
+            "displayName": "Location"
+          },
+          {
+            "name": "OwnerName",
+            "displayName": "Owner Name"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "VMWareESX-API",
+        "name": "VMWare ESX Account API",
+        "systemType": "Operating System",
+        "active": false,
+        "description": "",
+        "platformBaseID": "VMWareESX-API",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WinLocalWMI",
+        "name": "Windows Local Accounts WMI",
+        "systemType": "Windows",
+        "active": false,
+        "description": "",
+        "platformBaseID": "WinLocalWMI",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "Location",
+            "displayName": "Location"
+          },
+          {
+            "name": "OwnerName",
+            "displayName": "Owner Name"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WindowsDomainLDAP",
+        "name": "Windows Domain Accounts via LDAP",
+        "systemType": "Windows",
+        "active": false,
+        "description": "",
+        "platformBaseID": "WindowsDomainLDAP",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          }
+        ],
+        "optional": [
+          {
+            "name": "AuthenticationType",
+            "displayName": "Authentication Type"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "UseSSL",
+            "displayName": "Use SSL"
+          },
+          {
+            "name": "UnlockUserOnReconcile",
+            "displayName": "Unlock User On Reconcile"
+          },
+          {
+            "name": "UserDN",
+            "displayName": "User DN"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        },
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "as400",
+        "name": "AS400",
+        "systemType": "Operating System",
+        "active": false,
+        "description": "",
+        "platformBaseID": "as400",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "AS400AccountType",
+            "displayName": "AS400AccountType"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WinServerLocal",
+        "name": "Windows Server Local Accounts",
+        "systemType": "Windows",
+        "active": true,
+        "description": "",
+        "platformBaseID": "WinServerLocal",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "Location",
+            "displayName": "Location"
+          },
+          {
+            "name": "OwnerName",
+            "displayName": "Owner Name"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "WinDomain",
+        "name": "Windows Domain Account",
+        "systemType": "Windows",
+        "active": true,
+        "description": "",
+        "platformBaseID": "WinDomain",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "LogonDomain",
+            "displayName": "Log On To"
+          },
+          {
+            "name": "UserDN",
+            "displayName": "User DN"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "UnixSSH",
+        "name": "Unix via SSH",
+        "systemType": "*NIX",
+        "active": true,
+        "description": "",
+        "platformBaseID": "UnixSSH",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "UseSudoOnReconcile",
+            "displayName": "Use Sudo On Reconcile"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "CyberArkPTA",
+        "name": "CyberArk PTA",
+        "systemType": "Application",
+        "active": true,
+        "description": "This platform will enforce lifecycle password management of privileged accounts in CyberArk PTA.",
+        "platformBaseID": "CyberArkPTA",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "IgnoreCertificate",
+            "displayName": "Ignore Certificate"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": true,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "RSAManagement",
+        "name": "RSA Authentication Manager",
+        "systemType": "Application",
+        "active": false,
+        "description": "Manage RSA Authentication Manager (SecureID) Users.",
+        "platformBaseID": "RSAManagement",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "RSAUserType",
+            "displayName": "RSA User Type"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": null,
+          "displayName": "Security Change Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "CyberArk",
+        "name": "CyberArk Vault",
+        "systemType": "Application",
+        "active": true,
+        "description": "",
+        "platformBaseID": "CyberArk",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          }
+        ],
+        "optional": [
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Timeout",
+            "displayName": "Timeout"
+          },
+          {
+            "name": "ReconnectPeriod",
+            "displayName": "Reconnect Period"
+          },
+          {
+            "name": "ProxyType",
+            "displayName": "Proxy Type"
+          },
+          {
+            "name": "ProxyAddress",
+            "displayName": "Proxy Address"
+          },
+          {
+            "name": "ProxyPort",
+            "displayName": "Proxy Port"
+          },
+          {
+            "name": "ProxyAuthDomain",
+            "displayName": "Proxy Authentication Domain"
+          },
+          {
+            "name": "ProxyUser",
+            "displayName": "Proxy User"
+          },
+          {
+            "name": "ProxyPassword",
+            "displayName": "Proxy Password"
+          },
+          {
+            "name": "BehindFireWall",
+            "displayName": "Behind FireWall"
+          },
+          {
+            "name": "UseOnlyHTTP1",
+            "displayName": "Use Only HTTP1"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "SAP",
+        "name": "SAP",
+        "systemType": "Application",
+        "active": false,
+        "description": "",
+        "platformBaseID": "SAP",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "SystemNumber",
+            "displayName": "SAP System Number"
+          },
+          {
+            "name": "Client",
+            "displayName": "SAP Client"
+          }
+        ],
+        "optional": [
+          {
+            "name": "UserType",
+            "displayName": "User Type"
+          },
+          {
+            "name": "UseSNC",
+            "displayName": "Use SNC"
+          },
+          {
+            "name": "PartnerName",
+            "displayName": "PartnerName"
+          },
+          {
+            "name": "MyName",
+            "displayName": "MyName"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonReconcileAccount",
+          "displayName": "Logon/Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "ConjurHost",
+        "name": "Conjur Host",
+        "systemType": "Application",
+        "active": true,
+        "description": "",
+        "platformBaseID": "ConjurHost",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "HostName",
+            "displayName": "Host Name"
+          },
+          {
+            "name": "ApplianceURL",
+            "displayName": "Appliance URL"
+          }
+        ],
+        "optional": [
+          {
+            "name": "ConjurAccount",
+            "displayName": "Conjur Account"
+          }
+        ]
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": false,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "CiscoSSH",
+        "name": "Cisco router via SSH",
+        "systemType": "Network Device",
+        "active": false,
+        "description": "",
+        "platformBaseID": "CiscoSSH",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Type",
+            "displayName": "Cisco entity type"
+          }
+        ],
+        "optional": [
+          {
+            "name": "username",
+            "displayName": "username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "vty",
+            "displayName": "VTY"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "EnableAccount",
+          "displayName": "Enable Account"
+        },
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        },
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "SampleSSHKeyGroup",
+        "name": "[Sample SSH Key Group Platform]",
+        "systemType": "Misc",
+        "active": false,
+        "description": "Duplicate this platform for a new SSH Key Accounts Group",
+        "platformBaseID": "SampleSSHKeyGroup",
+        "platformType": "group"
+      },
+      "properties": {
+        "required": [],
+        "optional": []
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "SampleGroup",
+        "name": "[Sample Password Group Platform]",
+        "systemType": "Misc",
+        "active": false,
+        "description": "Duplicate this platform for a new Accounts Group",
+        "platformBaseID": "SampleGroup",
+        "platformType": "group"
+      },
+      "properties": {
+        "required": [],
+        "optional": []
+      },
+      "linkedAccounts": [],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": false,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "MSSql",
+        "name": "Microsoft SQL Server",
+        "systemType": "Database",
+        "active": true,
+        "description": "",
+        "platformBaseID": "MSSql",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          },
+          {
+            "name": "ReconcileIsWinAccount",
+            "displayName": "Windows reconcile account"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "SAPHANA",
+        "name": "SAP HANA",
+        "systemType": "Database",
+        "active": false,
+        "description": "This platform will enforce lifecycle password management of privileged accounts in SAP HANA.",
+        "platformBaseID": "SAPHANA",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          },
+          {
+            "name": "ReconcileIsWinAccount",
+            "displayName": "Windows reconcile account"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": true
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "MySQL",
+        "name": "MySQL Server",
+        "systemType": "Database",
+        "active": true,
+        "description": "",
+        "platformBaseID": "MSSql",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "Sybase",
+        "name": "Sybase ASE",
+        "systemType": "Database",
+        "active": false,
+        "description": "",
+        "platformBaseID": "Sybase",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "InformixUnixSSH",
+        "name": "Informix on Unix via SSH",
+        "systemType": "Database",
+        "active": false,
+        "description": "",
+        "platformBaseID": "InformixUnixSSH",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "DB2UnixSSH",
+        "name": "DB2 on Unix via SSH",
+        "systemType": "Database",
+        "active": false,
+        "description": "",
+        "platformBaseID": "DB2UnixSSH",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          }
+        ],
+        "optional": []
+      },
+      "linkedAccounts": [
+        {
+          "name": "LogonAccount",
+          "displayName": "Logon Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "Test-MySQL-DualAccts",
+        "name": "Test-MySQL-DualAccts",
+        "systemType": "Database",
+        "active": true,
+        "description": "",
+        "platformBaseID": "MSSql",
+        "platformType": "regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          },
+          {
+            "name": "VirtualUserName",
+            "displayName": "VirtualUserName"
+          },
+          {
+            "name": "Index",
+            "displayName": "Index"
+          },
+          {
+            "name": "DualAccountStatus",
+            "displayName": "DualAccountStatus"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": null
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    },
+    {
+      "general": {
+        "id": "Oracle",
+        "name": "Oracle Database",
+        "systemType": "Database",
+        "active": true,
+        "description": "",
+        "platformBaseID": "Oracle",
+        "platformType": "Regular"
+      },
+      "properties": {
+        "required": [
+          {
+            "name": "Username",
+            "displayName": "Username"
+          }
+        ],
+        "optional": [
+          {
+            "name": "DSN",
+            "displayName": "DSN (ODBC)"
+          },
+          {
+            "name": "Address",
+            "displayName": "Address"
+          },
+          {
+            "name": "Port",
+            "displayName": "Port"
+          },
+          {
+            "name": "Database",
+            "displayName": "Database"
+          }
+        ]
+      },
+      "linkedAccounts": [
+        {
+          "name": "ReconcileAccount",
+          "displayName": "Reconcile Account"
+        }
+      ],
+      "credentialsManagement": {
+        "allowedSafes": ".*",
+        "allowManualChange": true,
+        "performPeriodicChange": false,
+        "requirePasswordChangeEveryXDays": 90,
+        "allowManualVerification": true,
+        "performPeriodicVerification": false,
+        "requirePasswordVerificationEveryXDays": 7,
+        "allowManualReconciliation": true,
+        "automaticReconcileWhenUnsynched": false
+      },
+      "sessionManagement": {
+        "requirePrivilegedSessionMonitoringAndIsolation": false,
+        "recordAndSaveSessionActivity": true,
+        "PSMServerID": "PSMServer"
+      },
+      "privilegedAccessWorkflows": {
+        "requireDualControlPasswordAccessApproval": false,
+        "enforceCheckinCheckoutExclusiveAccess": false,
+        "enforceOnetimePasswordAccess": false
+      }
+    }
+  ],
+  "Total": 41
+}

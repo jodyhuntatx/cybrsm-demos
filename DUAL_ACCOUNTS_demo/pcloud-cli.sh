@@ -5,27 +5,44 @@
 ####################################################
 
 # use 'curl -v' and 'set -x' for verbose debugging 
-export CURL="curl -s"
+export CURL="curl -sk"
 util_defaults="set -u"
 
 showUsage() {
   echo "Usage:"
+  echo "  Platform commands:"
+  echo "    $0 platform_details <platform-name>"
+  echo "    $0 platform_groups_get"
+  echo "    $0 platform_rotational_groups_get"
+  echo
   echo "  Safe commands:"
-  echo "    $0 safes_list"
+  echo "    $0 safes_get"
   echo "    $0 safe_get <safe-name>"
   echo "    $0 safe_create <safe-name> <description>"
   echo "    $0 safe_member_get <safe-name> <member-name>"
   echo "    $0 safe_admin_add <safe-name> <member-name>"
   echo "    $0 safe_member_delete <safe-name> <member-name>"
+  echo
+  echo "  Safe Group commands:"
+  echo "    $0 safe_groups_get <safe-name>"
+  echo "    $0 safe_group_create <safe-name> <group-name> <group-platform-name>"
+  echo "    $0 safe_group_member_add <numberic-group-id> <numeric-account-id>"
+  echo "    $0 safe_group_members_get <safe_name> <group-name>"
+  echo "    $0 safe_group_member_delete <group-name> <account-name>"
+  echo
   echo "  Account commands:"
   echo "    $0 account_get <safe-name> <account-name>"
   echo "    $0 account_delete <safe-name> <account-name>"
+  echo "    $0 account_create_db_dual <safe-name> <platform-id> <account-name> <username> <password>"
+  echo "                      [ <server-address> ] [ <database-name> ] [ <server-port> ]"
+  echo "                      [ <virtual-user-name> ] [ <1/2> ] [ <Active/Inactive> ]"
   echo "    $0 account_create_db <safe-name> <platform-id> <account-name> <username> <password>"
   echo "                      [ <server-address> ] [ <database-name> ] [ <server-port> ]"
   echo "    $0 account_create_ssh <safe-name> <platform-id> <account-name> <username> <private-key>"
   echo "                      <server-address>"
   echo "    $0 account_create_aws <safe-name> <platform-id> <account-name> <username> <secret-key>"
   echo "                      <access-key-id> <account-id> [ <region> ] [ <account-alias> ]"
+  echo
   echo "  Authn commands:"
   echo "    $0 auth_token_get"
   exit -1
@@ -46,10 +63,18 @@ main() {
   checkDependencies
 
   case $1 in
-    pending_accts_get | onboarding_rules_get | safes_list)
+    pending_accts_get | onboarding_rules_get | safes_get | platforms_get  | platform_rotational_groups_get | platform_groups_get)
 	command=$1
 	;;
-    safe_get)
+    platform_details)
+	if [[ $# != 2 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	platformName=$(urlify "$2")
+	;;
+    safe_get | safe_groups_get)
 	if [[ $# != 2 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
@@ -75,6 +100,33 @@ main() {
 	safeName=$(urlify "$2")
 	memberName=$(urlify "$3")
 	;;
+    safe_group_members_get)
+	if [[ $# != 2 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	groupId=$(urlify "$2")
+	;;
+    safe_group_create)
+	if [[ $# != 4 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	safeName=$(urlify "$2")
+	groupName=$(urlify "$3")
+	groupPlatformId=$(urlify "$4")
+	;;
+    safe_group_member_add | safe_group_member_delete)
+	if [[ $# != 3 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	groupId=$(urlify "$2")
+	accountId=$(urlify "$3")
+	;;
     account_get | account_delete)
 	if [[ $# != 3 ]]; then
 	  echo "Incorrect number of arguments."
@@ -83,6 +135,24 @@ main() {
 	command=$1
 	safeName=$(urlify "$2")
 	accountName=$(urlify "$3")
+	;;
+    account_create_db_dual)
+	if [[ $# != 12 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	safeName=$(urlify "$2")
+	platformId=$(urlify "$3")
+	accountName=$(urlify "$4")
+	username="$5"
+	secret="$6"
+	address="$7"
+	dbName="$8"
+	dbPort="$9"
+	virtualUserName="${10}"
+	dualAccountIndex="${11}"
+	dualAccountStatus="${12}"
 	;;
     account_create_db)
 	if [[ $# != 9 ]]; then
@@ -135,13 +205,23 @@ main() {
 	echo $jwToken
 	exit
 	;;
+    session_token_get)
+	command=$1
+  	installeruser_authenticate
+	echo $sessionToken
+	exit
+	;;
     *)
 	echo "Unrecognized command: $1"
 	showUsage
 	;;
   esac
 
+if $SELF_HOSTED_PAM; then
+  installeruser_authenticate	# sets global variable authHeader
+else
   pcloud_authenticate	# sets global variable authHeader
+fi
 
 	# Note that for the function calls below, arguments are accessed globally.
 	# They are included here for documentation purpose but not actually passed
@@ -149,8 +229,24 @@ main() {
 	# them as parameters.
   case $command in
 
-    safes_list)
-	safes_list
+    platforms_get)
+	platforms_get
+	;;
+
+    platform_details)
+	platform_details
+	;;
+
+    platform_groups_get)
+	platform_groups_get
+	;;
+
+    platform_rotational_groups_get)
+	platform_rotational_groups_get
+	;;
+
+    safes_get)
+	safes_get
 	;;
 
     safe_get)
@@ -159,6 +255,22 @@ main() {
 
     safe_create)
 	safe_create "$safeName" "$description"
+	;;
+
+    safe_groups_get)
+	safe_groups_get "$safeName"
+	;;
+
+    safe_group_create)
+	safe_group_create "$safeName" "$groupName" "$groupPlatformId"
+	;;
+
+    safe_group_member_add)
+	safe_group_member_add "$groupId" "$accountId"
+	;;
+
+    safe_group_members_get)
+	safe_group_members_get "$groupId"
 	;;
 
     safe_member_get)
@@ -186,6 +298,20 @@ main() {
 	account_delete "$safeName" "$accountName"
 	;;
 
+    account_create_db_dual)
+	account_create_db_dual	"$safeName"	\
+        			"$platformId"	\
+        			"$accountName"	\
+	        		"$address"	\
+        			"$username"	\
+        			"$secret"	\
+      		 		"$dbName"	\
+       	 			"$dbPort"	\
+       	 			"$virtualUserName"	\
+       	 			"$dualAccountIndex"	\
+       	 			"$dualAccountStatus"
+	;;
+
     account_create_db)
 	account_create_db	"$safeName"	\
         			"$platformId"	\
@@ -194,7 +320,7 @@ main() {
         			"$username"	\
         			"$secret"	\
       		 		"$dbName"	\
-       	 			"$dbPort"	\
+       	 			"$dbPort"
 	;;
 
     account_create_ssh)
@@ -231,7 +357,8 @@ main() {
 	;;
 
     *)
-	showUsage
+        echo "Add $command to second case statement.!!"
+	exit -1
 	;;
   esac
 }
@@ -240,7 +367,7 @@ main() {
 # sets the global authorization header used in api calls for other methods
 function pcloud_authenticate() {
   $util_defaults
-  echo "Authenticating user $CYBERARK_ADMIN_USER..."
+#  echo "Authenticating user $CYBERARK_ADMIN_USER..."
   jwToken=$($CURL 					\
         -X POST \
         https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
@@ -262,6 +389,7 @@ function installeruser_authenticate() {
 		\"password\":\"$INSTALLERUSER_PASSWORD\"}"	\
 	"${PCLOUD_URL}/auth/Cyberark/Logon/")
   sessionToken=$(echo $sessionToken | tr -d '"')
+
   authHeader="Authorization: $sessionToken"
 }
 
@@ -315,7 +443,43 @@ function onboarding_rules_set() {
 }
 
 #####################################
-function safes_list() {
+function platforms_get() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/Platforms"
+}
+
+#####################################
+function platform_details() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/Platforms/$platformName"
+}
+
+#####################################
+function platform_groups_get() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/platforms/groups"
+}
+
+#####################################
+function platform_rotational_groups_get() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/platforms/rotationalGroups"
+}
+
+#####################################
+function safes_get() {
   $util_defaults
   $CURL 				\
 	-X GET				\
@@ -327,17 +491,26 @@ function safes_list() {
 function safe_get() {
   $util_defaults
   printf -v query '.value[] | select(.safeName=="%s")' $safeName
-  echo $(safes_list) | jq "$query"
+  echo $(safes_get) | jq "$query"
 }
 
 #####################################
+all_safe_options(){
+  "numberOfDaysRetention": 7,
+  "numberOfVersionsRetention": null,
+  "oLACEnabled": true,
+  "autoPurgeEnabled": true,
+  "managingCPM": "passwordManager",
+  "safeName": "PasswordManagerSafe",
+  "description": "This is PasswordManager safe.",
+  "location": ""
+}
 function safe_create() {
   $util_defaults
 
-  retCode=$($CURL 					\
+  response=$($CURL 					\
 	-X POST						\
-	--write-out '%{http_code}'			\
-	--output /dev/null				\
+	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
 	"${PCLOUD_URL}/Safes"				\
@@ -346,23 +519,31 @@ function safe_create() {
 		\"NumberOfDaysRetention\":0,		\
 		\"Description\":\"$description\"	\
 	    }")
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
 
-  case $retCode in
+  case $http_code in
     201)
         echo "Safe $safeName created."
        ;;
     400)
         echo "$0:safe_create()"
         echo "  Unable to create safe $safeName."
+	echo
+	echo "$content"
         ;;
     403)
         echo "$0:safe_create()"
         echo "  Unable to create safe $safeName."
         echo "  Check user $CYBERARK_ADMIN_USER is has sufficient permissions."
+	echo
+	echo "$content"
         exit -1
         ;;
     *)
-        echo "$0:safe_create(): Unknown return code: $retCode"
+        echo "$0:safe_create(): Unknown return code: $http_code"
+	echo
+	echo "$content"
         exit -1
         ;;
   esac
@@ -448,6 +629,86 @@ function safe_member_delete() {
 }
 
 #####################################
+function safe_groups_get() {
+  $util_defaults
+set -x
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/AccountGroups?Safe=$safeName"
+}
+
+#####################################
+function safe_group_create() {
+  $util_defaults
+
+  response=$($CURL 					\
+	-X POST						\
+	--write-out '\n%{http_code}'			\
+        -H 'Content-Type: application/json'		\
+	-H "$authHeader"				\
+	"${PCLOUD_URL}/AccountGroups"			\
+	-d "{						\
+		\"Safe\":\"$safeName\",			\
+		\"GroupName\": \"$groupName\",			\
+		\"GroupPlatformId\":\"$groupPlatformId\"	\
+	    }")
+
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
+
+  case $http_code in
+    201)
+        echo "Group $groupName Safe $safeName created."
+       ;;
+    400)
+        echo "$0:safe_group_create()"
+        echo "  Unable to create group $groupName in safe $safeName."
+	echo
+	echo "$content"
+        ;;
+    403)
+        echo "$0:safe_group_create()"
+        echo "  Unable to create group $groupName in safe $safeName."
+        echo "  Check user $CYBERARK_ADMIN_USER is has sufficient permissions."
+	echo
+	echo "$content"
+        exit -1
+        ;;
+    *)
+        echo "$0:safe_group_create(): Unknown return code: $http_code"
+	echo
+	echo "$content"
+        exit -1
+        ;;
+  esac
+
+}
+
+#####################################
+function safe_group_member_add() {
+  $util_defaults
+set -x
+  $CURL 				\
+	-X POST				\
+	-H "$authHeader"		\
+	--header "Content-Type: application/json"		\
+	"${PCLOUD_URL}/AccountGroups/$groupId/Members"	\
+	-d "{							\
+		\"AccountID\": \"$accountId\"			\
+	   }"
+}
+
+#####################################
+function safe_group_members_get() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/AccountGroups/$groupId/Members"
+}
+
+#####################################
 function account_get {
   $util_defaults
 
@@ -485,42 +746,115 @@ function account_delete {
 	# For reasons unknown, you can only delete SSH key accounts
 	# with the V1 REST API
   if [[ "$platformId" == "UnixSSHKeys" ]]; then
-    retCode=$($CURL 			\
+    response=$($CURL 			\
 	-X DELETE			\
-	--write-out '%{http_code}'	\
-	--output /dev/null		\
+	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
 	"${PCLOUD_URL_V1}/Accounts/$accountId"
     )
   else
-    retCode=$($CURL 			\
+    response=$($CURL 			\
 	-X DELETE			\
-	--write-out '%{http_code}'	\
-	--output /dev/null		\
+	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
 	"${PCLOUD_URL}/Accounts/$accountId"
     )
   fi
 
-  case $retCode in
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
+
+  case $http_code in
     200 | 204)
         echo "Deleted account $accountName in safe $safeName."
        ;;
     400)
         echo "$0:account_delete()"
 	echo "  Unable to delete account $accountName in safe $safeName."
+	echo
+	echo "$content"
         ;;
     403)
         echo "$0:account_delete()"
 	echo "  Unable to delete account $accountName in safe $safeName."
 	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo
+	echo "$content"
         exit -1
         ;;
     405)
         echo "Account with ID $accountId does not exist."
+	echo
+	echo "$content"
         ;;
     *)
-        echo "$0:account_delete: Unknown return code: $retCode"
+        echo "$0:account_delete: Unknown return code: $http_code"
+	echo
+	echo "$content"
+        exit -1
+        ;;
+  esac
+}
+
+#####################################
+function account_create_db_dual {
+  $util_defaults
+
+  response=$($CURL 					\
+	--write-out '\n%{http_code}'			\
+	-X POST						\
+        -H 'Content-Type: application/json'		\
+	-H "$authHeader"				\
+	"${PCLOUD_URL}/Accounts"			\
+	-d		"{				\
+			  \"platformId\": \"$platformId\",	\
+			  \"safeName\": \"$safeName\",		\
+			  \"name\": \"$accountName\",		\
+			  \"address\": \"$address\",		\
+			  \"platformAccountProperties\": {		\
+			    \"Port\": \"$dbPort\",			\
+			    \"Database\": \"$dbName\",			\
+			    \"VirtualUserName\": \"$virtualUserName\",	\
+			    \"Index\": \"$dualAccountIndex\",		\
+			    \"DualAccountStatus\": \"$dualAccountStatus\",	\
+			  },						\
+			  \"userName\": \"$username\",			\
+			  \"secret\": \"$secret\",			\
+			  \"secretType\": \"password\",			\
+			  \"secretManagement\": {			\
+			    \"automaticManagementEnabled\": true	\
+			  }						\
+			}"
+	)
+
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
+
+  case $http_code in
+    201)
+        echo "Created account $accountName in safe $safeName."
+       ;;
+    400)
+        echo "$0:account_create_db_dual()"
+	echo "  Unable to create account $accountName in safe $safeName with platform $platformId."
+	echo
+	echo "$content"
+        ;;
+    409)
+        echo "Account already exists. Please confirm values in vault are correct."
+	echo
+	echo "$content"
+        ;;
+    403)
+        echo "$0:account_create_db_dual()"
+	echo "  Unable to create account $accountName in safe $safeName."
+	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo
+	echo "$content"
+        exit -1
+        ;;
+    *)
+        echo "$0:account_create_db_dual: Unknown return code: $retCode"
         exit -1
         ;;
   esac
@@ -543,18 +877,13 @@ function account_create_db {
 			  \"address\": \"$address\",		\
 			  \"platformAccountProperties\": {		\
 			    \"Port\": \"$dbPort\",			\
-			    \"Database\": \"$dbName\",			\
-			    \"VirtualUserName\": \"virtualuser\",	\
-			    \"Index\": 0, 				\
-			    \"DualAccountStatus\": \"Inactive\",	\
+			    \"Database\": \"$dbName\"			\
 			  },						\
 			  \"userName\": \"$username\",			\
 			  \"secret\": \"$secret\",			\
 			  \"secretType\": \"password\",			\
 			  \"secretManagement\": {			\
-			    \"automaticManagementEnabled\": false,	\
-		 	    \"manualManagementReason\": 		\
-					\"Auto-onboarding test\"	\
+			    \"automaticManagementEnabled\": true	\
 			  }						\
 			}"
 	)
@@ -569,7 +898,6 @@ function account_create_db {
     400)
         echo "$0:account_create_db()"
 	echo "  Unable to create account $accountName in safe $safeName with platform $platformId."
-	echo "  Check if requested platform $platformId is activated in the vault."
 	echo
 	echo "$content"
         ;;
@@ -597,10 +925,9 @@ function account_create_db {
 function account_create_ssh {
   $util_defaults
 
-  retCode=$($CURL 					\
+  response=$($CURL 					\
 	-X POST						\
-	--output /dev/null				\
-	--write-out '%{http_code}'			\
+	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
 	"${PCLOUD_URL}/Accounts"			\
@@ -620,7 +947,10 @@ function account_create_ssh {
 			}"
 	)
 
-  case $retCode in
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
+
+  case $http_code in
     201)
         echo "Created account $accountName in safe $safeName."
        ;;
@@ -628,18 +958,26 @@ function account_create_ssh {
         echo "$0:account_create_ssh()"
 	echo "  Unable to create account $accountName in safe $safeName with platform $platformId."
 	echo "  Check if requested platform $platformId is activated in the vault."
+	echo
+	echo "$content"
         ;;
     409)
         echo "Account already exists. Please confirm values in vault are correct."
+	echo
+	echo "$content"
         ;;
     403)
         echo "$0:account_create_ssh()"
 	echo "  Unable to create account $accountName in safe $safeName."
 	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo
+	echo "$content"
         exit -1
         ;;
     *)
-        echo "$0:account_create_ssh: Unknown return code: $retCode"
+        echo "$0:account_create_ssh: Unknown return code: $http_code"
+	echo
+	echo "$content"
         exit -1
         ;;
   esac
@@ -649,10 +987,9 @@ function account_create_ssh {
 function account_create_aws {
   $util_defaults
 
-  retCode=$($CURL 					\
+  response=$($CURL 					\
 	-X POST						\
-	--output /dev/null				\
-	--write-out '%{http_code}'			\
+	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
 	"${PCLOUD_URL}/Accounts"			\
@@ -677,7 +1014,10 @@ function account_create_aws {
 			}"
 	)
 
-  case $retCode in
+  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
+  content=$(sed '$ d' <<< "$response")   # trim http_code
+
+  case $http_code in
     201)
         echo "Created account $accountName in safe $safeName."
        ;;
@@ -685,18 +1025,26 @@ function account_create_aws {
         echo "$0:account_create_aws()"
 	echo "  Unable to create account $accountName in safe $safeName with platform $platformId."
 	echo "  Check if requested platform $platformId is activated in the vault."
+	echo
+	echo "$content"
         ;;
     409)
         echo "Account already exists. Please confirm values in vault are correct."
+	echo
+	echo "$content"
         ;;
     403)
         echo "$0:account_create_aws()"
 	echo "  Unable to create account $accountName in safe $safeName."
 	echo "  Check user $CYBERARK_ADMIN_USER is a member of the safe and has sufficient permissions."
+	echo
+	echo "$content"
         exit -1
         ;;
     *)
-        echo "$0:account_create_aws: Unknown return code: $retCode"
+        echo "$0:account_create_aws: Unknown return code: $http_code"
+	echo
+	echo "$content"
         exit -1
         ;;
   esac
