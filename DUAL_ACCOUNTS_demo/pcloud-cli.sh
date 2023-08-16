@@ -26,8 +26,8 @@ showUsage() {
   echo "  Safe Group commands:"
   echo "    $0 safe_groups_get <safe-name>"
   echo "    $0 safe_group_create <safe-name> <group-name> <group-platform-name>"
-  echo "    $0 safe_group_member_add <numberic-group-id> <numeric-account-id>"
-  echo "    $0 safe_group_members_get <safe_name> <group-name>"
+  echo "    $0 safe_group_member_add <numeric-group-id> <numeric-account-id>"
+  echo "    $0 safe_group_members_get <group-id>"
   echo "    $0 safe_group_member_delete <group-name> <account-name>"
   echo
   echo "  Account commands:"
@@ -98,7 +98,7 @@ main() {
 	fi
 	command=$1
 	safeName=$(urlify "$2")
-	memberName=$(urlify "$3")
+	memberName="$3"
 	;;
     safe_group_members_get)
 	if [[ $# != 2 ]]; then
@@ -368,9 +368,9 @@ fi
 function pcloud_authenticate() {
   $util_defaults
 #  echo "Authenticating user $CYBERARK_ADMIN_USER..."
-  jwToken=$($CURL 					\
-        -X POST \
-        https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
+  jwToken=$($CURL 							\
+        -X POST 							\
+        "${IDENTITY_TENANT_URL}/oauth2/platformtoken" 			\
         -H "Content-Type: application/x-www-form-urlencoded"      	\
         --data-urlencode "grant_type"="client_credentials"              \
         --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
@@ -481,6 +481,7 @@ function platform_rotational_groups_get() {
 #####################################
 function safes_get() {
   $util_defaults
+set -x
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
@@ -631,7 +632,6 @@ function safe_member_delete() {
 #####################################
 function safe_groups_get() {
   $util_defaults
-set -x
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
@@ -659,7 +659,7 @@ function safe_group_create() {
 
   case $http_code in
     201)
-        echo "Group $groupName Safe $safeName created."
+        echo "Group $groupName created in safe $safeName."
        ;;
     400)
         echo "$0:safe_group_create()"
@@ -688,7 +688,6 @@ function safe_group_create() {
 #####################################
 function safe_group_member_add() {
   $util_defaults
-set -x
   $CURL 				\
 	-X POST				\
 	-H "$authHeader"		\
@@ -709,19 +708,23 @@ function safe_group_members_get() {
 }
 
 #####################################
+# there does not seem any difference between this output
+# and Account Details (GET .../Accounts/{id})
 function account_get {
   $util_defaults
 
-# search example. but you cannott search on account name
+# search example. you can search on everything BUT account name !!?
 #Accounts?limit=1&searchType=StartsWith&search={{ (instance_username + ' ' + instance_ip) | urlencode }}"
 
-  filter=$(urlify "filter=safeName eq ${safeName}")
+# So use jq to search on account name
   printf -v query '.value[] | select(.name=="%s")' $accountName
+  filter=$(urlify "filter=safeName eq ${safeName}")
   response=$($CURL 				\
-	-X GET				\
-	-H "$authHeader"		\
-	"${PCLOUD_URL}/Accounts?$filter" \
+	-X GET					\
+	-H "$authHeader"			\
+	"${PCLOUD_URL}/Accounts?$filter" 	\
 	| jq "$query")
+
   if [[ "$response" == "" && "$INTERACTIVE" == "true" ]]; then
     echo "Account $accountName not found in safe $safeName."
     exit -1
@@ -1074,9 +1077,9 @@ function checkDependencies() {
     echo "The JSON query utility jq is required. Please install jq."
     all_env_set=false
   fi
-  if [[ "$IDENTITY_TENANT_ID" == "" ]]; then
+  if [[ "$IDENTITY_TENANT_URL" == "" ]]; then
     echo
-    echo "  IDENTITY_TENANT_ID must be set - e.g. 'xyz1234'"
+    echo "  IDENTITY_TENANT_URL must be set."
     all_env_set=false
   fi
   if [[ "$PCLOUD_URL" == "" ]]; then

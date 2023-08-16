@@ -4,17 +4,17 @@ source demo-vars.sh
 
 export CURL="curl -sk"
 
-# Parameters
-exportPlatformId=${1:-"MySQL"}
-importPlatformId=${2:-"Test-MySQL-DualAccts"}
-rotationPlatformId=${3:-"MySQL-RotationGroup"}
 
 #####################################
 main() { 
-#  pcloud_authenticate
-  installeruser_authenticate
+  if $SELF_HOSTED_PAM; then
+    installeruser_authenticate	# sets global variable authHeader
+  else
+    pcloud_authenticate	# sets global variable authHeader
+  fi
+  
 #  export_platform
-#  import_rotationgroup_platform
+  import_rotationgroup_platform
   import_account_platform
 }
 
@@ -24,15 +24,15 @@ export_platform() {
   $CURL -X POST 							\
 	        --header "$authHeader"					\
 	        --header "Content-Type: application/json"		\
-	        "${PCLOUD_URL}/platforms/$exportPlatformId/export"	\
+	        "${PCLOUD_URL}/platforms/$exportAccountPlatformId/export"	\
 		-d ""							\
-		> "./export/${exportPlatformId}.zip"
+		> "./export/${exportAccountPlatformId}.zip"
 }
 
 #####################################
 import_rotationgroup_platform() {
   instantiate_rotationgroup_platform
-  importArray=$(base64 -i ./import/$rotationPlatformId.zip)
+  importArray=$(base64 -i ./import/$rotationGroupPlatformId.zip)
   import_platform
 }
 
@@ -40,23 +40,23 @@ import_rotationgroup_platform() {
 instantiate_rotationgroup_platform() {
   rm -f ./import/*
   cat ./templates/Policy-RotationalGroupTemplate.ini			\
-  | sed -e "s#{{ ROTATIONAL_GROUP_NAME }}#$rotationPlatformId#g"	\
-  > ./import/Policy-$rotationPlatformId.ini
+  | sed -e "s#{{ ROTATIONAL_GROUP_NAME }}#$rotationGroupPlatformId#g"	\
+  > ./import/Policy-$rotationGroupPlatformId.ini
 
   cat ./templates/Policy-RotationalGroupTemplate.xml			\
-  | sed -e "s#{{ ROTATIONAL_GROUP_NAME }}#$rotationPlatformId#g"	\
-  > ./import/Policy-$rotationPlatformId.xml
+  | sed -e "s#{{ ROTATIONAL_GROUP_NAME }}#$rotationGroupPlatformId#g"	\
+  > ./import/Policy-$rotationGroupPlatformId.xml
 
   # Import to the vault does not like path prefixes in zipfile
   cd ./import	
-    zip $rotationPlatformId.zip Policy-$rotationPlatformId.*
+    zip $rotationGroupPlatformId.zip Policy-$rotationGroupPlatformId.*
   cd ..
 }
 
 #####################################
 import_account_platform() {
   instantiate_account_platform
-  importArray=$(base64 -i ./import/$importPlatformId.zip)
+  importArray=$(base64 -i ./import/$dualAccountPlatformId.zip)
   import_platform
 }
 
@@ -64,16 +64,16 @@ import_account_platform() {
 instantiate_account_platform() {
   rm -f ./import/*
   cat ./templates/Policy-DualAcctTemplate-MySQL.ini	\
-  | sed -e "s#{{ PLATFORM_ID }}#$importPlatformId#g"	\
-  > ./import/Policy-$importPlatformId.ini
+  | sed -e "s#{{ PLATFORM_ID }}#$dualAccountPlatformId#g"	\
+  > ./import/Policy-$dualAccountPlatformId.ini
 
   cat ./templates/Policy-DualAcctTemplate-MySQL.xml	\
-  | sed -e "s#{{ PLATFORM_ID }}#$importPlatformId#g"	\
-  > ./import/Policy-$importPlatformId.xml
+  | sed -e "s#{{ PLATFORM_ID }}#$dualAccountPlatformId#g"	\
+  > ./import/Policy-$dualAccountPlatformId.xml
 
   # Import to the vault does not like path prefixes in zipfile
   cd ./import	
-    zip $importPlatformId.zip Policy-$importPlatformId.*
+    zip $dualAccountPlatformId.zip Policy-$dualAccountPlatformId.*
   cd ..
 }
 
@@ -106,55 +106,16 @@ import_platform() {
 #####################################
 # sets the global authorization header used in api calls for other methods
 function pcloud_authenticate() {
-  $util_defaults
-  echo "Authenticating user $CYBERARK_ADMIN_USER..."
-  response=$($CURL 							\
-        -X POST 							\
-       	--write-out '\n%{http_code}'                      		\
-        https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
-        -H "Content-Type: application/x-www-form-urlencoded"      	\
-        --data-urlencode "grant_type"="client_credentials"              \
-        --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
-        --data-urlencode "client_secret"="$CYBERARK_ADMIN_PWD")
-  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
-  content=$(sed '$ d' <<< "$response")   # trim http_code
-
-  case $http_code in
-    200)
-	jwToken=$(echo $content| jq -r .access_token)
-  	authHeader="Authorization: Bearer $jwToken"
-        ;;
-    *)
-        echo "Error code $http_code when authenticating $CYBERARK_ADMIN_USER."
-        echo $content
-        exit -1
-        ;;
-  esac
+  #echo "Authenticating user $CYBERARK_ADMIN_USER..."
+  jwToken=$(./pcloud-cli.sh auth_token_get)
+  authHeader="Authorization: Bearer $jwToken"
 }
 
 #####################################
 # authns legacy installeruser for non-CyberArk Identity vault access
 function installeruser_authenticate() {
-  response=$($CURL -X POST 						\
-       		    --write-out '\n%{http_code}'                      	\
-	           --header "Content-Type: application/json"		\
-	           --data "{\"username\":\"$INSTALLERUSER\",	 	\
-		            \"password\":\"$INSTALLERUSER_PASSWORD\"}"	\
-	           "${PCLOUD_URL}/auth/Cyberark/Logon/")
-  http_code=$(tail -n1 <<< "$response")  # get http_code on last line
-  content=$(sed '$ d' <<< "$response")   # trim http_code
-
-  case $http_code in
-    200)
-	sessionToken=$(echo $content | tr -d '"')
-	authHeader="Authorization: $sessionToken"
-	;;
-    *)	
-	echo "Error code $http_code when authenticating $INSTALLERUSER."
-	echo $content
-	exit -1
-	;;
-  esac
+  sessionToken=$(./pcloud-cli.sh session_token_get)
+  authHeader="Authorization: $sessionToken"
 }
 
 main "$@"
