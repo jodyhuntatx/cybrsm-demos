@@ -1,4 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Device Name="Database"><Policies><Policy ID="MySQL-Dual" AutoChangeOnAdd="No" AutoVerifyOnAdd="No" EnableSplitPassword="No" ForceManualPasswordChange="No" PlatformBaseID="MSSql" PlatformBaseType="MSSql" PlatformBaseProtocol="ODBC">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device Name="Database">
+  <Policies>
+    <Policy ID="MySQL-Dual" AutoChangeOnAdd="No" AutoVerifyOnAdd="No" EnableSplitPassword="No" ForceManualPasswordChange="No" PlatformBaseID="MSSql" PlatformBaseType="MSSql" PlatformBaseProtocol="ODBC">
           <Properties>
             <Required>
               <Property Name="Username" />
@@ -8,7 +11,6 @@
               <Property Name="Address" />
               <Property Name="Port" />
               <Property Name="Database" />
-              <Property Name="Description" />
               <Property Name="VirtualUserName" />
               <Property Name="Index" />
               <Property Name="DualAccountStatus" />
@@ -18,4 +20,6 @@
             <Link Name="ReconcileAccount" PropertyIndex="3" />
           </LinkedPasswords>
           <TicketingSystem EnterTicketingInfo="Yes" ValidateTicketNumber="No" />
-        </Policy></Policies></Device>
+    </Policy>
+  </Policies>
+</Device>

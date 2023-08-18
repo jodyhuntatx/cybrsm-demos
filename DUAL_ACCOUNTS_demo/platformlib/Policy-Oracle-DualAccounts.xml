@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Device Name="Database">
   <Policies>
-    <Policy ID="{{ PLATFORM_ID }}" AutoChangeOnAdd="No" AutoVerifyOnAdd="No" EnableSplitPassword="No" ForceManualPasswordChange="No" PlatformBaseID="MSSql" PlatformBaseType="MSSql" PlatformBaseProtocol="ODBC">
+       <Policy ID="Oracle" AutoChangeOnAdd="No" AutoVerifyOnAdd="No" PlatformBaseID="Oracle" PlatformBaseType="Oracle" PlatformBaseProtocol="ODBC">
           <Properties>
             <Required>
               <Property Name="Username" />
@@ -19,7 +19,12 @@
           <LinkedPasswords>
             <Link Name="ReconcileAccount" PropertyIndex="3" />
           </LinkedPasswords>
-          <TicketingSystem EnterTicketingInfo="Yes" ValidateTicketNumber="No" />
-    </Policy>
+          <TicketingSystem EnterTicketingInfo="No" ValidateTicketNumber="No" />
+          <PrivilegedSessionManagement ID="PSMServer_c383973" />
+          <ConnectionComponents PSMConnectionDefault="PSM-SQLPlus">
+            <ConnectionComponent Id="PSM-SQLPlus" />
+            <ConnectionComponent Id="PSM-TOAD" />
+          </ConnectionComponents>
+        </Policy>
   </Policies>
 </Device>

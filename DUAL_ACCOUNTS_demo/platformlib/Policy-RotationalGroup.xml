@@ -1,6 +1,6 @@
-<Device Name="{{ ROTATIONAL_GROUP_NAME }}">
+<Device Name="RotationalGroup">
   <Policies>
-    <Policy ID="{{ ROTATIONAL_GROUP_NAME }}"
+    <Policy ID="RotatationalGroup-Default"
 		AutoChangeOnAdd="No"
 		AutoVerifyOnAdd="No"
 		PlatformBaseID="RotationalGroup"

@@ -10,15 +10,22 @@ util_defaults="set -u"
 
 showUsage() {
   echo "Usage:"
+  echo "  System Info:"
+  echo "    $0 cpms_get"
+  echo
   echo "  Platform commands:"
   echo "    $0 platform_details <platform-name>"
+  echo "    $0 platform_export <platform-name> <output-filename>"
+  echo "    $0 platform_import <zipfile-name>"
+  echo "    $0 platform_target_delete <target-platform-name>"
   echo "    $0 platform_groups_get"
   echo "    $0 platform_rotational_groups_get"
   echo
   echo "  Safe commands:"
   echo "    $0 safes_get"
   echo "    $0 safe_get <safe-name>"
-  echo "    $0 safe_create <safe-name> <description>"
+  echo "    $0 safe_create <safe-name> <description> [ <cpm-name> ]"
+  echo "    $0 safe_delete <safe-name>"
   echo "    $0 safe_member_get <safe-name> <member-name>"
   echo "    $0 safe_admin_add <safe-name> <member-name>"
   echo "    $0 safe_member_delete <safe-name> <member-name>"
@@ -48,6 +55,7 @@ showUsage() {
   exit -1
 
 # Commands below are partially implemented and mostly don't work.
+  echo "    $0 safe_member_update <safe-name> <member-name>"
   echo "    $0 pending_accts_get"
   echo "    $0 pending_accts_set_db "
   echo "    $0 onboarding_rules_get"
@@ -63,18 +71,35 @@ main() {
   checkDependencies
 
   case $1 in
-    pending_accts_get | onboarding_rules_get | safes_get | platforms_get  | platform_rotational_groups_get | platform_groups_get)
+    pending_accts_get | onboarding_rules_get | safes_get | platforms_get  | platform_rotational_groups_get | platform_groups_get | cpms_get)
 	command=$1
 	;;
-    platform_details)
+    platform_details | platform_target_delete)
 	if [[ $# != 2 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
 	fi
 	command=$1
-	platformName=$(urlify "$2")
+	platformId="$2"
 	;;
-    safe_get | safe_groups_get)
+    platform_export)
+	if [[ $# != 3 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	platformId="$2"
+	zipfileName="$3"
+	;;
+    platform_import)
+	if [[ $# != 2 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	zipfileName="$2"
+	;;
+    safe_get | safe_groups_get | safe_delete)
 	if [[ $# != 2 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
@@ -83,15 +108,16 @@ main() {
 	safeName=$(urlify "$2")
 	;;
     safe_create)
-	if [[ $# != 3 ]]; then
+	if [[ $# < 3 && $# > 4 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
 	fi
 	command=$1
-	safeName=$(urlify "$2")
-	description=$3
+	safeName="$2"
+	description="$3"
+	cpmName="$4"
 	;;
-    safe_member_get | safe_member_add | safe_member_delete | safe_admin_add)
+    safe_member_get | safe_member_add | safe_member_delete | safe_admin_add | safe_member_update)
 	if [[ $# != 3 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
@@ -217,150 +243,14 @@ main() {
 	;;
   esac
 
-if $SELF_HOSTED_PAM; then
-  installeruser_authenticate	# sets global variable authHeader
-else
-  pcloud_authenticate	# sets global variable authHeader
-fi
+  if $SELF_HOSTED_PAM; then
+    installeruser_authenticate	# sets global variable authHeader
+  else
+    pcloud_authenticate	# sets global variable authHeader
+  fi
 
-	# Note that for the function calls below, arguments are accessed globally.
-	# They are included here for documentation purpose but not actually passed
-	# as function arguments. At some point it may be useful to actually pass 
-	# them as parameters.
-  case $command in
-
-    platforms_get)
-	platforms_get
-	;;
-
-    platform_details)
-	platform_details
-	;;
-
-    platform_groups_get)
-	platform_groups_get
-	;;
-
-    platform_rotational_groups_get)
-	platform_rotational_groups_get
-	;;
-
-    safes_get)
-	safes_get
-	;;
-
-    safe_get)
-	safe_get "$safeName"
-	;;
-
-    safe_create)
-	safe_create "$safeName" "$description"
-	;;
-
-    safe_groups_get)
-	safe_groups_get "$safeName"
-	;;
-
-    safe_group_create)
-	safe_group_create "$safeName" "$groupName" "$groupPlatformId"
-	;;
-
-    safe_group_member_add)
-	safe_group_member_add "$groupId" "$accountId"
-	;;
-
-    safe_group_members_get)
-	safe_group_members_get "$groupId"
-	;;
-
-    safe_member_get)
-	safe_member_get "$safeName" "$memberName"
-	;;
-
-    safe_member_add)
-	safe_member_add "$safeName" "$memberName"
-	;;
-
-    safe_member_delete)
-	safe_member_delete "$safeName" "$memberName"
-	;;
-
-    safe_admin_add)
-	safe_admin_add "$safeName" "$memberName"
-	;;
-
-    account_get)
-	INTERACTIVE=true
-	account_get "$safeName" "$accountName"
-	;;
-
-    account_delete)
-	account_delete "$safeName" "$accountName"
-	;;
-
-    account_create_db_dual)
-	account_create_db_dual	"$safeName"	\
-        			"$platformId"	\
-        			"$accountName"	\
-	        		"$address"	\
-        			"$username"	\
-        			"$secret"	\
-      		 		"$dbName"	\
-       	 			"$dbPort"	\
-       	 			"$virtualUserName"	\
-       	 			"$dualAccountIndex"	\
-       	 			"$dualAccountStatus"
-	;;
-
-    account_create_db)
-	account_create_db	"$safeName"	\
-        			"$platformId"	\
-        			"$accountName"	\
-	        		"$address"	\
-        			"$username"	\
-        			"$secret"	\
-      		 		"$dbName"	\
-       	 			"$dbPort"
-	;;
-
-    account_create_ssh)
-	account_create_ssh	"$safeName"	\
-        			"$platformId"	\
-        			"$accountName"	\
-	        		"$address"	\
-        			"$username"	\
-        			"$secret"
-	;;
-
-    account_create_aws)
-        account_create_aws 	"$safeName"	\
-        			"$platformId"	\
-        			"$accountName"	\
-        			"$username"	\
-        			"$secret"	\
-        			"accessKeyId"	\
-        			"accountId"	\
-        			"$region"	\
-        			"$accountAlias"
-	;;
-
-    pending_accts_get)
-	pending_accts_get
-	;;
-
-    onboarding_rules_get)
-	onboarding_rules_get
-	;;
-
-    onboarding_rules_set)
-	onboarding_rules_set
-	;;
-
-    *)
-        echo "Add $command to second case statement.!!"
-	exit -1
-	;;
-  esac
+	# invoke command which accesses global variables set above
+  echo $($command)
 }
 
 #####################################
@@ -383,6 +273,7 @@ function pcloud_authenticate() {
 # authns legacy installeruser for non-CyberArk Identity vault access
 function installeruser_authenticate() {
   $util_defaults
+  echo "Authenticating installeruser..."
   sessionToken=$($CURL -X POST 					\
 	--header "Content-Type: application/json"		\
 	--data "{\"username\":\"$INSTALLERUSER\",	 	\
@@ -443,6 +334,15 @@ function onboarding_rules_set() {
 }
 
 #####################################
+function cpms_get() {
+  $util_defaults
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/ComponentsMonitoringDetails/CPM"
+}
+
+#####################################
 function platforms_get() {
   $util_defaults
   $CURL 				\
@@ -457,7 +357,42 @@ function platform_details() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Platforms/$platformName"
+	"${PCLOUD_URL}/Platforms/$platformId"
+}
+
+#####################################
+function platform_export() {
+  $util_defaults
+  $CURL 						\
+	-X POST						\
+	-H "$authHeader"				\
+	-d ""						\
+	"${PCLOUD_URL}/Platforms/$platformId/Export"	\
+	> "$zipfileName"
+  echo "Platform ID $platformId exported to file $zipfileName in zip format."
+}
+
+#####################################
+function platform_import() {
+  $util_defaults
+
+  importArray=$(base64 -i $zipfileName)
+  $CURL -X POST                                      		\
+	--header "$authHeader"                          \
+        --header "Content-Type: application/json"       \
+        "${PCLOUD_URL}/platforms/import"                \
+        --data "{                                       \
+        	\"ImportFile\": \"$importArray\"        \
+                }"
+}
+
+#####################################
+function platform_target_delete() {
+  $util_defaults
+  $CURL 				\
+	-X DELETE			\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/Platforms/Targets/$platformId"
 }
 
 #####################################
@@ -481,7 +416,6 @@ function platform_rotational_groups_get() {
 #####################################
 function safes_get() {
   $util_defaults
-set -x
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
@@ -509,6 +443,12 @@ all_safe_options(){
 function safe_create() {
   $util_defaults
 
+  if [[ "$cpmName" != "" ]]; then
+    printf -v cpmKeyValue '\"managingCPM\": \"%s\", \' $cpmName
+  else
+    cpmKeyValue=" "
+  fi
+
   response=$($CURL 					\
 	-X POST						\
 	--write-out '\n%{http_code}'			\
@@ -518,8 +458,10 @@ function safe_create() {
 	-d "{						\
 		\"SafeName\":\"$safeName\",		\
 		\"NumberOfDaysRetention\":0,		\
+		$cpmKeyValue				\
 		\"Description\":\"$description\"	\
 	    }")
+
   http_code=$(tail -n1 <<< "$response")  # get http_code on last line
   content=$(sed '$ d' <<< "$response")   # trim http_code
 
@@ -549,6 +491,15 @@ function safe_create() {
         ;;
   esac
 
+}
+
+#####################################
+function safe_delete() {
+  $util_defaults
+  $CURL 				\
+	-X DELETE			\
+	-H "$authHeader"		\
+	"${PCLOUD_URL}/Safes/$safeName"
 }
 
 #####################################
@@ -617,6 +568,21 @@ function safe_admin_add() {
                 }"                                              	\
         | jq .
 
+}
+
+#####################################
+function safe_member_update() {
+  $util_defaults
+  $CURL 								\
+	-X PUT								\
+	-H "$authHeader"						\
+	"${PCLOUD_URL}/Safes/${safeName}/members/${memberName}/"	\
+	-d "{								\
+		\"isReadOnly\" : \"false\",				\
+                \"permissions\": {                              	\
+                        \"accessWithoutConfirmation\": true		\
+		}							\
+	   }"
 }
 
 #####################################

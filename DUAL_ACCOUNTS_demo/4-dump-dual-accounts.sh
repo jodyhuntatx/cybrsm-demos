@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source demo-vars.sh
+source demo-vars.sh.latam
 
 main() {
   dump_platforms
@@ -24,7 +24,6 @@ dump_group() {
   groupId=$(echo $groupJson | jq -r "$query")
 
   echo "$ENV_TAG: Rotational Group ===================="
-  echo "  $ENV_TAG: Rotational Group Platform:"
   echo $groupJson | jq .
   if [[ "$groupId" != "" ]]; then
     echo "Group members:"

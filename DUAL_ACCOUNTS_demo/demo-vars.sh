@@ -13,7 +13,7 @@ exportAccountPlatformId=${1:-"MySQL"}
 rotationGroupPlatformId=${3:-"RotationGroup-Default"}
 dualAccountPlatformId=${2:-"MySQL-Dual"}
 SAFE_NAME=TestDualAccounts
-SAFE_ADMIN=jody.hunt@cyberark.cloud.1741
+SAFE_ADMIN=jody_hunt@cyberark.cloud.3357
 PLATFORM_ID=$dualAccountPlatformId
 ACCOUNT_NAME1=MySQL-DualAccts1
 ACCOUNT_NAME2=MySQL-DualAccts2
@@ -23,14 +23,14 @@ GROUP_PLATFORM_ID=$rotationGroupPlatformId
 ##################################################
 # CyberArk tenant values
 
-# URL of your CyberArk Identity tenant - no trailing slash
-export IDENTITY_TENANT_URL=https://latamlab.my.idaptive.app
+# URL of your CyberArk Identity tenant
+export IDENTITY_TENANT_URL=https://aao4987.id.cyberark.cloud
 
-# URL of your CyberArk Privilege Cloud tenant - no trailing slash
-export PCLOUD_BASE_URL=https://latamlab.cyberark.cloud
+# URL of your CyberArk Privilege Cloud tenant
+export PCLOUD_TENANT_URL=https://cybr-secrets.cyberark.cloud
 
-#export INSTALLERUSER=installeruser@cyberark.cloud.3357
-#export INSTALLERUSER_PASSWORD=$(keyring get cybrid installeruserpwd)
+export INSTALLERUSER=installeruser@cyberark.cloud.3357
+export INSTALLERUSER_PASSWORD=$(keyring get cybrid installeruserpwd)
 
 if $SELF_HOSTED_PAM; then
   export INSTALLERUSER=Administrator
@@ -43,7 +43,11 @@ fi
 # OR PROMPTED FOR.
 ###########################################################
 
-tmp=$(echo $PCLOUD_BASE_URL | cut -d'/' -f3)
+# Get Identity tenant ID and tenant subdomain name
+tmp=$(echo $IDENTITY_TENANT_URL | cut -d'/' -f3)
+export IDENTITY_TENANT_ID=$(echo $tmp | cut -d'.' -f1)
+
+tmp=$(echo $PCLOUD_TENANT_URL | cut -d'/' -f3)
 export CYBERARK_SUBDOMAIN_NAME=$(echo $tmp | cut -d'.' -f1)
 
 ###########################################################
@@ -85,6 +89,8 @@ if $SELF_HOSTED_PAM; then
   LOCAL_VAULT_BASE_URL=https://comp-server/PasswordVault/API
   export PCLOUD_URL=$LOCAL_VAULT_BASE_URL
 fi
+
+export SECRETS_HUB_URL=https://$CYBERARK_SUBDOMAIN_NAME.secretshub.cyberark.cloud/api
 
 ##########################################################
 # END
