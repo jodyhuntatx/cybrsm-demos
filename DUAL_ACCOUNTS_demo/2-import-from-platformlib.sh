@@ -1,28 +1,23 @@
 #!/bin/bash
 
-source ./demo-vars.sh
+source ./env-vars.sh
 
 main() {
-  if [[ $# != 1 ]]; then
-    show_usage
+  if [[ $# = 0 ]]; then
+    echo -n "Enter Platform ID in platformlib to import: "
+    read PLATFORM_ID
+  else
+    PLATFORM_ID=$1
   fi
-  PLATFORM_ID=$1
   PLATFORM_FILENAME_ROOT=""
   find_platform_files
   if [[ "$PLATFORM_FILENAME_ROOT" != "" ]]; then
     echo import_platform $PLATFORM_FILENAME_ROOT
   else
-    echo "Platform files for PlatformID $PLATFORM_ID not found in ./templates."
-    echo "Supported Dual Account platforms:"
-    ./list-dual-account-platforms.sh
+    echo "Platform files for PlatformID $PLATFORM_ID not found in ./platformlib/"
+    echo
+    ./1-list-platform-library.sh
   fi
-}
-
-#####################################
-show_usage() {
-  echo "Usage: $0 <dual-account-platform-id>"
-  echo " Run 1-list-dual-account-platforms.sh to see a list of platforms for import."
-  exit -1
 }
 
 #####################################
@@ -49,12 +44,12 @@ import_platform() {
   # copy platform files 
   cp ./platformlib/$PLATFORM_FILENAME_ROOT.* ./for_import
 
-  # create zipfile - Import does not like path prefixes in zipfile
+  # create zipfile - cd into directory because vault does not like path prefixes in zipfile
   cd ./for_import	
     zip $PLATFORM_ID.zip $PLATFORM_FILENAME_ROOT.*
   cd ..
 
-  ./pcloud-cli.sh platform_import ./for_import/$PLATFORM_ID.zip
+  ./cybrvault-cli.sh platform_import ./for_import/$PLATFORM_ID.zip
 }
 
 main "$@"

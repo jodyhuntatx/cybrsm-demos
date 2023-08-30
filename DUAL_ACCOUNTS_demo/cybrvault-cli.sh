@@ -1,11 +1,12 @@
 #!/bin/bash
 
 ####################################################
-# pcloud-cli.sh - a bash script CLI for Privilege Cloud
+# cybrvault-cli.sh - 
+# A bash script CLI for CybrArk Self-Hosted and Privilege Cloud Vaults
 ####################################################
 
 # use 'curl -v' and 'set -x' for verbose debugging 
-export CURL="curl -sk"
+CURL="curl -sk"
 util_defaults="set -u"
 
 showUsage() {
@@ -24,21 +25,23 @@ showUsage() {
   echo "  Safe commands:"
   echo "    $0 safes_get"
   echo "    $0 safe_get <safe-name>"
+  echo "    $0 safe_accounts_get <safe-name>"
   echo "    $0 safe_create <safe-name> <description> [ <cpm-name> ]"
   echo "    $0 safe_delete <safe-name>"
   echo "    $0 safe_member_get <safe-name> <member-name>"
   echo "    $0 safe_admin_add <safe-name> <member-name>"
   echo "    $0 safe_member_delete <safe-name> <member-name>"
   echo
-  echo "  Safe Group commands:"
+  echo "  Safe Account Group commands:"
   echo "    $0 safe_groups_get <safe-name>"
   echo "    $0 safe_group_create <safe-name> <group-name> <group-platform-name>"
   echo "    $0 safe_group_member_add <numeric-group-id> <numeric-account-id>"
-  echo "    $0 safe_group_members_get <group-id>"
-  echo "    $0 safe_group_member_delete <group-name> <account-name>"
+  echo "    $0 safe_group_members_get <numeric-group-id>"
+  echo "    $0 safe_group_member_delete <numeric-group-id> <numeric-account-id>"
   echo
   echo "  Account commands:"
   echo "    $0 account_get <safe-name> <account-name>"
+  echo "    $0 account_details_get <numeric-account-id>"
   echo "    $0 account_delete <safe-name> <account-name>"
   echo "    $0 account_create_db_dual <safe-name> <platform-id> <account-name> <username> <password>"
   echo "                      [ <server-address> ] [ <database-name> ] [ <server-port> ]"
@@ -55,6 +58,7 @@ showUsage() {
   exit -1
 
 # Commands below are partially implemented and mostly don't work.
+# They're here if you want to play with them.
   echo "    $0 safe_member_update <safe-name> <member-name>"
   echo "    $0 pending_accts_get"
   echo "    $0 pending_accts_set_db "
@@ -99,7 +103,7 @@ main() {
 	command=$1
 	zipfileName="$2"
 	;;
-    safe_get | safe_groups_get | safe_delete)
+    safe_get | safe_accounts_get | safe_groups_get | safe_delete)
 	if [[ $# != 2 ]]; then
 	  echo "Incorrect number of arguments."
 	  showUsage
@@ -152,6 +156,14 @@ main() {
 	command=$1
 	groupId=$(urlify "$2")
 	accountId=$(urlify "$3")
+	;;
+    account_details_get)
+	if [[ $# != 2 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	accountName=$(urlify "$2")
 	;;
     account_get | account_delete)
 	if [[ $# != 3 ]]; then
@@ -233,7 +245,7 @@ main() {
 	;;
     session_token_get)
 	command=$1
-  	installeruser_authenticate
+  	self_hosted_authenticate
 	echo $sessionToken
 	exit
 	;;
@@ -244,12 +256,12 @@ main() {
   esac
 
   if $SELF_HOSTED_PAM; then
-    installeruser_authenticate	# sets global variable authHeader
+    self_hosted_authenticate	# sets global variable authHeader
   else
-    pcloud_authenticate	# sets global variable authHeader
+    pcloud_authenticate		# sets global variable authHeader
   fi
 
-	# invoke command which accesses global variables set above
+	# invoke function which accesses global variables set above
   echo $($command)
 }
 
@@ -270,15 +282,15 @@ function pcloud_authenticate() {
 }
 
 #####################################
-# authns legacy installeruser for non-CyberArk Identity vault access
-function installeruser_authenticate() {
+# authenticates to self-hosted vault
+function self_hosted_authenticate() {
   $util_defaults
-  echo "Authenticating installeruser..."
+#  echo "Authenticating self-hosted admin: $CYBERARK_ADMIN_USER...""
   sessionToken=$($CURL -X POST 					\
 	--header "Content-Type: application/json"		\
-	--data "{\"username\":\"$INSTALLERUSER\",	 	\
-		\"password\":\"$INSTALLERUSER_PASSWORD\"}"	\
-	"${PCLOUD_URL}/auth/Cyberark/Logon/")
+	--data "{\"username\":\"$CYBERARK_ADMIN_USER\",	 	\
+		\"password\":\"$CYBERARK_ADMIN_PWD\"}"		\
+	"${VAULT_API_URL}/auth/Cyberark/Logon/")
   sessionToken=$(echo $sessionToken | tr -d '"')
 
   authHeader="Authorization: $sessionToken"
@@ -292,7 +304,7 @@ function pending_accts_get() {
 
   $CURL -X GET                          		\
 	-H "$authHeader"				\
-        "${PCLOUD_URL}/DiscoveredAccounts"
+        "${VAULT_API_URL}/DiscoveredAccounts"
   echo
 }
 
@@ -304,7 +316,7 @@ function onboarding_rules_get() {
 
   $CURL -X GET                          		\
 	-H "$authHeader"				\
-        "${PCLOUD_URL}/AutomaticOnboardingRules"
+        "${VAULT_API_URL}/AutomaticOnboardingRules"
   echo
 }
 
@@ -316,7 +328,7 @@ function onboarding_rules_set() {
 
   $CURL -X POST                          		\
 	-H "$authHeader"				\
-        "${PCLOUD_URL}/AutomaticOnboardingRules"
+        "${VAULT_API_URL}/AutomaticOnboardingRules"
   echo 	'{							\
 	"RuleName": "<rule name> - auto-generated if blank",	\
 	"RuleDescription": "<description> - optional"		\
@@ -339,7 +351,7 @@ function cpms_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/ComponentsMonitoringDetails/CPM"
+	"${VAULT_API_URL}/ComponentsMonitoringDetails/CPM"
 }
 
 #####################################
@@ -348,7 +360,7 @@ function platforms_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Platforms"
+	"${VAULT_API_URL}/Platforms"
 }
 
 #####################################
@@ -357,7 +369,7 @@ function platform_details() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Platforms/$platformId"
+	"${VAULT_API_URL}/Platforms/$platformId"
 }
 
 #####################################
@@ -367,7 +379,7 @@ function platform_export() {
 	-X POST						\
 	-H "$authHeader"				\
 	-d ""						\
-	"${PCLOUD_URL}/Platforms/$platformId/Export"	\
+	"${VAULT_API_URL}/Platforms/$platformId/Export"	\
 	> "$zipfileName"
   echo "Platform ID $platformId exported to file $zipfileName in zip format."
 }
@@ -380,7 +392,7 @@ function platform_import() {
   $CURL -X POST                                      		\
 	--header "$authHeader"                          \
         --header "Content-Type: application/json"       \
-        "${PCLOUD_URL}/platforms/import"                \
+        "${VAULT_API_URL}/platforms/import"                \
         --data "{                                       \
         	\"ImportFile\": \"$importArray\"        \
                 }"
@@ -389,10 +401,9 @@ function platform_import() {
 #####################################
 function platform_target_delete() {
   $util_defaults
-  $CURL 				\
-	-X DELETE			\
+  $CURL -X DELETE			\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Platforms/Targets/$platformId"
+	"${VAULT_API_URL}/Platforms/Targets/$platformId"
 }
 
 #####################################
@@ -401,7 +412,7 @@ function platform_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/platforms/groups"
+	"${VAULT_API_URL}/platforms/groups"
 }
 
 #####################################
@@ -410,7 +421,7 @@ function platform_rotational_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/platforms/rotationalGroups"
+	"${VAULT_API_URL}/platforms/rotationalGroups"
 }
 
 #####################################
@@ -419,7 +430,7 @@ function safes_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Safes"
+	"${VAULT_API_URL}/Safes"
 }
 
 #####################################
@@ -430,7 +441,17 @@ function safe_get() {
 }
 
 #####################################
-all_safe_options(){
+function safe_accounts_get() {
+  $util_defaults
+  filter=$(urlify "filter=safeName eq ${safeName}")
+  $CURL 				\
+	-X GET				\
+	-H "$authHeader"		\
+	"${VAULT_API_URL}/Accounts?$filter"
+}
+
+#####################################
+all_safe_options_for_reference(){
   "numberOfDaysRetention": 7,
   "numberOfVersionsRetention": null,
   "oLACEnabled": true,
@@ -443,6 +464,7 @@ all_safe_options(){
 function safe_create() {
   $util_defaults
 
+  # cpmName is optional
   if [[ "$cpmName" != "" ]]; then
     printf -v cpmKeyValue '\"managingCPM\": \"%s\", \' $cpmName
   else
@@ -454,7 +476,7 @@ function safe_create() {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/Safes"				\
+	"${VAULT_API_URL}/Safes"				\
 	-d "{						\
 		\"SafeName\":\"$safeName\",		\
 		\"NumberOfDaysRetention\":0,		\
@@ -499,7 +521,7 @@ function safe_delete() {
   $CURL 				\
 	-X DELETE			\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Safes/$safeName"
+	"${VAULT_API_URL}/Safes/$safeName"
 }
 
 #####################################
@@ -508,7 +530,7 @@ function safe_member_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Safes/${safeName}/members/${memberName}/" | jq .
+	"${VAULT_API_URL}/Safes/${safeName}/members/${memberName}/"
 }
 
 #####################################
@@ -518,7 +540,7 @@ function safe_member_add() {
           --request POST                                        \
 	  -H "$authHeader"		\
           --header 'Content-Type: application/json'             \
-          ${PCLOUD_URL}/Safes/${safeName}/Members/ 		\
+          ${VAULT_API_URL}/Safes/${safeName}/Members/ 		\
           --data "{                                             \
                 \"memberName\":\"$memberName\",                 \
                 \"memberType\":\"User\",                        \
@@ -528,8 +550,7 @@ function safe_member_add() {
                         \"listAccounts\": true,                 \
                         \"accessWithoutConfirmation\": true     \
                         }                                       \
-                }"                                              \
-        | jq .
+                }"
 }
 
 #####################################
@@ -537,9 +558,9 @@ function safe_admin_add() {
   $util_defaults
         $CURL -s \
           --request POST                                        \
-	  -H "$authHeader"		\
-          --header 'Content-Type: application/json'             \
-          ${PCLOUD_URL}/Safes/${safeName}/Members/ 		\
+	  -H "$authHeader"					\
+          -H 'Content-Type: application/json'             	\
+          ${VAULT_API_URL}/Safes/${safeName}/Members/ 		\
           --data "{                                             \
                 \"memberName\":\"$memberName\",                 \
                 \"memberType\":\"User\",                        \
@@ -576,7 +597,7 @@ function safe_member_update() {
   $CURL 								\
 	-X PUT								\
 	-H "$authHeader"						\
-	"${PCLOUD_URL}/Safes/${safeName}/members/${memberName}/"	\
+	"${VAULT_API_URL}/Safes/${safeName}/members/${memberName}/"	\
 	-d "{								\
 		\"isReadOnly\" : \"false\",				\
                 \"permissions\": {                              	\
@@ -588,11 +609,10 @@ function safe_member_update() {
 #####################################
 function safe_member_delete() {
   $util_defaults
-
   $CURL 				\
 	-X DELETE			\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Safes/$safeName/Members/${memberName}/"
+	"${VAULT_API_URL}/Safes/$safeName/Members/${memberName}/"
 }
 
 #####################################
@@ -601,7 +621,7 @@ function safe_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/AccountGroups?Safe=$safeName"
+	"${VAULT_API_URL}/AccountGroups?Safe=$safeName"
 }
 
 #####################################
@@ -613,7 +633,7 @@ function safe_group_create() {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/AccountGroups"			\
+	"${VAULT_API_URL}/AccountGroups"			\
 	-d "{						\
 		\"Safe\":\"$safeName\",			\
 		\"GroupName\": \"$groupName\",			\
@@ -657,10 +677,10 @@ function safe_group_member_add() {
   $CURL 				\
 	-X POST				\
 	-H "$authHeader"		\
-	--header "Content-Type: application/json"		\
-	"${PCLOUD_URL}/AccountGroups/$groupId/Members"	\
-	-d "{							\
-		\"AccountID\": \"$accountId\"			\
+	-H "Content-Type: application/json"		\
+	"${VAULT_API_URL}/AccountGroups/$groupId/Members"	\
+	-d "{						\
+		\"AccountID\": \"$accountId\"		\
 	   }"
 }
 
@@ -670,7 +690,16 @@ function safe_group_members_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/AccountGroups/$groupId/Members"
+	"${VAULT_API_URL}/AccountGroups/$groupId/Members"
+}
+
+#####################################
+function account_details_get {
+  $util_defaults
+  $CURL 					\
+	-X GET					\
+	-H "$authHeader"			\
+	"${VAULT_API_URL}/Accounts/$accountName"
 }
 
 #####################################
@@ -679,16 +708,16 @@ function safe_group_members_get() {
 function account_get {
   $util_defaults
 
-# search example. you can search on everything BUT account name !!?
-#Accounts?limit=1&searchType=StartsWith&search={{ (instance_username + ' ' + instance_ip) | urlencode }}"
+  # search example. you can search on everything BUT account name !!?
+  #<url>/Accounts?limit=1&searchType=StartsWith&search={{ (instance_username + ' ' + instance_ip) | urlencode }}"
 
-# So use jq to search on account name
+  # So get all accounts in safe and use jq to search on account name
   printf -v query '.value[] | select(.name=="%s")' $accountName
   filter=$(urlify "filter=safeName eq ${safeName}")
   response=$($CURL 				\
 	-X GET					\
 	-H "$authHeader"			\
-	"${PCLOUD_URL}/Accounts?$filter" 	\
+	"${VAULT_API_URL}/Accounts?$filter" 	\
 	| jq "$query")
 
   if [[ "$response" == "" && "$INTERACTIVE" == "true" ]]; then
@@ -702,6 +731,7 @@ function account_get {
 function account_delete {
   $util_defaults
 
+  # suppress messages that jq can't parse 
   INTERACTIVE=false
   accountInfo=$(account_get $safeName $accountName)
   if [[ "$accountInfo" == "" ]]; then
@@ -719,14 +749,14 @@ function account_delete {
 	-X DELETE			\
 	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
-	"${PCLOUD_URL_V1}/Accounts/$accountId"
+	"${VAULT_API_URL_V1}/Accounts/$accountId"
     )
   else
     response=$($CURL 			\
 	-X DELETE			\
 	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
-	"${PCLOUD_URL}/Accounts/$accountId"
+	"${VAULT_API_URL}/Accounts/$accountId"
     )
   fi
 
@@ -774,7 +804,7 @@ function account_create_db_dual {
 	-X POST						\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/Accounts"			\
+	"${VAULT_API_URL}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -838,7 +868,7 @@ function account_create_db {
 	-X POST						\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/Accounts"			\
+	"${VAULT_API_URL}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -899,7 +929,7 @@ function account_create_ssh {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/Accounts"			\
+	"${VAULT_API_URL}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -961,7 +991,7 @@ function account_create_aws {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${PCLOUD_URL}/Accounts"			\
+	"${VAULT_API_URL}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -1048,9 +1078,9 @@ function checkDependencies() {
     echo "  IDENTITY_TENANT_URL must be set."
     all_env_set=false
   fi
-  if [[ "$PCLOUD_URL" == "" ]]; then
+  if [[ "$VAULT_API_URL" == "" ]]; then
     echo
-    echo "  PCLOUD_URL must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
+    echo "  VAULT_API_URL must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
     all_env_set=false
   fi
   if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then

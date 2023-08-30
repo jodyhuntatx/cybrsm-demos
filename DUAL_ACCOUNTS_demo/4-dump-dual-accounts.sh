@@ -1,6 +1,13 @@
 #!/bin/bash
 
-source demo-vars.sh.latam
+source env-vars.sh
+
+ROTATIONAL_GROUP_PLATFORM_ID=RotationGroup-Default
+GROUP_NAME=MySQL-AcctGroup
+ACCOUNT_PLATFORM_ID=MySQL-Dual
+SAFE_NAME=TestDualAccounts
+ACCOUNT_NAME1=MySQL-DualAccts1
+ACCOUNT_NAME2=MySQL-DualAccts2
 
 main() {
   dump_platforms
@@ -11,23 +18,24 @@ main() {
 dump_platforms() {
   echo "$ENV_TAG: Platforms ==========================="
   echo "  $ENV_TAG: Rotational Group Platform:"
-  ./pcloud-cli.sh platform_details $rotationGroupPlatformId | jq .
+  ./cybrvault-cli.sh platform_details $ROTATIONAL_GROUP_PLATFORM_ID | jq .
   echo "-----------------------------------------------"
   echo "  $ENV_TAG: Target Account Platform:"
-  ./pcloud-cli.sh platform_details $dualAccountPlatformId | jq .
+  ./cybrvault-cli.sh platform_details $ACCOUNT_PLATFORM_ID | jq .
   echo "==============================================="
 }
 
 dump_group() {
-  groupJson=$(./pcloud-cli.sh safe_groups_get $SAFE_NAME)
-  printf -v query '.[] | select(.GroupName=="%s").GroupID' $GROUP_NAME
-  groupId=$(echo $groupJson | jq -r "$query")
+  allSafeGroups=$(./cybrvault-cli.sh safe_groups_get $SAFE_NAME)
+  printf -v query '.[] | select(.GroupName=="%s")' $GROUP_NAME
+  groupJson=$(echo $allSafeGroups | jq -r "$query")
+  groupId=$(echo $groupJson | jq -r .GroupID)
 
   echo "$ENV_TAG: Rotational Group ===================="
   echo $groupJson | jq .
   if [[ "$groupId" != "" ]]; then
     echo "Group members:"
-    ./pcloud-cli.sh safe_group_members_get $groupId | jq .
+    ./cybrvault-cli.sh safe_group_members_get $groupId | jq .
   fi
   echo "==============================================="
 }
@@ -35,10 +43,10 @@ dump_group() {
 dump_accounts() {
   echo "$ENV_TAG: Dual Accounts ======================="
   echo "  $ENV_TAG: $ACCOUNT_NAME1:"
-  ./pcloud-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME1 | jq .
+  ./cybrvault-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME1 | jq .
   echo "-----------------------------------------------"
   echo "  $ENV_TAG: $ACCOUNT_NAME2:"
-  ./pcloud-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME2 | jq .
+  ./cybrvault-cli.sh account_get $SAFE_NAME $ACCOUNT_NAME2 | jq .
   echo "==============================================="
 }
 
