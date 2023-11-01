@@ -4,12 +4,12 @@
 # CyberArk tenant values
 
 # URL of your CyberArk Identity tenant
-export IDENTITY_TENANT_URL=https://aao4987.id.cyberark.cloud
+export IDENTITY_TENANT_URL=https://aba4952.id.cyberark.cloud
 
 # URL of your CyberArk Privilege Cloud tenant
-export PCLOUD_TENANT_URL=https://cybr-secrets.cyberark.cloud
+export PCLOUD_TENANT_URL=https://sh-immersion.cyberark.cloud
 
-export INSTALLERUSER=installeruser@cyberark.cloud.3357
+export INSTALLERUSER=installeruser@cyberark.cloud.13576
 export INSTALLERUSER_PASSWORD=$(keyring get cybrid installeruserpwd)
 
 ###########################################################

@@ -1,13 +1,6 @@
 #!/bin/bash
 
 export CURL="curl -sk"
-export IDENTITY_TENANT_ID=aao4987
-# Conjur Cloud variables
-CONJUR_CLOUD_URL=https://cybr-secrets.secretsmgr.cyberark.cloud/api
-CONJUR_DOMAIN=cyberark.cloud.3357
-# Service user
-CONJUR_ADMIN_USER=jody_bot@$CONJUR_DOMAIN
-CONJUR_ADMIN_PWD=$(keyring get cybrid jodybotpwd)
 
 # debugging
 util_defaults="set -u"
@@ -15,7 +8,7 @@ CONJUR_VERBOSE=${CONJUR_VERBOSE:-""}		# sets CONJUR_VERBOSE to "" if undefined
 
 showUsage() {
   echo "Usage:"
-  echo "      $0 [ whoami | resources | list | info | health | audit ]"
+  echo "      $0 [ whoami | resources | list ]"
   echo "      $0 [ get <var-name> ]"
   echo "      $0 [ set <var-name> <var-value> ]"
   echo "      $0 [ append <policy-branch> <policy-file-name> ]"
@@ -26,8 +19,10 @@ showUsage() {
 }
 
 main() {
+  checkDependencies
+
   case $1 in
-    whoami | resources | list | info | health | audit)
+    whoami | resources | list)
 	command=$1
 	;;
     get)
@@ -106,15 +101,6 @@ main() {
 	;;
 
 	# apparently these functions are not implemented in Conjur Cloud
-    info)
-	conjur_info
-	;; 
-    health)
-	conjur_health
-	;; 
-    audit)
-	conjur_audit 
-	;;
     *)
 	showUsage
 	;;
@@ -132,15 +118,15 @@ function conjur_authenticate {
   $util_defaults
   jwToken=$($CURL \
         -X POST \
-        https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
+        $CYBERARK_IDENTITY_URL/oauth2/platformtoken 		\
         -H "Content-Type: application/x-www-form-urlencoded"      	\
         --data-urlencode "grant_type"="client_credentials"              \
-        --data-urlencode "client_id"="$CONJUR_ADMIN_USER"               \
-        --data-urlencode "client_secret"="$CONJUR_ADMIN_PWD"		\
+        --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
+        --data-urlencode "client_secret"="$CYBERARK_ADMIN_PWD"		\
 	| jq -r .access_token)
   authToken=$($CURL	\
         -X POST		\
-	$CONJUR_CLOUD_URL/authn-oidc/cyberark/conjur/authenticate 	\
+	$CYBERARK_CCLOUD_API/authn-oidc/cyberark/conjur/authenticate 	\
 	-H "Content-Type: application/x-www-form-urlencoded"		\
 	-H "Accept-Encoding: base64"					\
 	--data-urlencode "id_token=$jwToken" )
@@ -153,7 +139,7 @@ function conjur_whoami {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${CONJUR_CLOUD_URL}/whoami"
+	"${CYBERARK_CCLOUD_API}/whoami"
 }
 
 #####################################
@@ -162,7 +148,7 @@ function conjur_resources {
   $CURL 						\
 	-X GET						\
 	-H "$authHeader" 				\
-	"$CONJUR_CLOUD_URL/resources/conjur" | jq
+	"$CYBERARK_CCLOUD_API/resources/conjur" | jq
 }
 
 #####################################
@@ -179,7 +165,7 @@ function conjur_get_variable {
   var=$(urlify $varName)
   value=$($CURL							\
 	  -X GET 						\
-	  $CONJUR_CLOUD_URL/secrets/conjur/variable/$var	\
+	  $CYBERARK_CCLOUD_API/secrets/conjur/variable/$var	\
           -H "Content-Type: application/json"			\
 	  -H "$authHeader")
   echo -n "${value}"
@@ -193,7 +179,7 @@ function conjur_set_variable {
   $CURL					\
   	-H "$authHeader"		\
 	--data "$variable_value"	\
-	"$CONJUR_CLOUD_URL/secrets/conjur/variable/$variable_name"
+	"$CYBERARK_CCLOUD_API/secrets/conjur/variable/$variable_name"
 }
 
 #####################################
@@ -205,7 +191,7 @@ function conjur_append_policy {
 	-X POST				\
   	-H "$authHeader"		\
 	-d "$(< $policy_name)"		\
-	$CONJUR_CLOUD_URL/policies/conjur/policy/$policy_branch)
+	$CYBERARK_CCLOUD_API/policies/conjur/policy/$policy_branch)
   echo "$response"
 }
 
@@ -218,7 +204,7 @@ function conjur_update_policy {
 	-X PATCH				\
   	-H "$authHeader"			\
 	-d "$(< $policy_name)"			\
-	$CONJUR_CLOUD_URL/policies/conjur/policy/$policy_branch)
+	$CYBERARK_CCLOUD_API/policies/conjur/policy/$policy_branch)
   echo "$response"
 }
 
@@ -231,7 +217,7 @@ function conjur_authn_enable {
   	-X PATCH 						\
   	-H "$authHeader" 					\
 	-d "enabled=true"					\
-	"${CONJUR_CLOUD_URL}/${authnType}/${serviceId}/conjur")
+	"${CYBERARK_CCLOUD_API}/${authnType}/${serviceId}/conjur")
   echo "$response"
 }
 
@@ -244,7 +230,7 @@ function conjur_authn_status {
         -X GET							\
         -H "$authHeader"                                        \
         -d "enabled=true"                                       \
-        "${CONJUR_CLOUD_URL}/${authnType}/${serviceId}/conjur/status")
+        "${CYBERARK_CCLOUD_API}/${authnType}/${serviceId}/conjur/status")
   echo "$response"
 }
 
@@ -255,7 +241,7 @@ function conjur_rotate_api_key {
 	$util_defaults
 	api_key=$(curl $CONJUR_VERBOSE -X PUT -sk 	\
 		-H "$authHeader"				\
-		"$CONJUR_CLOUD_URL/authn/${CONJUR_ACCOUNT}/api_key?role=conjur:${kind}:${id}")
+		"$CYBERARK_CCLOUD_API/authn/${CONJUR_ACCOUNT}/api_key?role=conjur:${kind}:${id}")
 	echo $api_key
 }
 
@@ -267,11 +253,11 @@ function conjur_set_user_password() {
 	$util_defaults
 	curl $CONJUR_VERBOSE --fail -s -k 				\
 		--user "$username:$current_password"			\
-		$CONJUR_CLOUD_URL/authn/conjur/login
+		$CYBERARK_CCLOUD_API/authn/conjur/login
 	curl $CONJUR_VERBOSE -X PUT -s -k				\
 		--data "$new_password"					\
 		--user $username:"$current_password"			\
-		"$CONJUR_CLOUD_URL/authn/${CONJUR_ACCOUNT}/password"
+		"$CYBERARK_CCLOUD_API/authn/${CONJUR_ACCOUNT}/password"
 }
 
 #####################################
@@ -289,35 +275,41 @@ urlify() {
         echo $str
 }
 
+#####################################
+# verifies jq installed & required environment variables are set
+function checkDependencies() {
+  all_env_set=true
+  if [[ "$(which jq)" == "" ]]; then
+    echo
+    echo "The JSON query utility jq is required. Please install jq."
+    all_env_set=false
+  fi
+  if [[ "$CYBERARK_IDENTITY_URL" == "" ]]; then
+    echo
+    echo "  CYBERARK_IDENTITY_URL must be set."
+    all_env_set=false
+  fi
+  if [[ "$CYBERARK_CCLOUD_API" == "" ]]; then
+    echo
+    echo "  CYBERARK_CCLOUD_API must be set - e.g. 'https://my-secrets.secretsmgr.cyberark.cloud/api'"
+    all_env_set=false
+  fi
+  if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then
+    echo
+    echo "  CYBERARK_ADMIN_USER must be set - e.g. foo_bar@cyberark.cloud.7890"
+    echo "    This MUST be a Service User and Oauth confidential client."
+    echo "    This script will not work for human user identities."
+    all_env_set=false
+  fi
+  if [[ "$CYBERARK_ADMIN_PWD" == "" ]]; then
+    echo
+    echo "  CYBERARK_ADMIN_PWD must be set to the $CYBERARK_ADMIN_USER password."
+    all_env_set=false
+  fi
+  if ! $all_env_set; then
+    echo
+    exit -1
+  fi
+}
+
 main "$@"
-
-#####################################
-# not implented in Conjur Cloud?
-function conjur_info {
-  $util_defaults
-  $CURL 				\
-	-X GET				\
-	-H "$authHeader"		\
-	"${CONJUR_CLOUD_URL}/info"
-}
-
-#####################################
-# not implented in Conjur Cloud?
-function conjur_health {
-  $util_defaults
-  $CURL 				\
-	-X GET				\
-	-H "$authHeader"		\
-	"${CONJUR_CLOUD_URL}/health"
-}
-
-#####################################
-# not implented in Conjur Cloud?
-function conjur_audit {
-  $util_defaults
-  response=$($CURL			\
-	  -H "$authHeader"		\
-	"${CONJUR_CLOUD_URL}/audit")
-  echo "$response"
-}
-

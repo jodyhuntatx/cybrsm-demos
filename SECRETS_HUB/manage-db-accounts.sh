@@ -16,6 +16,8 @@ export CLOUD_PLATFORM_IDS="AWSAccessKeys"
 export SSH_PLATFORM_IDS="UnixSSHKeys InformixUnixSSH DB2UnixSSH"
 export DB_PLATFORM_IDS="MySQL MSSql Oracle SAPHANA Sybase"
 
+CYBRVAULT_CLI=../bin/cybrvault-cli.sh
+
 declare -a ALL_PLATFORM_IDS=(
 AWSAccessKeys
 UnixSSHKeys
@@ -46,7 +48,7 @@ case $command in
     # provision AWS Access Keys account
     platformId=AWSAccessKeys
     ACCOUNT_NAME=${platformId}-Onboarded
-    ./pcloud-cli.sh account_create_aws 		\
+    $CYBRVAULT_CLI/account_create_aws 		\
 			"$SAFE_NAME"		\
 			"$platformId"		\
 			"$ACCOUNT_NAME"		\
@@ -60,7 +62,7 @@ case $command in
     # provision SSH account
     platformId=UnixSSHKeys
     ACCOUNT_NAME=${platformId}-Onboarded
-    ./pcloud-cli.sh account_create_ssh 		\
+    $CYBRVAULT_CLI account_create_ssh 		\
 			"$SAFE_NAME"		\
 			"$platformId"		\
 			"$ACCOUNT_NAME"		\
@@ -71,7 +73,7 @@ case $command in
     # provision Informix via SSH account
     platformId=InformixUnixSSH
     ACCOUNT_NAME=${platformId}-Onboarded
-    ./pcloud-cli.sh account_create_ssh          \
+    $CYBRVAULT_CLI account_create_ssh          \
                         "$SAFE_NAME"            \
                         "$platformId"           \
                         "$ACCOUNT_NAME"         \
@@ -82,7 +84,7 @@ case $command in
     # provision DB2 via SSH account
     platformId=DB2UnixSSH
     ACCOUNT_NAME=${platformId}-Onboarded
-    ./pcloud-cli.sh account_create_ssh          \
+    $CYBRVAULT_CLI account_create_ssh          \
                         "$SAFE_NAME"            \
                         "$platformId"           \
                         "$ACCOUNT_NAME"         \
@@ -93,7 +95,7 @@ case $command in
     # provision DB accounts
     for platformId in $DB_PLATFORM_IDS; do
       accountName=${platformId}-Onboarded
-      ./pcloud-cli.sh account_create_db \
+      $CYBRVAULT_CLI account_create_db \
 			$SAFE_NAME	\
 			$platformId	\
 			$accountName	\
@@ -109,8 +111,8 @@ case $command in
   deprovision)
     for platformId in "${ALL_PLATFORM_IDS[@]}"; do
       accountName=${platformId}-Onboarded
-      ./pcloud-cli.sh account_delete $SAFE_NAME "$accountName"
-#      ./pcloud-cli.sh account_get $SAFE_NAME "$accountName"
+      $CYBRVAULT_CLI account_delete $SAFE_NAME "$accountName"
+#     $CYBRVAULT_CLI account_get $SAFE_NAME "$accountName"
     done
     ;;
 

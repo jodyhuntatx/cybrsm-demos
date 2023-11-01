@@ -4,6 +4,8 @@
 # shub-cli.sh - a bash script CLI for Secrets Hub
 ####################################################
 
+CYBRVAULT_CLI=~/Conjur/cybrsm-demos/bin/cybrvault-cli.sh
+
 export CURL="curl -s"
 
 showUsage() {
@@ -48,6 +50,10 @@ main() {
   checkDependencies
 
   case $1 in
+    auth_token_get)
+	echo $($CYBRVAULT_CLI auth_token_get)
+	exit 0
+	;;
     tenant_info | stores_sources_get | stores_targets_get | stores_get | stores_name_id | policies_get | policies_name_id)
 	command=$1
 	;;
@@ -111,119 +117,120 @@ main() {
 	;;
   esac
 
-  cyberark_authenticate	# sets global variable authHeader
+  authToken=$($CYBRVAULT_CLI auth_token_get)
+  authHeader="Authorization: Bearer $authToken"
 
   case $command in
 
     tenant_info)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/info"
+          "${CYBERARK_SHUB_API}/info"
 	;;
 
     stores_sources_get)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores"		\
+          "${CYBERARK_SHUB_API}/secret-stores"		\
 	| jq '.secretStores[] | select(any(.behaviors[] == "SECRETS_SOURCE"; .))'
 	;;
 
     stores_targets_get)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores"		\
+          "${CYBERARK_SHUB_API}/secret-stores"		\
 	| jq '.secretStores[] | select(any(.behaviors[] == "SECRETS_TARGET"; .))'
 	;;
 
     stores_get)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores"
+          "${CYBERARK_SHUB_API}/secret-stores"
 	;;
 
     stores_name_id)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores"		\
+          "${CYBERARK_SHUB_API}/secret-stores"		\
 	| jq -r '.secretStores[] | "Store name: \(.name)\n  Store ID: \(.id)"'
 	;;
 
     store_get)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores/$storeId"
+          "${CYBERARK_SHUB_API}/secret-stores/$storeId"
 	;;
 
     store_id_get)
 	printf -v query '.secretStores[] | select(.name=="%s") | .id' "$storeName"
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores"		\
+          "${CYBERARK_SHUB_API}/secret-stores"		\
 	| jq -r "$query"
 	;;
 
     store_status)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores/$storeId/status/connection"
+          "${CYBERARK_SHUB_API}/secret-stores/$storeId/status/connection"
 	;;
 
     filters_get)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores/$storeId/filters"
+          "${CYBERARK_SHUB_API}/secret-stores/$storeId/filters"
 	;;
 
     filter_get)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/secret-stores/$storeId/filters/$filterId"
+          "${CYBERARK_SHUB_API}/secret-stores/$storeId/filters/$filterId"
 	;;
 
     policies_get)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies"
+          "${CYBERARK_SHUB_API}/policies"
 	;;
 
     policies_target_get)
 	printf -v query '.policies[] | select(.target.id=="%s")' "$storeId"
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies"			\
+          "${CYBERARK_SHUB_API}/policies"			\
 	| jq -r "$query"
 	;;
 
     policies_name_id)
         $CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies"			\
+          "${CYBERARK_SHUB_API}/policies"			\
 	| jq -r '.policies[] | "Policy name: \(.name)\n  Policy ID: \(.id)"'
 	;;
 
     policy_get)
 	$CURL -X GET                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies/$policyId"
+          "${CYBERARK_SHUB_API}/policies/$policyId"
 	;;
 
     policy_state)
 	$CURL -X PUT                          		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies/$policyId/state"	\
+          "${CYBERARK_SHUB_API}/policies/$policyId/state"	\
 	  -d "{ \"action\": \"$action\" }"
 	;;
 
     policy_delete)
 	$CURL -X DELETE                        		\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies/$policyId"
+          "${CYBERARK_SHUB_API}/policies/$policyId"
 	;;
 
     policy_create)
 	$CURL -X POST					\
 	  -H "$authHeader"				\
-          "${SECRETS_HUB_URL}/policies"			\
+          "${CYBERARK_SHUB_API}/policies"			\
 	  -d "{						\
 		\"name\": \"$name\",			\
 		\"description\": \"$description\",	\
@@ -246,22 +253,6 @@ main() {
 }
 
 #####################################
-# sets the global authorization header used in api calls for other methods
-function cyberark_authenticate() {
-  $util_defaults
-#  echo "Authenticating user $CYBERARK_ADMIN_USER..."
-  jwToken=$($CURL 					\
-        -X POST \
-        https://$IDENTITY_TENANT_ID.id.cyberark.cloud/oauth2/platformtoken \
-        -H "Content-Type: application/x-www-form-urlencoded"      	\
-        --data-urlencode "grant_type"="client_credentials"              \
-        --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
-        --data-urlencode "client_secret"="$CYBERARK_ADMIN_PWD"		\
-	| jq -r .access_token)
-  authHeader="Authorization: Bearer $jwToken"
-}
-
-#####################################
 # verifies jq installed & required environment variables are set
 function checkDependencies() {
   all_env_set=true
@@ -270,14 +261,14 @@ function checkDependencies() {
     echo "The JSON query utility jq is required. Please install jq."
     all_env_set=false
   fi
-  if [[ "$IDENTITY_TENANT_ID" == "" ]]; then
+  if [[ "$CYBERARK_IDENTITY_URL" == "" ]]; then
     echo
-    echo "  IDENTITY_TENANT_ID must be set - e.g. 'xyz1234'"
+    echo "  CYBERARK_IDENTITY_URL must be set."
     all_env_set=false
   fi
-  if [[ "$PCLOUD_URL" == "" ]]; then
+  if [[ "$CYBERARK_SHUB_API" == "" ]]; then
     echo
-    echo "  PCLOUD_URL must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
+    echo "  CYBERARK_SHUB_API must be set - e.g. 'https://my-secrets.secretshub.cyberark.cloud/api'"
     all_env_set=false
   fi
   if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then

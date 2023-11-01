@@ -1,1 +1,0 @@
-{ "ARN": "arn:aws:secretsmanager:us-west-2:475601244925:secret:Evans/test/secret-ahoRUv", "Name": "Evans/test/secret", "LastChangedDate": "2022-08-16T16:19:41.638000-05:00", "LastAccessedDate": "2023-08-07T19:00:00-05:00", "Tags": [], "SecretVersionsToStages": { "6555e53b-a4fb-47e0-be5f-8b647f37aa37": [ "AWSCURRENT" ] }, "CreatedDate": "2022-08-16T16:19:41.584000-05:00" }

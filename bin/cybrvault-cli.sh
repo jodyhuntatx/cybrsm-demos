@@ -5,6 +5,7 @@
 # A bash script CLI for CybrArk Self-Hosted and Privilege Cloud Vaults
 ####################################################
 
+SELF_HOSTED_PAM=${SELF_HOSTED_PAM:-false}
 # use 'curl -v' and 'set -x' for verbose debugging 
 CURL="curl -sk"
 util_defaults="set -u"
@@ -54,7 +55,9 @@ showUsage() {
   echo "                      <access-key-id> <account-id> [ <region> ] [ <account-alias> ]"
   echo
   echo "  Authn commands:"
-  echo "    $0 auth_token_get"
+  echo "    $0 whoami"
+  echo "    $0 auth_token_get - get JWT from CyberArk Identity"
+  echo "    $0 session_token_get - get legacy CyberArk Vault session token"
   exit -1
 
 # Commands below are partially implemented and mostly don't work.
@@ -249,6 +252,10 @@ main() {
 	echo $sessionToken
 	exit
 	;;
+    whoami)
+        echo "$CYBERARK_ADMIN_USER"
+        exit
+        ;;
     *)
 	echo "Unrecognized command: $1"
 	showUsage
@@ -272,7 +279,7 @@ function pcloud_authenticate() {
 #  echo "Authenticating user $CYBERARK_ADMIN_USER..."
   jwToken=$($CURL 							\
         -X POST 							\
-        "${IDENTITY_TENANT_URL}/oauth2/platformtoken" 			\
+        "${CYBERARK_IDENTITY_URL}/oauth2/platformtoken" 			\
         -H "Content-Type: application/x-www-form-urlencoded"      	\
         --data-urlencode "grant_type"="client_credentials"              \
         --data-urlencode "client_id"="$CYBERARK_ADMIN_USER"		\
@@ -290,7 +297,7 @@ function self_hosted_authenticate() {
 	--header "Content-Type: application/json"		\
 	--data "{\"username\":\"$CYBERARK_ADMIN_USER\",	 	\
 		\"password\":\"$CYBERARK_ADMIN_PWD\"}"		\
-	"${VAULT_API_URL}/auth/Cyberark/Logon/")
+	"${CYBERARK_VAULT_API}/auth/Cyberark/Logon/")
   sessionToken=$(echo $sessionToken | tr -d '"')
 
   authHeader="Authorization: $sessionToken"
@@ -304,7 +311,7 @@ function pending_accts_get() {
 
   $CURL -X GET                          		\
 	-H "$authHeader"				\
-        "${VAULT_API_URL}/DiscoveredAccounts"
+        "${CYBERARK_VAULT_API}/DiscoveredAccounts"
   echo
 }
 
@@ -316,7 +323,7 @@ function onboarding_rules_get() {
 
   $CURL -X GET                          		\
 	-H "$authHeader"				\
-        "${VAULT_API_URL}/AutomaticOnboardingRules"
+        "${CYBERARK_VAULT_API}/AutomaticOnboardingRules"
   echo
 }
 
@@ -328,7 +335,7 @@ function onboarding_rules_set() {
 
   $CURL -X POST                          		\
 	-H "$authHeader"				\
-        "${VAULT_API_URL}/AutomaticOnboardingRules"
+        "${CYBERARK_VAULT_API}/AutomaticOnboardingRules"
   echo 	'{							\
 	"RuleName": "<rule name> - auto-generated if blank",	\
 	"RuleDescription": "<description> - optional"		\
@@ -351,7 +358,7 @@ function cpms_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/ComponentsMonitoringDetails/CPM"
+	"${CYBERARK_VAULT_API}/ComponentsMonitoringDetails/CPM"
 }
 
 #####################################
@@ -360,7 +367,7 @@ function platforms_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Platforms"
+	"${CYBERARK_VAULT_API}/Platforms"
 }
 
 #####################################
@@ -369,7 +376,7 @@ function platform_details() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Platforms/$platformId"
+	"${CYBERARK_VAULT_API}/Platforms/$platformId"
 }
 
 #####################################
@@ -379,7 +386,7 @@ function platform_export() {
 	-X POST						\
 	-H "$authHeader"				\
 	-d ""						\
-	"${VAULT_API_URL}/Platforms/$platformId/Export"	\
+	"${CYBERARK_VAULT_API}/Platforms/$platformId/Export"	\
 	> "$zipfileName"
   echo "Platform ID $platformId exported to file $zipfileName in zip format."
 }
@@ -392,7 +399,7 @@ function platform_import() {
   $CURL -X POST                                      		\
 	--header "$authHeader"                          \
         --header "Content-Type: application/json"       \
-        "${VAULT_API_URL}/platforms/import"                \
+        "${CYBERARK_VAULT_API}/platforms/import"                \
         --data "{                                       \
         	\"ImportFile\": \"$importArray\"        \
                 }"
@@ -403,7 +410,7 @@ function platform_target_delete() {
   $util_defaults
   $CURL -X DELETE			\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Platforms/Targets/$platformId"
+	"${CYBERARK_VAULT_API}/Platforms/Targets/$platformId"
 }
 
 #####################################
@@ -412,7 +419,7 @@ function platform_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/platforms/groups"
+	"${CYBERARK_VAULT_API}/platforms/groups"
 }
 
 #####################################
@@ -421,7 +428,7 @@ function platform_rotational_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/platforms/rotationalGroups"
+	"${CYBERARK_VAULT_API}/platforms/rotationalGroups"
 }
 
 #####################################
@@ -430,7 +437,7 @@ function safes_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Safes"
+	"${CYBERARK_VAULT_API}/Safes"
 }
 
 #####################################
@@ -447,7 +454,7 @@ function safe_accounts_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Accounts?$filter"
+	"${CYBERARK_VAULT_API}/Accounts?$filter"
 }
 
 #####################################
@@ -476,7 +483,7 @@ function safe_create() {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/Safes"				\
+	"${CYBERARK_VAULT_API}/Safes"				\
 	-d "{						\
 		\"SafeName\":\"$safeName\",		\
 		\"NumberOfDaysRetention\":0,		\
@@ -521,7 +528,7 @@ function safe_delete() {
   $CURL 				\
 	-X DELETE			\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Safes/$safeName"
+	"${CYBERARK_VAULT_API}/Safes/$safeName"
 }
 
 #####################################
@@ -530,7 +537,7 @@ function safe_member_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Safes/${safeName}/members/${memberName}/"
+	"${CYBERARK_VAULT_API}/Safes/${safeName}/members/${memberName}/"
 }
 
 #####################################
@@ -540,7 +547,7 @@ function safe_member_add() {
           --request POST                                        \
 	  -H "$authHeader"		\
           --header 'Content-Type: application/json'             \
-          ${VAULT_API_URL}/Safes/${safeName}/Members/ 		\
+          ${CYBERARK_VAULT_API}/Safes/${safeName}/Members/ 		\
           --data "{                                             \
                 \"memberName\":\"$memberName\",                 \
                 \"memberType\":\"User\",                        \
@@ -560,7 +567,7 @@ function safe_admin_add() {
           --request POST                                        \
 	  -H "$authHeader"					\
           -H 'Content-Type: application/json'             	\
-          ${VAULT_API_URL}/Safes/${safeName}/Members/ 		\
+          ${CYBERARK_VAULT_API}/Safes/${safeName}/Members/ 		\
           --data "{                                             \
                 \"memberName\":\"$memberName\",                 \
                 \"memberType\":\"User\",                        \
@@ -597,7 +604,7 @@ function safe_member_update() {
   $CURL 								\
 	-X PUT								\
 	-H "$authHeader"						\
-	"${VAULT_API_URL}/Safes/${safeName}/members/${memberName}/"	\
+	"${CYBERARK_VAULT_API}/Safes/${safeName}/members/${memberName}/"	\
 	-d "{								\
 		\"isReadOnly\" : \"false\",				\
                 \"permissions\": {                              	\
@@ -612,7 +619,7 @@ function safe_member_delete() {
   $CURL 				\
 	-X DELETE			\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Safes/$safeName/Members/${memberName}/"
+	"${CYBERARK_VAULT_API}/Safes/$safeName/Members/${memberName}/"
 }
 
 #####################################
@@ -621,7 +628,7 @@ function safe_groups_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/AccountGroups?Safe=$safeName"
+	"${CYBERARK_VAULT_API}/AccountGroups?Safe=$safeName"
 }
 
 #####################################
@@ -633,7 +640,7 @@ function safe_group_create() {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/AccountGroups"			\
+	"${CYBERARK_VAULT_API}/AccountGroups"			\
 	-d "{						\
 		\"Safe\":\"$safeName\",			\
 		\"GroupName\": \"$groupName\",			\
@@ -678,7 +685,7 @@ function safe_group_member_add() {
 	-X POST				\
 	-H "$authHeader"		\
 	-H "Content-Type: application/json"		\
-	"${VAULT_API_URL}/AccountGroups/$groupId/Members"	\
+	"${CYBERARK_VAULT_API}/AccountGroups/$groupId/Members"	\
 	-d "{						\
 		\"AccountID\": \"$accountId\"		\
 	   }"
@@ -690,7 +697,7 @@ function safe_group_members_get() {
   $CURL 				\
 	-X GET				\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/AccountGroups/$groupId/Members"
+	"${CYBERARK_VAULT_API}/AccountGroups/$groupId/Members"
 }
 
 #####################################
@@ -699,7 +706,7 @@ function account_details_get {
   $CURL 					\
 	-X GET					\
 	-H "$authHeader"			\
-	"${VAULT_API_URL}/Accounts/$accountName"
+	"${CYBERARK_VAULT_API}/Accounts/$accountName"
 }
 
 #####################################
@@ -717,7 +724,7 @@ function account_get {
   response=$($CURL 				\
 	-X GET					\
 	-H "$authHeader"			\
-	"${VAULT_API_URL}/Accounts?$filter" 	\
+	"${CYBERARK_VAULT_API}/Accounts?$filter" 	\
 	| jq "$query")
 
   if [[ "$response" == "" && "$INTERACTIVE" == "true" ]]; then
@@ -749,14 +756,14 @@ function account_delete {
 	-X DELETE			\
 	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
-	"${VAULT_API_URL_V1}/Accounts/$accountId"
+	"${CYBERARK_VAULT_API_V1}/Accounts/$accountId"
     )
   else
     response=$($CURL 			\
 	-X DELETE			\
 	--write-out '\n%{http_code}'	\
 	-H "$authHeader"		\
-	"${VAULT_API_URL}/Accounts/$accountId"
+	"${CYBERARK_VAULT_API}/Accounts/$accountId"
     )
   fi
 
@@ -804,7 +811,7 @@ function account_create_db_dual {
 	-X POST						\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/Accounts"			\
+	"${CYBERARK_VAULT_API}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -868,7 +875,7 @@ function account_create_db {
 	-X POST						\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/Accounts"			\
+	"${CYBERARK_VAULT_API}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -929,7 +936,7 @@ function account_create_ssh {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/Accounts"			\
+	"${CYBERARK_VAULT_API}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -991,7 +998,7 @@ function account_create_aws {
 	--write-out '\n%{http_code}'			\
         -H 'Content-Type: application/json'		\
 	-H "$authHeader"				\
-	"${VAULT_API_URL}/Accounts"			\
+	"${CYBERARK_VAULT_API}/Accounts"			\
 	-d		"{				\
 			  \"platformId\": \"$platformId\",	\
 			  \"safeName\": \"$safeName\",		\
@@ -1073,14 +1080,14 @@ function checkDependencies() {
     echo "The JSON query utility jq is required. Please install jq."
     all_env_set=false
   fi
-  if [[ "$IDENTITY_TENANT_URL" == "" ]]; then
+  if [[ "$CYBERARK_IDENTITY_URL" == "" ]]; then
     echo
-    echo "  IDENTITY_TENANT_URL must be set."
+    echo "  CYBERARK_IDENTITY_URL must be set."
     all_env_set=false
   fi
-  if [[ "$VAULT_API_URL" == "" ]]; then
+  if [[ "$CYBERARK_VAULT_API" == "" ]]; then
     echo
-    echo "  VAULT_API_URL must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
+    echo "  CYBERARK_VAULT_API must be set - e.g. 'https://my-secrets.privilegecloud.cyberark.cloud/api'"
     all_env_set=false
   fi
   if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then
