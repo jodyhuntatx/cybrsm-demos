@@ -1,0 +1,6 @@
+# applied at:
+# /data
+- !host
+  id: jody-ephemeral-test
+  annotations:
+    authn/api-key: true

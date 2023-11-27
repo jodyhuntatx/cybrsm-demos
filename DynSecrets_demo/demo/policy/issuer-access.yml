@@ -1,0 +1,6 @@
+# applied at:
+# /conjur/issuer/jody-aws-issuer/delegation
+
+- !grant
+  role: !group consumers
+  members: !host /data/jody-ephemeral-test

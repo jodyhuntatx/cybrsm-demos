@@ -17,6 +17,9 @@ showUsage() {
     echo "  $0 role_id_get <role-name>"
     echo "  $0 role_get <role-name>"
     echo "  $0 setAttribute <identity-display-name> <attr-name> <attr-value>"
+    echo "  $0 describe_system"
+    echo "  $0 tenant_info"
+    echo "  $0 advance_tenant_info"
     exit -1
 }
 
@@ -26,7 +29,7 @@ main() {
   uName=""
 
   case $command in
-    user_list | roles_get)
+    user_list | roles_get | describe_system | tenant_info | advanced_tenant_info) 
       ;;
     user_create)
       if [[ $# != 4 ]]; then
@@ -67,6 +70,19 @@ main() {
   oauthClientAuthenticate
 
   $command
+}
+
+###############################
+describe_system() {
+  $util_defaults
+
+  $CURL --request POST					\
+  --url $CYBERARK_IDENTITY_URL/SysInfo/About		\
+  --header 'Accept: */*'				\
+  --header 'Content-Type: application/json'		\
+  --header 'X-IDAP-NATIVE-CLIENT: true'			\
+  --header "$authHeader"				\
+  --data ''
 }
 
 ###############################
@@ -162,6 +178,30 @@ user_role_add() {
   --data "{ \"Name\": \"$roleId\",			\
 	    \"Users\": { \"Add\": [ \"$uName\" ] }	\
           }"
+}
+
+###############################
+tenant_info() {
+  $util_defaults
+
+  $CURL --request POST					\
+  --url $CYBERARK_IDENTITY_URL/TenantConfig/GetCustomerConfig \
+  --header 'Accept: */*'				\
+  --header "$authHeader"				\
+  --data ''						\
+  | jq .
+}
+
+###############################
+advanced_tenant_info() {
+  $util_defaults
+
+  $CURL --request POST					\
+  --url $CYBERARK_IDENTITY_URL/TenantConfig/GetAdvancedConfig \
+  --header 'Accept: */*'				\
+  --header "$authHeader"				\
+  --data ''						\
+  | jq .
 }
 
 ###############################
