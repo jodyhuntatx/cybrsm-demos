@@ -25,8 +25,9 @@ case $1 in
 	fi
 	command=$1
 	region=$2
-	aws --region $region secretsmanager list-secrets	\
-	| jq '.SecretList[] | select(any(.Tags[].Key == "Sourced by CyberArk"; .) | not)'
+	aws --region $region secretsmanager list-secrets	
+#\
+#	| jq '.SecretList[] | select(any(.Tags[].Key == "Sourced by CyberArk"; .) | not)'
 	;;
 
   secret_describe)
