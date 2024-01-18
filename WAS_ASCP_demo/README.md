@@ -84,8 +84,8 @@ Accounts are free, but required for repo access.
 
 ## Helpful links
 ### IBM Installation Manager
- - https://www.ibm.com/support/knowledgecenter/SSDV2W_1.8.5/com.ibm.silentinstall12.doc/topics/t_silent_installIM_IMinst.html
- - https://www.ibm.com/support/fixcentral/swg/selectFixes?parent=ibm~Rational&product=ibm/Rational/IBM+Installation+Manager&function=all
+ - Documentation: https://www.ibm.com/docs/en/installation-manager/1.9.2?topic=SSDV2W_1.9.2/com.ibm.silentinstall12.doc/topics/t_silent_installIM_IMinst.htm
+ - Download: https://www.ibm.com/support/fixcentral/swg/selectFixes?parent=ibm~Rational&product=ibm/Rational/IBM+Installation+Manager&function=all
 
 ### WAS Repository installation
  - https://www.ibm.com/support/knowledgecenter/SSAW57_9.0.5/com.ibm.websphere.installation.nd.doc/ae/tins_productfiles_im.html

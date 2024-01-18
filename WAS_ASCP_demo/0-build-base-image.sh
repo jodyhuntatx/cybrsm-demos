@@ -1,7 +1,7 @@
 #!/bin/bash
 source wasascpdemo.config
 
-xxmain() {
+main() {
   clear
   get_ibm_credentials
   stop_build_container
@@ -9,11 +9,9 @@ xxmain() {
   start_build_container
   install_ibm_install_manager
   install_websphere
-}
-main() {
   create_was_server_profile
   stage_cp
-  install_ascp_credmapper
+#  install_ascp_credmapper
   commit_build_image
   stop_build_container
 }
@@ -41,7 +39,7 @@ function get_ibm_credentials() {
 function create_build_image() {
   echo "Creating build image..."
 
-  docker build -q . -f ./Dockerfile.was -t $DEMO_IMAGE
+  docker build . -f ./Dockerfile.was -t $DEMO_IMAGE
 }
 
 ######################
