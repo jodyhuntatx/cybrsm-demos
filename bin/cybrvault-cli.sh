@@ -42,6 +42,7 @@ showUsage() {
   echo
   echo "  Account commands:"
   echo "    $0 account_get <safe-name> <account-name>"
+  echo "    $0 account_search <search-string>"
   echo "    $0 account_details_get <numeric-account-id>"
   echo "    $0 account_delete <safe-name> <account-name>"
   echo "    $0 account_create_db_dual <safe-name> <platform-id> <account-name> <username> <password>"
@@ -176,6 +177,15 @@ main() {
 	command=$1
 	safeName=$(urlify "$2")
 	accountName=$(urlify "$3")
+	;;
+    account_search)
+	if [[ $# != 2 ]]; then
+	  echo "Incorrect number of arguments."
+	  showUsage
+	fi
+	command=$1
+	searchString="$2"
+#	searchString=$(urlify "$2")
 	;;
     account_create_db_dual)
 	if [[ $# != 12 ]]; then
@@ -731,6 +741,20 @@ function account_get {
     echo "Account $accountName not found in safe $safeName."
     exit -1
   fi
+  echo $response
+}
+
+#####################################
+function account_search {
+  $util_defaults
+
+  # search example. you can search on everything BUT account name !!?
+  #<url>/Accounts?limit=1&search={{ (instance_username + ' ' + instance_ip) | urlencode }}"
+
+  response=$($CURL 				\
+	-X GET					\
+	-H "$authHeader"			\
+	"${CYBERARK_VAULT_API}/Accounts?search=${searchString}")
   echo $response
 }
 
