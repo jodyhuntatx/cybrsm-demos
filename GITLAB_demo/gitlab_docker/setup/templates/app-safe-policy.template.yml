@@ -1,0 +1,8 @@
+---
+# This policy is applied to the /<VaultName> branch.
+# It grants the safe access role to app identity.
+- !grant
+  roles:
+  - !group {{ LOB_NAME }}/{{ SAFE_NAME }}/delegation/consumers
+  members:
+  - !host /apps/{{ CONJUR_IDENTITY }}

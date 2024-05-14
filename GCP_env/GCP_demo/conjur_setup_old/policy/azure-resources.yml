@@ -1,0 +1,35 @@
+---
+
+# Variables named for the identities that have access to them
+- !variable test-var-rgrp1
+- !variable test-var-rgrp1-sid1
+- !variable test-var-rgrp1-uid1
+- !variable test-var-rgrp2-uid1
+
+# Resource group 1
+- !permit
+  role: !host apps/rgrp1
+  privilege: [ read, execute ]
+  resource: !variable test-var-rgrp1
+
+- !permit
+  role: !host apps/rgrp1-sid1
+  privilege: [ read, execute ]
+  resources:
+  - !variable test-var-rgrp1-sid1
+
+- !permit
+  role: !host apps/rgrp1-uid1
+  privilege: [ read, execute ]
+  resource: !variable test-var-rgrp1-uid1
+
+# Resource group 2
+- !permit
+  role: !host apps/rgrp2-uid1
+  privilege: [ read, execute ]
+  resource: !variable test-var-rgrp2-uid1
+
+- !grant
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  members:
+  - !group apps

@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Example command:"
+echo ">> sqlcmd -S <db-ip-address> -U sa -P Cyberark1 -Q 'select name from sys.databases'"
+echo
+docker exec -it mssql-cli bash

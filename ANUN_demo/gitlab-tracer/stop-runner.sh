@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source ./gitlab-vars.sh
+
+$DOCKER stop $GITLAB_RUNNER_CONTAINER
+$DOCKER rm $GITLAB_RUNNER_CONTAINER
+$DOCKER volume rm $GITLAB_RUNNER_VOLUME

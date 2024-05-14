@@ -1,0 +1,6 @@
+apiVersion: v2
+name: app
+appVersion: "v0.0.0.0"
+description: A Helm chart for an app using External Secrets Operator
+version: 0.0.0
+type: application

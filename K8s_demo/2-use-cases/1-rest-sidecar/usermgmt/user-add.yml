@@ -1,0 +1,4 @@
+- !user {{ USERNAME }}
+- !grant
+  role: !group {{ PROJECTNAME }}/users
+  member: !user {{ USERNAME }}

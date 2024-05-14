@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Cleaning $PWD..."
+rm policy/master* tmp/*
+cd key-encrypt
+  ./_clean.sh
+cd ..

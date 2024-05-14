@@ -1,0 +1,7 @@
+#!/bin/bash -eu
+source ../../config/conjur.config
+source ../env/sandbox.env
+source ./env/mtls-demo.conf
+
+docker-compose down -v
+docker-compose rm

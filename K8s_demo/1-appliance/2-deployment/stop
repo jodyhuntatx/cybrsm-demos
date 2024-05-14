@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source ../../../config/conjur.config
+FOLLOWER_MANIFESTS="follower-deployment-manifest.yaml"
+for i in $FOLLOWER_MANIFESTS; do
+  kubectl delete -f ./manifests/$i -n $CYBERARK_NAMESPACE_NAME --ignore-not-found 
+  rm ./manifests/$i
+done

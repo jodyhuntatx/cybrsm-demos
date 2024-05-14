@@ -1,0 +1,36 @@
+server {
+  listen 80;
+  
+  server_name server localhost;
+
+  location / {
+    rewrite ^ https://$host$request_uri? permanent;
+  }
+  
+}
+server {
+  listen 443 ssl;
+
+  server_name server localhost;
+
+  location / {
+    root /;
+    index index.html;
+  }
+  
+  location /refresh_cert {
+    content_by_lua_block {
+       ngx.say('Refreshing certificates & key.')
+#      os.execute("/bin/myShellScript.sh")
+    } 
+  }
+
+  # Certificate information presented by host
+  ssl_certificate /conjur/tls-cert;
+  ssl_certificate_key /conjur/tls-private-key;
+
+  # Client certificates accepted by host
+  ssl_client_certificate /conjur/tls-ca-chain;
+  ssl_verify_client on;
+  
+}

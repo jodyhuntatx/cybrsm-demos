@@ -1,0 +1,7 @@
+---
+- {{ CONJUR_SAFE_CONSUMER_IDENTITY }}
+
+# Grant safe consumer role to a Conjur role (host/group)
+- !grant
+  role: !group {{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}/delegation/consumers
+  member: {{ CONJUR_SAFE_CONSUMER_IDENTITY }}

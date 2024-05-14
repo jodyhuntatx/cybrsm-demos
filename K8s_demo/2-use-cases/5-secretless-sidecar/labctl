@@ -1,0 +1,92 @@
+#!/bin/bash
+
+source ../../../config/conjur.config
+source ../../../bin/conjur_utils.sh
+
+if [[ "$PLATFORM" == "openshift" ]]; then
+  uname=$($CLI whoami 2> /dev/null)
+  if [[ "$uname" != "user"* ]]; then
+    echo "Please login as a lab user first."
+    exit -1
+  fi
+  APP_NAMESPACE_NAME=$uname
+else
+  uname=$APP_NAMESPACE_NAME
+fi
+
+main() {
+  CMD=$1
+  case $CMD in
+    y*)
+        create_yaml_files
+        ;;
+    a*)
+        deploy_app
+        ;;
+    e*)
+        $CLI exec -it $($CLI get pods -n $APP_NAMESPACE_NAME | grep app-example-secretless | grep Running | awk '{print $1}') -n $APP_NAMESPACE_NAME -- bash 
+        ;;
+    d*)
+        reset_lab
+        ;;
+    c*)
+        reset_lab
+        rm -f *.yaml
+        ;;
+    *)
+        echo "Usage: $0 [ yaml | apply | exec | delete | clean ]"
+        exit -1
+  esac
+  exit 0
+}
+
+########################
+create_yaml_files() {
+  echo "creating YAML files..."
+
+  # DAP policy file
+  cat ./templates/app-secretless-policy.template.yaml		\
+  | sed -e "s#{{ APP_NAMESPACE_NAME }}#$uname#g"			\
+  | sed -e "s#{{ CLUSTER_AUTHN_ID }}#$CLUSTER_AUTHN_ID#g"	\
+  | sed -e "s#{{ SECRETS_ACCESS_ROLE }}#$SECRETS_ACCESS_ROLE#g"	\
+  > ./app-secretless-policy.yaml
+
+  # DAP service config map
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+  | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
+  > ./conjur-config-cm.yaml
+
+  # Secretless config map
+  cat ./templates/secretless-cm.template.yaml			\
+  | sed -e "s#{{ VAULT_NAME }}#$VAULT_NAME#g"			\
+  | sed -e "s#{{ ACCOUNT_ADDRESS }}#$ACCOUNT_ADDRESS#g"		\
+  | sed -e "s#{{ ACCOUNT_USERNAME }}#$ACCOUNT_USERNAME#g"	\
+  | sed -e "s#{{ ACCOUNT_PASSWORD }}#$ACCOUNT_PASSWORD#g"       \
+  > ./secretless.yaml
+
+  # Secretless deployment manifest
+  sed -e "s#{{ APP_IMAGE }}#$APP_IMAGE#g"				\
+	./templates/app-secretless-manifest.template.yaml		\
+  | sed -e "s#{{ SECRETLESS_BROKER_IMAGE }}#$SECRETLESS_BROKER_IMAGE#g"	\
+  | sed -e "s#{{ APP_NAMESPACE_NAME }}#$APP_NAMESPACE_NAME#g"		\
+  | sed -e "s#{{ CONJUR_AUTHN_URL }}#$CONJUR_AUTHN_URL#g"		\
+  > ./app-secretless-manifest.yaml
+}
+
+########################
+deploy_app() {
+  conjur_append_policy $APP_NAMESPACE_NAME ./app-secretless-policy.yaml
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAME_SPACE_NAME
+  fi
+  $CLI create cm secretless-config --from-file=secretless.yaml -n $APP_NAMESPACE_NAME
+  $CLI apply -f ./app-secretless-manifest.yaml -n $APP_NAMESPACE_NAME
+}
+
+########################
+reset_lab() {
+  $CLI delete cm secretless-config -n $APP_NAMESPACE_NAME --ignore-not-found
+  $CLI delete -f ./app-secretless-manifest.yaml -n $APP_NAMESPACE_NAME --ignore-not-found
+}
+
+main "$@"

@@ -1,0 +1,4 @@
+#/bin/bash
+source ./self-serve.bashlib
+if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+revoke-safe-access-for-identities $1

@@ -1,0 +1,2 @@
+Main-Class: JavaPasswordSDKSample
+Class-Path: /opt/CARKaim/sdk/javapasswordsdk.jar

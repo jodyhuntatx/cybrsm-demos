@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: test-app
+  name: test-app
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-app
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      containers:
+        - name: test-app
+          image: alpine/curl
+          imagePullPolicy: IfNotPresent
+          command: ["sleep","infinity"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DOCKERCONFIG 
+              valueFrom:
+                secretKeyRef:
+                  name: docker-config
+                  key: .dockerconfigjson
+

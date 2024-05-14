@@ -1,0 +1,73 @@
+{
+  "safeRequest": {
+    "vaultName": "DemoVault",
+    "cpmName": "PasswordManager",
+    "lobName": "CICD",
+    "requestor": "{{ REQUESTOR }}",
+    "projectName": "{{ PROJECT_NAME }}",
+    "safeName": "{{ PROJECT_NAME }}"
+  },
+  "identities": [
+    {
+      "identity": "!host app-example-sidecar-user1"
+    },
+    {
+      "identity": "!host fedexdemo/admin-app",
+      "managed_identity": "true",
+      "authn": {
+        "type": "k8s",
+        "id": "mac-k8s",
+        "annotations": [
+          {
+            "key": "authn-k8s/namespace",
+            "value": "user1"
+          },
+          {
+            "key": "authn-k8s/service-account",
+            "value": "app-example-sidecar"
+          },
+          {
+            "key": "authn-k8s/authentication-container-name",
+            "value": "authenticator"
+          }
+        ]
+      }
+    }
+  ],
+  "accountRequests": [
+    {
+      "accountName": "WinServerAcct",
+      "platformId": "WinServerLocal",
+      "systemType": "Windows",
+      "address": "WIN-T4KRGHVATN4",
+      "userName": "mdamon",
+      "secretType": "password"
+    },
+    {
+      "accountName": "OracleDB-Dev",
+      "platformId": "Oracle",
+      "systemType": "Database",
+      "userName": "galgadot",
+      "port": 0,
+      "secretType": "password"
+    },
+    {
+      "accountName": "SQLServer-Dev",
+      "platformId": "MSSql",
+      "systemType": "Database",
+      "userName": "jfavreau",
+      "port": 0,
+      "secretType": "password"
+    },
+    {
+      "accountName": "MySQL-Dev",
+      "platformId": "MySQL",
+      "systemType": "Database",
+      "address": "conjur-master-mac",
+      "port": 3306,
+      "database": "petclinic",
+      "userName": "jhunt",
+      "secretType": "password"
+    }
+  ]
+}

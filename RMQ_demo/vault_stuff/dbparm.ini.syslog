@@ -1,0 +1,11 @@
+# paste at bottom of dbparm.ini
+# See: 
+#  https://docs.cyberark.com/Product-Doc/OnlineHelp/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm
+[SYSLOG]
+UseLegacySyslogFormat=Yes
+SyslogServerIP=192.168.35.206
+SyslogServerPort=1514
+SyslogServerProtocol=UDP
+SyslogTranslatorFile=SysLog\CpmPwdChange.xsl
+SyslogMessageCodeFilter=24
+SyslogMsgsQueueNotificationThreshold=1

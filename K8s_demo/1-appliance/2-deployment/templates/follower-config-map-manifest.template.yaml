@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: follower-config
+data:
+  FOLLOWER_HOSTNAME: conjur-follower # this should be the same value as the service name
+  SEED_FILE_DIR: /tmp/seedfile
+  CONJUR_SEED_FILE_URL: https://{{ CONJUR_LEADER_HOSTNAME }}/configuration/{{ CONJUR_ACCOUNT }}/seed/follower
+  CONJUR_AUTHN_LOGIN: host/{{ CLUSTER_AUTHN_ID }}/dap-authn-service
+  CONJUR_AUTHENTICATORS: {{ CONJUR_AUTHENTICATORS }}
+

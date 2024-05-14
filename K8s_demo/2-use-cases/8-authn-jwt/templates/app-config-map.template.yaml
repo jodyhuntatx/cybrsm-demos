@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config-map
+data:
+  AUTHN_JWT_ID: {{ AUTHN_JWT_ID }}
+  DB_HOSTNAME_ID: {{ ACCOUNT_ADDRESS }}
+  DB_NAME_ID: {{ ACCOUNT_DATABASE }}
+  DB_UNAME_ID:  {{ ACCOUNT_USERNAME }}
+  DB_PWD_ID:  {{ ACCOUNT_PASSWORD }}

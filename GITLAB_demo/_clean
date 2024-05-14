@@ -1,0 +1,7 @@
+#!/bin/bash -x
+echo "Cleaning $PWD..."
+pushd setup
+  for i in $(ls policy/gitlab*.yml); do
+    rm $i
+  done
+popd

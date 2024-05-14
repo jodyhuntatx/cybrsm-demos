@@ -1,0 +1,42 @@
+[Main]
+# --------------------------------------------------------------------------------
+# The folder to which the installation CD was copied.
+# --------------------------------------------------------------------------------
+InstallationFolder=/tmp/psmpinst
+
+# --------------------------------------------------------------------------------
+# Whether or not the CyberArk SSHD service should be installed.
+# The CyberArk SSHD service is required for tunneling and for connecting with the SSH 
+# command in the following syntax:
+# <ssh client> vaultuser@targetuser#domainaddress@targetmachine#targetport@targetpassword@proxyaddress
+# --------------------------------------------------------------------------------
+InstallCyberArkSSHD=Yes
+
+# --------------------------------------------------------------------------------
+# Whether or not the PSMP hardening settings will be applied.
+# --------------------------------------------------------------------------------
+Hardening=No
+
+# --------------------------------------------------------------------------------
+# Whether or not you accept all the terms of the PSMP end user license agreement. 
+# This agreement is on the installation CD in the PSMProxy installation package. 
+# Open this agreement and read it carefully, then set this parameter to Yes.
+# --------------------------------------------------------------------------------
+AcceptCyberArkEULA=Yes
+
+PSMPAppUser=PSMPApp_Demo
+PSMPGWUser=PSMPGW_Demo
+CreateVaultEnvironment=No
+
+#PSMPCreateEnvClientsCount=10
+#PSMPCreateEnvRetryTimeout=1
+#PSMPConfigurationSafe=PVWAConfig
+#PSMPConfigurationFolder=Root
+#PSMPPVConfigurationFileName=PVConfiguration.xml
+#PSMPPoliciesConfigurationFileName=Policies.xml
+
+# If enabling AD Bridge, be sure to uncomment lines in build.sh that install libssh
+EnableADBridge=Yes
+#ADBridgeUser=PSMP_ADB_<hostname>
+#ADBridgeConfigurationSafe=PSMPADBridgeConf
+#ADBridgeConfFile=main_psmpadbridge.conf.<OS type>.<Version>

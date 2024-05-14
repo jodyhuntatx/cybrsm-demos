@@ -1,0 +1,7 @@
+# - cybrlab_policy_metadata
+# branch: data
+# mode: append-policy
+---
+- !grant
+  role: !group vault/ConjurTest/delegation/consumers
+  members: !host workloads/system:serviceaccount:conjur-cloud:k8s-secrets-service-account

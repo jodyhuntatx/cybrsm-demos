@@ -1,0 +1,3 @@
+- !grant
+  role: !group DemoVault/CICD/PetClinicDev/delegation/consumers
+  member: !group user1/consumers 

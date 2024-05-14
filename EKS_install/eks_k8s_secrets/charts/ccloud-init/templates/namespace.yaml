@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conjur-cloud
+  namespace: {{ .Values.namespace }}
+data:
+  CONJUR_ACCOUNT: {{ .Values.account }}
+  CONJUR_APPLIANCE_URL: "https://{{ .Values.conjur_fqdn }}/api"
+  CONJUR_AUTHN_URL: "https://{{ .Values.conjur_fqdn }}/api/authn-jwt/{{ .Values.conjur_authn_id }}"
+  AUTHENTICATOR_ID: "{{ .Values.conjur_authn_id }}"
+  CONJUR_VERSION: "5"
+  CONJUR_SSL_CERTIFICATE: {{ .Values.conjur_cert | b64dec | quote }}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.conjur_app_service_account }}
+  namespace: {{ .Values.namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: secrets-access
+  namespace: {{ .Values.namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: [ "get", "update"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: secrets-access-binding
+subjects:
+  - kind: ServiceAccount
+    namespace: {{ .Values.namespace }}
+    name: {{ .Values.conjur_app_service_account }}
+roleRef:
+  kind: Role
+  apiGroup: rbac.authorization.k8s.io
+  name: secrets-access

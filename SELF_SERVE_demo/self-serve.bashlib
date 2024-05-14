@@ -1,0 +1,388 @@
+#!/bin/bash
+source ./self-serve.config
+
+############################
+create-safe-and-accounts() {
+  if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+  export ACCESS_REQUEST_JSON_FILE=$1
+  export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+
+  parse_access_request
+  $CYBR login -i --non-interactive -a cyberark -b $PAS_PVWA_URL -u $PAS_ADMIN_NAME 
+  $CYBR safes add -s $PAS_SAFE_NAME --days 0 --cpm $PAS_CPM_NAME	\
+	-d "For project $PROJECT_NAME" 
+  pas_add_safe_members
+  pas_add_safe_accounts
+  $CYBR conjur logon-non-interactive
+  conjur_load_safe_policy
+}
+
+############################
+parse_access_request() {
+  export REQUESTOR=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.requestor)
+  export PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.safeName)
+  export PROJECT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.projectName)
+  export PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.vaultName)
+  export PAS_LOB_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.lobName)
+  export PAS_CPM_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.cpmName)
+}
+
+############################
+pas_add_safe_members() {
+  $CYBR safes add-member -s $PAS_SAFE_NAME --member-name "Administrator" $ACL_FULL_ADMIN > /dev/null 2>&1
+  $CYBR safes add-member -s $PAS_SAFE_NAME --member-name $PAS_LOB_NAME $ACL_LOB_USER
+}
+
+############################
+pas_add_safe_accounts() {
+  i=0
+  while true; do
+    acctRequest=$(cat $ACCESS_REQUEST_JSON_FILE | jq .accountRequests[$i])
+    if [[ $acctRequest != null ]]; then
+      accountName=$(echo $acctRequest | jq -r .accountName) 
+      address=$(echo $acctRequest | jq -r .address) 
+      userName=$(echo $acctRequest | jq -r .userName) 
+      secretType=$(echo $acctRequest | jq -r .secretType) 
+      secretValue=$(openssl rand -hex 5) 
+      platformId=$(echo $acctRequest | jq -r .platformId) 
+      systemType=$(echo $acctRequest | jq -r .systemType) 
+      port=$(echo $acctRequest | jq -r .port) 
+
+      # Create account & provision per platform
+      case $systemType in
+	Database)
+          dbName=$(echo $acctRequest | jq -r .database) 
+          retCode=$($CYBR accounts add	\
+		-s $PAS_SAFE_NAME	\
+		-n $accountName		\
+		-p $platformId		\
+		-a $address		\
+		-u $userName		\
+		-t $secretType		\
+		-c $secretValue		\
+		-m			\
+		-e "database=$dbName,port=$port" > /dev/null)
+          if [[ $retCode != 0 ]]; then
+	    echo "Error creating $platformId database account in $PAS_SAFE_NAME."
+          fi
+	  ;;
+	*)
+          $CYBR accounts add 		\
+		-s $PAS_SAFE_NAME	\
+		-n $accountName		\
+		-p $platformId		\
+		-a $address		\
+		-u $userName		\
+		-t $secretType		\
+		-c $secretValue
+	  ;;
+      esac
+
+      # Provision account access per platform
+      case $platformId in
+	MySQL)
+          dbName=$(echo $acctRequest | jq -r .database) 
+	  pushd mysql > /dev/null
+            ./mysqldb-grant-user-access.sh $dbName $userName $secretValue
+	  popd > /dev/null
+	  ;;
+	*)
+	  echo "No target system provisioning support for $platformId."
+	  ;;
+      esac
+    else
+      break
+    fi
+    let i=$i+1
+  done
+}
+
+############################
+conjur_load_safe_policy() {
+  policy_fname="./policy/$timeStamp-create-safe-$PAS_VAULT_NAME-$PAS_LOB_NAME-$PAS_SAFE_NAME.yaml"
+
+  # Instantiate policy template with this access request info
+  cat ./templates/safe-creation-policy.template.yaml	\
+  | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g"	\
+  | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"	\
+  | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"	\
+  > $policy_fname
+
+  $CYBR conjur append-policy -b root -f $policy_fname > /dev/null
+}
+
+############################
+create-managed-identities() {
+  if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+  export ACCESS_REQUEST_JSON_FILE=$1
+  export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+
+  i=0
+  while true; do
+    identity_request=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities[$i])
+    if [[ $identity_request != null ]]; then
+      managed_identity=$(echo $identity_request | jq -r .managed_identity)
+      if [[ $managed_identity == true ]]; then
+        identity_role=$(echo $identity_request | jq -r .identity)
+
+        # remove spaces and slashes in filename
+        id_name=$(echo $identity_role | sed -e "s#!##"g | sed -e "s# #-#"g | sed -e "s#/#_#"g)
+        policy_fname=./policy/$timeStamp-identity-creation-policy-$id_name.yaml
+        role_type=$(echo $identity_role | cut -d ' ' -f1)
+        role_id=$(echo $identity_role | cut -d ' ' -f2)
+        echo "- $role_type" > $policy_fname
+        echo "  id: $role_id" >> $policy_fname
+
+        annotations=$(echo $identity_request | jq -r .authn.annotations)
+        if [[ $annotations != null ]]; then
+          echo "  annotations:" >> $policy_fname
+          j=0
+          while true; do
+            annotation=$(echo $identity_request | jq -r .authn.annotations[$j])
+            if [[ $annotation != null ]]; then
+              key=$(echo $annotation | jq -r .key);
+              value=$(echo $annotation | jq -r .value);
+              echo "    $key: $value" >> $policy_fname
+              let j=$j+1
+            else
+              break
+            fi
+          done
+        fi
+
+        authn_type=$(echo $identity_request | jq -r .authn.type)
+        if [[ $authn_type == null ]]; then
+          echo "ERROR: authn type required for managed identities."
+	  exit -1
+        fi
+        case $authn_type in
+  	  k8s)
+	    authn_id=$(echo $identity_request | jq -r .authn.id)
+	    echo "" >> $policy_fname
+	    echo "- !grant" >> $policy_fname
+	    echo "  roles:" >> $policy_fname
+	    echo "  - !group conjur/authn-k8s/$authn_id/consumers" >> $policy_fname
+	    echo "  members:" >> $policy_fname
+	    echo "  - $identity_role" >> $policy_fname
+	    ;;
+	  *)
+	    echo "ERROR: authn-type $authn_type not supported for managed identities."
+	    ;;
+        esac
+
+        $CYBR conjur append-policy -b root -f $policy_fname > /dev/null
+        echo "Identity created: \"$identity_role\"."
+      fi
+      let i=i+1
+    else
+      break
+    fi
+  done
+}
+
+############################
+grant-safe-access-to-identities() {
+
+  if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+  export ACCESS_REQUEST_JSON_FILE=$1
+  export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+
+  export PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.vaultName)
+  export PAS_LOB_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.lobName)
+  export PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.safeName)
+
+  i=0
+  while true; do
+    conjur_identity=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities[$i].identity)
+    if [[ $conjur_identity != null ]]; then
+      # remove bangs, spaces and slashes in identity name for filename
+      id_name=$(echo $conjur_identity 	\
+  		| sed -e "s#!##"g	\
+		| sed -e "s# #-#"g	\
+		| sed -e "s#/#_#"g)
+      policy_fname="./policy/$timeStamp-consumer-grant-policy-$PAS_SAFE_NAME-$id_name.yaml"
+
+      # Instantiate policy template with this access request info
+      cat ./templates/consumer-grant-policy.template.yaml		  \
+      | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g"		  \
+      | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"			  \
+      | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"                   \
+      | sed -e "s#{{ CONJUR_SAFE_CONSUMER_IDENTITY }}#$conjur_identity#g" \
+      > $policy_fname
+
+      $CYBR conjur append-policy -b root -f $policy_fname > /dev/null
+
+      echo "Access to secrets in $PAS_SAFE_NAME in vault $PAS_VAULT_NAME granted to \"$conjur_identity\"."
+      let i=$i+1
+    else
+      break
+    fi
+  done
+}
+
+############################
+revoke-safe-access-for-identities() {
+  if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+  export ACCESS_REQUEST_JSON_FILE=$1
+  export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+
+  PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.vaultName)
+  PAS_LOB_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.lobName)
+  PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.safeName)
+
+  i=0
+  while true; do
+    conjur_identity=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities[$i].identity)
+    if [[ $conjur_identity != null ]]; then
+      # remove spaces and slashes in filename
+      id_name=$(echo $conjur_identity | sed -e "s#!##"g | sed -e "s# #-#"g | sed -e "s#/#_#"g)
+      policy_fname=./policy/$timeStamp-consumer-revoke-policy-$PAS_SAFE_NAME-$id_name.yaml
+
+      # Instantiate policy template with this access request info
+      cat "./templates/consumer-revoke-policy.template.yaml"		\
+      | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g"		\
+      | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"			\
+      | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"			\
+      | sed -e "s#{{ CONJUR_SAFE_CONSUMER_IDENTITY }}#$conjur_identity#g" \
+      > $policy_fname
+
+      $CYBR conjur update-policy -b root -f $policy_fname > /dev/null
+
+      echo "Access to safe $PAS_SAFE_NAME in vault $PAS_VAULT_NAME revoked for \"$conjur_identity\"."
+      let i=i+1
+    else
+      break
+    fi
+  done
+}
+
+############################
+delete-managed-identities() {
+if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+export ACCESS_REQUEST_JSON_FILE=$1
+export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+
+PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.vaultName)
+PAS_LOB_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.lobName)
+PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.safeName)
+
+i=0
+while true; do
+  identity_request=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities[$i])
+  if [[ $identity_request != null ]]; then
+    managed_identity=$(echo $identity_request | jq -r .managed_identity)
+    if [[ $managed_identity == true ]]; then
+      identity_role=$(echo $identity_request | jq -r .identity)
+      # remove spaces and slashes in filename
+      id_name=$(echo $identity_role | sed -e "s#!##"g | sed -e "s# #-#"g | sed -e "s#/#_#"g)
+      policy_fname=./policy/$timeStamp-delete-identity-$id_name.yaml
+
+      # Instantiate policy template with this identity request info
+      cat ./templates/identity-deletion-policy.template.yaml 		\
+      | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g" 		\
+      | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"			\
+      | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"			\
+      | sed -e "s#{{ CONJUR_SAFE_CONSUMER_IDENTITY }}#$identity_role#g" \
+      > $policy_fname
+
+      $CYBR conjur update-policy -b root -f $policy_fname > /dev/null
+      echo "Managed identity deleted: \"$identity_role\"."
+    fi
+    let i=i+1
+  else
+    break
+  fi
+done
+}
+
+############################
+delete-safe-and-accounts() {
+  if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+  export ACCESS_REQUEST_JSON_FILE=$1
+  export timeStamp=$(date -j "+%y-%m-%d-%H:%M:%S")
+  export PAS_SAFE_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.safeName)
+  export PAS_VAULT_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.vaultName)
+  export PAS_LOB_NAME=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .safeRequest.lobName)
+
+  $CYBR login -i --non-interactive -a cyberark -b $PAS_PVWA_URL -u $PAS_ADMIN_NAME 
+  pas_delete_safe_accounts
+  $CYBR safes delete -s $PAS_SAFE_NAME
+  $CYBR conjur logon-non-interactive
+  conjur_revoke_consumer_policies
+  conjur_delete_safe_policy
+}
+
+############################
+pas_delete_safe_accounts() {
+  i=0
+  while true; do
+    acctRequest=$(cat $ACCESS_REQUEST_JSON_FILE | jq .accountRequests[$i])
+    if [[ $acctRequest != null ]]; then
+
+      platformId=$(echo $acctRequest | jq -r .platformId) 
+      case $platformId in
+	MySQL)
+          userName=$(echo $acctRequest | jq -r .userName) 
+          dbName=$(echo $acctRequest | jq -r .database) 
+	  pushd mysql > /dev/null
+            ./mysqldb-revoke-user-access.sh $dbName $userName
+	  popd > /dev/null
+	  ;;
+	*)
+	  echo "No target system de-provisioning support for platform $platformId."
+	  ;;
+      esac
+
+    else
+      break
+    fi
+    let i=$i+1
+  done
+}
+
+############################
+conjur_revoke_consumer_policies() {
+  i=0
+  while true; do
+    conjur_identity=$(cat $ACCESS_REQUEST_JSON_FILE | jq -r .identities[$i].identity)
+    if [[ $conjur_identity != null ]]; then
+      # remove bangs, spaces and slashes in identity name for filename
+      id_name=$(echo $conjur_identity 	\
+		| sed -e "s#!##"g	\
+		| sed -e "s# #-#"g	\
+		| sed -e "s#/#_#"g)
+      policy_fname="./policy/$timeStamp-revoke-$PAS_SAFE_NAME-$id_name.yaml"
+
+      # Instantiate policy template with this access request info
+      cat ./templates/consumer-revoke-policy.template.yaml		  \
+      | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g"                 \
+      | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"                     \
+      | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"                   \
+      | sed -e "s#{{ CONJUR_SAFE_CONSUMER_IDENTITY }}#$conjur_identity#g" \
+      > $policy_fname
+
+      $CYBR conjur update-policy -b root -f $policy_fname > /dev/null
+
+      echo "Access to secrets in $PAS_SAFE_NAME in vault $PAS_VAULT_NAME revoked for \"$conjur_identity\"."
+      let i=$i+1
+    else
+      break
+    fi
+  done
+}
+
+############################
+conjur_delete_safe_policy() {
+  policy_fname="./policy/$timeStamp-delete-safe-$PAS_VAULT_NAME-$PAS_LOB_NAME-$PAS_SAFE_NAME.yaml"
+
+  # Instantiate policy template with this access request info
+  cat ./templates/safe-deletion-policy.template.yaml	\
+  | sed -e "s#{{ PAS_VAULT_NAME }}#$PAS_VAULT_NAME#g"	\
+  | sed -e "s#{{ PAS_LOB_NAME }}#$PAS_LOB_NAME#g"	\
+  | sed -e "s#{{ PAS_SAFE_NAME }}#$PAS_SAFE_NAME#g"	\
+  > $policy_fname
+
+  $CYBR conjur update-policy -b root -f $policy_fname > /dev/null
+  echo "Successfully deleted policy for safe $PAS_SAFE_NAME."
+}
+

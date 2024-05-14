@@ -1,0 +1,412 @@
+  id: HPiLOSSH
+  name: HPiLO via SSH
+  systemType: Remote Access
+  active: false
+  platformBaseID: HPiLOSSH
+  platformType: regular
+
+  id: HPiLOTelnet
+  name: HPiLO via Telnet
+  systemType: Remote Access
+  active: false
+  platformBaseID: HPiLOTelnet
+  platformType: regular
+
+  id: DRACSSH
+  name: DRAC via SSH
+  systemType: Remote Access
+  active: false
+  platformBaseID: DRACSSH
+  platformType: Regular
+
+  id: PSMSecureConnect
+  name:
+  systemType: PSM Secure Connect
+  active: false
+  platformBaseID: PSMSecureConnect
+  platformType: regular
+
+  id: SunOneDirectorySSL
+  name: SunOne directory via SSL
+  systemType: Directory
+  active: false
+  platformBaseID: SunOneDirectorySSL
+  platformType: regular
+
+  id: IBMTivoli
+  name:
+  systemType: Directory
+  active: false
+  platformBaseID: IBMTivoli
+  platformType: regular
+
+  id: Novell-eDirectory
+  name: Novell eDirectory server
+  systemType: Directory
+  active: false
+  platformBaseID: Novell-eDirectory
+  platformType: regular
+
+  id: OracleInternetDirectory
+  name:
+  systemType: Directory
+  active: false
+  platformBaseID: OracleInternetDirectory
+  platformType: regular
+
+  id: SunOneDirectory
+  name: SunOne Directory
+  systemType: Directory
+  active: false
+  platformBaseID: SunOneDirectory
+  platformType: regular
+
+  id: MSActiveDirectory
+  name:
+  systemType: Directory
+  active: false
+  platformBaseID: MSActiveDirectory
+  platformType: regular
+
+  id: AWS
+  name: Amazon Web Services - AWS
+  systemType: Amazon web services
+  active: true
+  platformBaseID: AmazonWebServices
+  platformType: Regular
+
+  id: AzureApplicationKeys
+  name: Microsoft Azure Application Keys Management
+  systemType: Cloud Service
+  active: false
+  platformBaseID: AzureApplicationKeys
+  platformType: Regular
+
+  id: AWSAccessKeys
+  name: Amazon Web Services - AWS - Access Keys
+  systemType: Amazon web services
+  active: true
+  platformBaseID: AmazonWebServices-API
+  platformType: Regular
+
+  id: AzurePasswordManagement
+  name: Microsoft Azure Password Management
+  systemType: Cloud Service
+  active: true
+  platformBaseID: AzurePasswordManagement
+  platformType: Regular
+
+  id: NetScreenSSH
+  name: NetScreen via SSH
+  systemType: Security Appliance
+  active: false
+  platformBaseID: NetScreenSSH
+  platformType: regular
+
+  id: Firewall1
+  name: Check Point FireWall-1
+  systemType: Security Appliance
+  active: false
+  platformBaseID: Firewall1
+  platformType: regular
+
+  id: GAiASSH
+  name: Check Point GAiA via SSH
+  systemType: Security Appliance
+  active: false
+  platformBaseID: GAiASSH
+  platformType: Regular
+
+  id: CiscoPixTelnet
+  name: Cisco Pix via Telnet
+  systemType: Security Appliance
+  active: false
+  platformBaseID: CiscoPixTelnet
+  platformType: regular
+
+  id: NetScreenTelnet
+  name: NetScreen via Telnet
+  systemType: Security Appliance
+  active: false
+  platformBaseID: NetScreenTelnet
+  platformType: regular
+
+  id: CiscoPixSSH
+  name: Cisco Pix via SSH
+  systemType: Security Appliance
+  active: false
+  platformBaseID: CiscoPixSSH
+  platformType: regular
+
+  id: WinDesktopLocal
+  name: Windows Desktop Local Accounts
+  systemType: Windows
+  active: true
+  platformBaseID: WinDesktopLocal
+  platformType: regular
+
+  id: OS390Telnet
+  name: OS390 via Telnet
+  systemType: Operating System
+  active: false
+  platformBaseID: OS390Telnet
+  platformType: regular
+
+  id: WinDomain
+  name: Windows Domain Account
+  systemType: Windows
+  active: true
+  platformBaseID: WinDomain
+  platformType: regular
+
+  id: UnixSSHKeys
+  name: Unix via SSH Keys
+  systemType: *NIX
+  active: true
+  platformBaseID: UnixSSHKeys
+  platformType: Regular
+
+  id: VMWareESX-API
+  name: VMWare ESX Account API
+  systemType: Operating System
+  active: false
+  platformBaseID: VMWareESX-API
+  platformType: regular
+
+  id: UnixSSHSubnet
+  name:
+  systemType: *NIX
+  active: false
+  platformBaseID: UnixSSHSubnet
+  platformType: regular
+
+  id: WinServerLocal
+  name: Windows Server Local Accounts
+  systemType: Windows
+  active: true
+  platformBaseID: WinServerLocal
+  platformType: regular
+
+  id: VMWareESX-SSH
+  name: VMWare ESX Account
+  systemType: Operating System
+  active: true
+  platformBaseID: VMWareESX-SSH
+  platformType: Regular
+
+  id: WinLooselyDevice
+  name: Windows Loosely Device
+  systemType: Windows
+  active: false
+  platformBaseID: WinLooselyDevice
+  platformType: regular
+
+  id: as400
+  name: AS400
+  systemType: Operating System
+  active: false
+  platformBaseID: as400
+  platformType: regular
+
+  id: UnixSSH
+  name: Unix via SSH
+  systemType: *NIX
+  active: true
+  platformBaseID: UnixSSH
+  platformType: Regular
+
+  id: OS390FTP
+  name: OS390 via FTP
+  systemType: Operating System
+  active: false
+  platformBaseID: OS390FTP
+  platformType: regular
+
+  id: UnixTelnet
+  name: Unix via Telnet
+  systemType: *NIX
+  active: false
+  platformBaseID: UnixTelnet
+  platformType: Regular
+
+  id: WinLocalWMI
+  name: Windows Local Accounts WMI
+  systemType: Windows
+  active: false
+  platformBaseID: WinLocalWMI
+  platformType: regular
+
+  id: OS390SSH
+  name: OS390 via SSH
+  systemType: Operating System
+  active: false
+  platformBaseID: OS390SSH
+  platformType: regular
+
+  id: ConjurHost
+  name: Conjur Host
+  systemType: Application
+  active: true
+  platformBaseID: ConjurHost
+  platformType: Regular
+
+  id: CyberArkPTA
+  name: CyberArk PTA
+  systemType: Application
+  active: false
+  platformBaseID: CyberArkPTA
+  platformType: Regular
+
+  id: RSAManagement
+  name: RSA Authentication Manager
+  systemType: Application
+  active: true
+  platformBaseID: RSAManagement
+  platformType: Regular
+
+  id: BMCRemedy
+  name: BMC Remedy
+  systemType: Application
+  active: false
+  platformBaseID: BMCRemedy
+  platformType: Regular
+
+  id: VMWarevCenterPersonal
+  name:
+  systemType: Application
+  active: true
+  platformBaseID: VMWarevCenterPersonal
+  platformType: regular
+
+  id: CyberArk
+  name: CyberArk Vault
+  systemType: Application
+  active: true
+  platformBaseID: CyberArk
+  platformType: regular
+
+  id: VMWarevCenterShared
+  name: VMWare vCenter Shared Accounts
+  systemType: Application
+  active: true
+  platformBaseID: VMWarevCenterShared
+  platformType: regular
+
+  id: SAP
+  name: SAP
+  systemType: Application
+  active: false
+  platformBaseID: SAP
+  platformType: regular
+
+  id: CiscoTelnet
+  name: Cisco router via Telnet
+  systemType: Network Device
+  active: false
+  platformBaseID: CiscoTelnet
+  platformType: regular
+
+  id: CiscoSSH
+  name: Cisco router via SSH
+  systemType: Network Device
+  active: true
+  platformBaseID: CiscoSSH
+  platformType: regular
+
+  id: SampleSSHKeyGroup
+  name: [Sample SSH Key Group Platform]
+  systemType: Misc
+  active: false
+  platformBaseID: SampleSSHKeyGroup
+  platformType: group
+
+  id: Oracle-Group
+  name: Oracle-Group
+  systemType: Misc
+  active: true
+  platformBaseID: SampleGroup
+  platformType: RotationalGroup
+
+  id: SampleGroup
+  name: [Sample Password Group Platform]
+  systemType: Misc
+  active: false
+  platformBaseID: SampleGroup
+  platformType: group
+
+  id: DB2Windows
+  name: DB2 on Windows
+  systemType: Database
+  active: false
+  platformBaseID: DB2Windows
+  platformType: regular
+
+  id: MSSql
+  name: Microsoft SQL Server
+  systemType: Database
+  active: true
+  platformBaseID: MSSql
+  platformType: regular
+
+  id: DB2UnixTelnet
+  name: DB2 on Unix via Telnet
+  systemType: Database
+  active: false
+  platformBaseID: DB2UnixTelnet
+  platformType: Regular
+
+  id: InformixUnixTelnet
+  name: Informix on Unix via Telnet
+  systemType: Database
+  active: false
+  platformBaseID: InformixUnixTelnet
+  platformType: Regular
+
+  id: MySQL
+  name: MySQL Server
+  systemType: Database
+  active: false
+  platformBaseID: MySQL
+  platformType: regular
+
+  id: Sybase
+  name: Sybase ASE
+  systemType: Database
+  active: false
+  platformBaseID: Sybase
+  platformType: regular
+
+  id: InformixWindows
+  name: Informix on Windows
+  systemType: Database
+  active: false
+  platformBaseID: InformixWindows
+  platformType: regular
+
+  id: InformixUnixSSH
+  name: Informix on Unix via SSH
+  systemType: Database
+  active: false
+  platformBaseID: InformixUnixSSH
+  platformType: Regular
+
+  id: DB2UnixSSH
+  name: DB2 on Unix via SSH
+  systemType: Database
+  active: false
+  platformBaseID: DB2UnixSSH
+  platformType: Regular
+
+  id: SAPHANA
+  name: SAP HANA
+  systemType: Database
+  active: false
+  platformBaseID: SAPHANA
+  platformType: regular
+
+  id: Oracle
+  name: Oracle Database
+  systemType: Database
+  active: true
+  platformBaseID: Oracle
+  platformType: regular

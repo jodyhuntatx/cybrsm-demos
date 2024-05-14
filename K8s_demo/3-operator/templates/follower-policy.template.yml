@@ -1,0 +1,13 @@
+- !host
+  id: conjur-follower
+  annotations:
+    authn-k8s/namespace: cyberark
+    authn-k8s/service-account: conjur-follower
+    authn-k8s/authentication-container-name: configurator
+   
+- !grant
+  roles:
+  - !group conjur/authn-k8s/mac-k8s/consumers
+  - !group conjur/seed-generation/consumers
+  members:
+  - !host conjur-follower

@@ -1,0 +1,68 @@
+# Configuration settings for AZURE demo environment
+
+#################################
+##  AZURE Configuration setting  ##
+#################################
+
+
+# SSH info for connecting to VM instance
+export LOGIN_USER=ocuser
+export AZURE_PUB_DNS=JodyMac.local
+export AZURE_PUB_IP=192.168.1.5
+export AZURE_SSH_KEY=~/.ssh/id_oshift
+
+# path to Conjur tarfiles
+IMAGE_DIR=./images
+
+# Conjur tarfile name (NOT paths)
+CONJUR_APPLIANCE_VERSION=11.2.1
+CONJUR_APPLIANCE_IMAGE_FILE=conjur-appliance_${CONJUR_APPLIANCE_VERSION}.tar.gz
+
+# Name of application policy
+export APPLICATION_NAME=cust-portal
+
+# Conjur cluster connections configured w/ private IP
+if [[ $USER = $LOGIN_USER ]]; then
+  export AZURE_PVT_IP=$(hostname -i)
+fi
+
+############################################################
+#              Conjur Master Cluster settings
+############################################################
+
+# NOT using DNS - scripts add entries in /etc/hosts. 
+# This is to allow use of a descriptive name for Conjur Master.
+export NO_DNS=false
+export CONJUR_MASTER_HOST_NAME=$AZURE_PUB_DNS
+export CONJUR_MASTER_HOST_IP=$AZURE_PVT_IP
+export CONJUR_ACCOUNT=dev
+export CONJUR_ADMIN_PASSWORD=Cyberark1
+export CONJUR_APPLIANCE_IMAGE=conjur-appliance:$CONJUR_APPLIANCE_VERSION
+export CLI_IMAGE_NAME=cyberark/conjur-cli:5-latest
+
+export CONJUR_MASTER_CONTAINER_NAME=conjur-master
+export CONJUR_FOLLOWER_CONTAINER_NAME=conjur-follower
+export CLI_CONTAINER_NAME=conjur-cli
+export CONJUR_MASTER_PORT=443
+# CONJUR_FOLLOWER_PORT is for follower on master host only - not for OpenShift followers
+export CONJUR_FOLLOWER_PORT=444
+export CONJUR_MASTER_PGSYNC_PORT=5432
+export CONJUR_MASTER_PGAUDIT_PORT=1999
+export CONJUR_APPLIANCE_URL=https://$CONJUR_MASTER_HOST_NAME:$CONJUR_MASTER_PORT
+export CONJUR_VERSION=5
+
+# location to cache master cert and seed file for Follower configuration
+export CACHE_DIR=~/conjur-etc
+export CONJUR_CERT_FILE=$CACHE_DIR/conjur-$CONJUR_ACCOUNT.pem
+export FOLLOWER_SEED_FILE=$CACHE_DIR/follower-seed.tar
+
+###########################################################
+# Cert altnames for Conjur node-to-node TLS authentication
+# Alt names must be separated by a spaces, not commas
+
+# Alt-names for conjur master cert 
+export MASTER_ALTNAMES="$CONJUR_MASTER_HOST_NAME,$AZURE_PUB_DNS"
+
+# Alt-names for conjur follower cert
+export FOLLOWER_ALTNAMES="$CONJUR_MASTER_HOST_NAME"
+###########################################################

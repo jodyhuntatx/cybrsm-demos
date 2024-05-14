@@ -1,0 +1,18 @@
+# Holds DAP config info for apps in all namespaces
+# Access is gained via rolebinding to a clusterrole
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conjur-config
+data:
+  CONJUR_ACCOUNT: {{ CONJUR_ACCOUNT }}
+  CONJUR_LEADER_HOSTNAME: {{ CONJUR_LEADER_HOSTNAME }}
+  CONJUR_LEADER_PORT: "{{ CONJUR_LEADER_PORT }}"
+  CONJUR_LEADER_URL: https://{{ CONJUR_LEADER_HOSTNAME }}:{{ CONJUR_LEADER_PORT }}
+  CLUSTER_AUTHN_ID: {{ CLUSTER_AUTHN_ID }}
+  CONJUR_VERSION: "5"
+  CONJUR_APPLIANCE_URL: https://conjur-follower.{{ CYBERARK_NAMESPACE_NAME }}.svc.cluster.local
+  CONJUR_AUTHN_URL: https://conjur-follower.{{ CYBERARK_NAMESPACE_NAME }}.svc.cluster.local/api/authn-k8s/{{ CLUSTER_AUTHN_ID }}
+  CONJUR_AUTHN_TOKEN_FILE: /run/conjur/access-token
+  CONJUR_LEADER_CERTIFICATE: | {{ CONJUR_LEADER_CERTIFICATE }}
+  CONJUR_FOLLOWER_CERTIFICATE: | {{ CONJUR_FOLLOWER_CERTIFICATE }}

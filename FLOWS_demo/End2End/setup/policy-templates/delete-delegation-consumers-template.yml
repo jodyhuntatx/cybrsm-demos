@@ -1,0 +1,15 @@
+# loaded at /data/vault
+# referenced in Flows datastore by End2End-Provision flow as:
+#  	conjur-policy-delete-delegation-consumers
+---
+- !delete
+  record: !group {{ SAFE_NAME }}/delegation/consumers
+
+- !delete
+  record: !policy {{ SAFE_NAME }}/delegation
+
+- !delete
+  record: !policy {{ SAFE_NAME }}
+
+- !delete
+  record: !group {{ SAFE_NAME }}-admins

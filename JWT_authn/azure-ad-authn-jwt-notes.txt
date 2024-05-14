@@ -1,0 +1,96 @@
+Brief config notes for using Conjur authn-jwt with Azure AD-registered applications.
+Jody Hunt	26 Feb 2022
+
+GOAL: Use an application's Azure application ID in an Azure access token (JWT) to uniquely identify authorized applications for access to secrets in Conjur. This will typically be a user-facing application, where the user authenticates with an Oauth2/OIDC workflow resulting in a short-lived Azure AD JWT specific to the application (its access token). The value of the appid claim is invariant across users. This serves to separate user identities from the application identity, and allows the application to access resources on behalf of users.
+
+Curated topical Azure documentation reading list:
+  Workload identities:
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/workload-identities-overview
+  Apps w/o human user authentication:
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-app-types#daemons-and-server-side-apps
+  Oauth2 workflow:
+    https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/auth-oauth2
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow
+  Access Tokens:
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/access-tokens
+  Azure AD app registration:
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+    https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-app-manifest
+
+AZURE AD JWT OVERVIEW:
+
+  Azure AD supports two versions of access tokens that can be identified by their headers or the version claim in their bodies.
+
+  Azure AD v1 Token header:
+    {
+      "typ": "JWT",
+      "alg": "RS256",
+      "x5t": "i6lGk3ABcdEFgh893nEQ7syHJlY",
+      "kid": "i6lGk3abCDefGH893nEQ7syHJlY"
+    }
+
+  Azure AD v2 Token header:
+    {
+      "typ": "JWT",
+      "alg": "RS256",
+      "kid": "i6lGk3abCDefGH893nEQ7syHJlY"
+    }
+
+  The JWKS endpoint for validating an Azure AD JWT is dependent on its version:
+    Azure AD V1 - https://login.microsoftonline.com/common/discovery/keys     
+    Azure AD V2 - https://login.microsoftonline.com/common/discovery/v2.0/keys
+
+
+  Example decoded header & payload from V1 JWT for Azure AD-registered app:
+    {
+      "typ": "JWT",
+      "alg": "RS256",
+      "x5t": "nOo3ZDrODXabCDefJKslHR_KXEg",
+      "kid": "nOo3ZDrODXABcdEFjkslHR_KXEg"
+    }.
+    {
+      "aud": "00000002-0000-0000-c000-000000000000",
+      "iss": "https://sts.windows.net/a78fc4cd-87e9-48e0-ac85-9c723e6cca39/",
+      "iat": 1628260603,
+      "nbf": 1628260603,
+      "exp": 1628264503,
+      "aio": "E2ZgYLhR6va79fxDvunTZ7F9bv5TCQA=",
+      "appid": "987cd77a-d6af-4264-b3a2-048e5c3d9ea7",	<-- AD-registered application UUID
+      "appidacr": "1",
+      "idp": "https://sts.windows.net/a78fc4cd-87e9-48e0-ac85-9c723e6cca39/",
+      "oid": "9f374a83-7ffb-4683-9eaf-7357dbd00deb",
+      "rh": "0.AVgA7_M7x-mH4EishAbcXfkKOY_oO0av1mRCs6IEjlw9nqdYAAA.",
+      "sub": "9f374a83-7ffb-4683-9eaf-7357dbd00deb",
+      "tenant_region_scope": "NA",
+      "tid": "a87cd3de-97ea-48e0-ac85-9c723e6cca39",	<-- Azure tenant UUID
+      "uti": "kkLMxyZZ8lbCDEfL0UFDAg",
+      "ver": "1.0"					<-- JWT version format (see above)
+    }
+
+  Example of a minimal Conjur policy for authn-jwt endpoint and Conjur host to authenticate using above JWT:
+
+---
+# authn-jwt endpoint 
+- !policy
+  id: conjur/authn-jwt/<endpoint-id>	<-- endpoint ID can be any string, e.g. aadv1
+  body:
+   - !variable issuer			<-- set to https://sts.windows.net/<tenant-id>
+
+					    Note that doc says this is an optional field,
+					    but that is apparently not the case for Azure AD.
+
+   - !variable jwks-uri			<-- set to V1 or V2 endpoint
+					    - https://login.microsoftonline.com/common/discovery/keys
+					    - https://login.microsoftonline.com/common/discovery/v2.0/keys
+
+   - !variable token-app-property	<-- set to "appid" (actual name of claim, not UUID)
+
+   - !variable identity-path		<-- not needed if host id policy is at root
+					    otherwise path from policy root to host id
+
+# host identity is the UUID value in the appid claim
+- !host
+  id: 987cd77a-d6af-4264-b3a2-048e5c3d9ea7 <-- value of "appid" claim
+  annotations:
+    authn-jwt/aadv1/appid: 987cd77a-d6af-4264-b3a2-048e5c3d9ea7 <-- annotation is <authn-jwt endpoint>/<value of token-app-property>: <value of "appid" claim>
+

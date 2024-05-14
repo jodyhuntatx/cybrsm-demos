@@ -1,0 +1,11 @@
+---
+- hosts: demoMachines
+  gather_facts: False
+  roles:
+    - role: cyberark.conjur-lookup-plugin
+  tasks:
+    - name: Retrieve secret with host identity
+      vars:
+        secret_name: DemoVault/CICD/CICD_Secrets/MySQL/password
+        secret_value: "{{ lookup('retrieve_conjur_variable', '{{secret_name}}') }}"
+      debug: msg="Secret retrieved is {{secret_value}}"

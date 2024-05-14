@@ -1,0 +1,17 @@
+#!/bin/bash
+source ./javacpdemo.config
+
+if [[ "$(docker ps | grep $DEMO_CONTAINER)" == "" ]]; then
+  exit 0
+fi 
+
+echo 
+read -p "Remove running app container? " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit -1
+fi
+echo "Stopping and removing app container..."
+docker stop $DEMO_CONTAINER > /dev/null 2>&1 && docker rm $DEMO_CONTAINER > /dev/null 2>&1
+exit 0

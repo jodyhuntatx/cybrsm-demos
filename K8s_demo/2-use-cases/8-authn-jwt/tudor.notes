@@ -1,0 +1,169 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: summon-jwt-2
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: summon-account-jwt
+  namespace: summon-jwt-2
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: summon
+  namespace: summon-jwt-2
+  labels:
+    app: summon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: demo
+      app: summon
+  template:
+    metadata:
+      labels:
+        role: demo
+        app: summon
+    spec:
+      serviceAccountName: summon-account-jwt
+      containers:
+      - name: summon
+        image: image-registry.openshift-image-registry.svc:5000/summon-jwt-2/summon-image:7
+        imagePullPolicy: Always
+        env:
+          - name: CONJUR_AUTHN_JWT_SERVICE_ID
+            value: dev-cluster2
+          - name: JWT_TOKEN_PATH
+            value: /var/run/secrets/tokens/2/jwt2
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                key: ssl-certificate
+                name: conjur-ssl
+        envFrom:
+         - configMapRef:
+             name: conjur-connect-apps
+        volumeMounts:
+          - mountPath: /var/run/secrets/tokens/2
+            name: jwt-token-2
+      volumes:
+        - name: conjur-client-ssl
+          emptyDir:
+           medium: Memory
+        - name: jwt-token-2
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt2
+                  expirationSeconds: 6000
+                  audience: https://conjur.host2.name/
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: summon-jwt-2
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: summon-account-jwt
+  namespace: summon-jwt-2
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: summon
+  namespace: summon-jwt-2
+  labels:
+    app: summon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: demo
+      app: summon
+  template:
+    metadata:
+      labels:
+        role: demo
+        app: summon
+    spec:
+      serviceAccountName: summon-account-jwt
+      containers:
+      - name: authenticator
+        image: cyberark/conjur-authn-k8s-client
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: CONJUR_AUTHN_TOKEN_FILE
+            value: /run/conjur/access-token
+          - name: JWT_TOKEN_PATH
+            value: /var/run/secrets/tokens/jwt/2
+        envFrom:
+         - configMapRef:
+             name: conjur-connect-apps
+        volumeMounts:
+          - mountPath: /run/conjur
+            name: conjur-access-token
+          - mountPath: /var/run/secrets/tokens/2
+            name: jwt-token
+      - name: summon
+        image: image-registry.openshift-image-registry.svc:5000/summon-jwt/summon-image:2
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: CONJUR_AUTHN_TOKEN_FILE
+            value: /run/conjur/access-token
+        envFrom:
+         - configMapRef:
+             name: conjur-connect-apps
+        volumeMounts:
+          - mountPath: /run/conjur
+            name: conjur-access-token
+          - mountPath: /var/run/secrets/tokens/2
+            name: jwt-token
+      volumes:
+        - name: conjur-access-token
+          emptyDir:
+           medium: Memory
+        - name: conjur-client-ssl
+          emptyDir:
+           medium: Memory
+        - name: jwt-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt
+                  expirationSeconds: 6000
+                  audience: https://conjur.host.name/
+
+
+oc create configmap conjur-ssl --from-file=ssl-certificate=”/.../conjur.pem" -n <namespace>
+
+oc create configmap conjur-connect-apps -n <namespace> \
+  -o yaml \
+  --from-literal CONJUR_ACCOUNT=$CONJUR_ACCOUNT \
+  --from-literal CONJUR_APPLIANCE_URL=$CONJUR_APPLIANCE_URL \
+  --from-literal CONJUR_AUTHN_JWT_SERVICE_ID=$CONJUR_AUTHN_JWT_SERVICE_ID \
+  --from-literal CONJUR_AUTHN_URL=$CONJUR_AUTHN_URL | oc apply -f 
+
+
+
+To set public-keys variable in Conjur:
+conjur variable set -iconjur/authn-jwt/dev-cluster2/public-keys-v "{\"type\":\"jwks\", \"value\":$(catjwks.json)}"

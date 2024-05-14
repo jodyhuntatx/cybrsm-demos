@@ -1,0 +1,13 @@
+Download the >> 32-bit << MSI installer package from here:
+	http://dev.mysql.com/downloads/connector/odbc/
+>> Make sure it is the 32-bit, not 64-bit driver installer. <<
+
+Run installer
+cd to \Program Files\MySQL
+run:
+  # Register Unicode driver for Windows
+  >> myodbc-installer -a -d -n "MySQL ODBC 8.0 Unicode Driver" -t "DRIVER=myodbc8w.dll;SETUP=myodbc8S.dll"
+
+Edit MySQL platform:
+  Automatic Password Management -> Additional Policy Settings
+  Edit the Driver=[name] in ConnectionCommand to match name used above.

@@ -1,0 +1,52 @@
+---
+- !policy
+  id: secrets
+  body:
+  - !variable db-username
+  - !variable db-password
+  
+# Creates a Synchronizer compatible policy with variables.
+# All secrets for the project are in CICD_Secrets
+
+- !group DemoVault-admins
+
+#########################
+# Vault RBAC
+# - updates vault policy with LOB admin group
+- !policy
+  id: DemoVault
+  owner: !group DemoVault-admins
+  body:
+  - !group CICD-admins
+
+  #########################
+  # LOB RBAC
+  # - creates LOB policy owned by LOB admin group
+  # - creates safe admin group
+  - !policy
+    id: CICD
+    owner: !group /DemoVault/CICD-admins
+    body:
+    - !group CICD_Secrets-admins
+
+    #########################
+    # Safe RBAC
+    # - creates empty sub-policy for safe
+    # - creates delegation sub-policy w/ consumers group 
+    - !policy
+      id: CICD_Secrets
+      body:
+      - !policy
+        id: delegation
+        owner: !group /DemoVault/CICD/CICD_Secrets-admins
+        body:
+        - !group consumers
+
+      - &variables
+        - !variable MySQL/username
+        - !variable MySQL/password
+
+      - !permit
+        role: !group delegation/consumers
+        privilege: [ read, execute ]
+        resource: *variables

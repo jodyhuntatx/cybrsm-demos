@@ -1,0 +1,16 @@
+---
+# This policy is applied to the /apps branch. It creates a new identity
+# in the /apps branch, annotated with values for authn-jwt, and grants
+# it membership in the authenticators group, enabling it to authenticate.
+
+- !host
+  id: Freestylin
+  annotations:
+    authn-jwt/jenkins/jenkins_full_name: Freestylin
+
+# Grant authentication permission to app identity
+- !grant
+  roles:
+  - !group authenticators
+  members:
+  - !host Freestylin

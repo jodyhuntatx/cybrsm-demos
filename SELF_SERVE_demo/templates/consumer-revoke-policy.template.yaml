@@ -1,0 +1,5 @@
+---
+# Revoke safe consumer role to a Conjur role (host/layer/user/group)
+- !revoke
+  role: !group {{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}/delegation/consumers
+  member: {{ CONJUR_SAFE_CONSUMER_IDENTITY }}

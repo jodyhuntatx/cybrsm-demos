@@ -1,0 +1,68 @@
+#!/bin/bash 
+
+source ../config/conjur.config
+source ./splunk-demo.config
+
+printf "\nBringng up splunk container...\n"
+docker volume create splunkvar
+docker volume create splunketc
+docker run -d \
+    --name splunk \
+    --restart always \
+    -p "$SPLUNK_EXTERNAL_PORT:$SPLUNK_EXTERNAL_PORT" \
+    -p "$SPLUNK_REST_PORT:$SPLUNK_REST_PORT" \
+    -v "$CONJUR_AUDIT_VOLUME:$SPLUNK_AUDIT_DIRECTORY" \
+    -v "$CONJUR_NGINX_VOLUME:$SPLUNK_NGINX_DIRECTORY" \
+    -v "splunketc:/opt/splunk/etc" \
+    -v "splunkvar:/opt/splunk/var" \
+    -e SPLUNK_START_ARGS="--accept-license --seed-passwd $SPLUNK_ACCOUNT_PASSWORD" \
+    -e SPLUNK_USER="root" \
+    $SPLUNK_IMAGE_NAME
+
+printf "\nWaiting until Splunk server is responsive...\n"
+while true; do
+  check_text=$(curl -s -k http://$CONJUR_LEADER_HOST_NAME:$SPLUNK_EXTERNAL_PORT/en-US/account/login?return_to=%2Fen-US%2F | grep "Splunk Inc")
+  if [[ "$check_text" != "" ]]; then
+    break
+  fi
+  echo -n "."
+  sleep 3
+done
+echo
+
+# volumes shared w/ Conjur Leader, mounted in Splunk at /conjur & /nginx.
+printf "Adding monitor for Conjur audit data...\n"
+docker exec $SPLUNK_CONTAINER_NAME /opt/splunk/bin/splunk add monitor /conjur/audit.json -auth $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD
+printf "Adding monitor for Conjur nginx data...\n"
+docker exec $SPLUNK_CONTAINER_NAME /opt/splunk/bin/splunk add monitor /nginx/access.log -auth $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD
+
+# For REST API reference for accessing dashboards and views see:
+#   https://docs.splunk.com/Documentation/Splunk/7.2.0/RESTREF/RESTknowledge#data.2Fui.2Fviews
+
+printf "\nLoading Conjur dashboards...\n"
+curl -sk -o /dev/null -u $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD \
+  https://$CONJUR_LEADER_HOST_NAME:$SPLUNK_REST_PORT/servicesNS/$SPLUNK_ACCOUNT/search/data/ui/views \
+  -d "name=Conjur-Secrets&eai:data=$(cat ./conjur-secrets.xml | tr -d '\n')"
+
+curl -sk -o /dev/null -u $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD \
+  https://$CONJUR_LEADER_HOST_NAME:$SPLUNK_REST_PORT/servicesNS/$SPLUNK_ACCOUNT/search/data/ui/views \
+  -d "name=Conjur-Policies&eai:data=$(cat ./conjur-policies.xml | tr -d '\n')"
+
+curl -sk -o /dev/null -u $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD \
+https://$CONJUR_LEADER_HOST_NAME:$SPLUNK_REST_PORT/servicesNS/$SPLUNK_ACCOUNT/search/data/transforms/extractions \
+-d REGEX='^[^ \n]* (?P<IP_address>[^ ]+)(?:[^ \n]* ){4}(?P<HTTP_code>\d+)(?:[^ \n]* ){3}(?P<Client>"\w+/\d+\.\d+\s+\(\w+;\s+\w+\s+\w+\s+\w+\s+\w+\s+\d+_\d+_\d+\)\s+\w+/\d+\.\d+\s+\(\w+,\s+\w+\s+\w+\)\s+\w+/\d+\.\d+\.\d+\.\d+\s+\w+/\d+\.\d+")' -d SOURCE_KEY=_raw -d name=nginx_access_transform
+
+curl -sk -o /dev/null -u $SPLUNK_ACCOUNT:$SPLUNK_ACCOUNT_PASSWORD \
+  https://$CONJUR_LEADER_HOST_NAME:$SPLUNK_REST_PORT/servicesNS/$SPLUNK_ACCOUNT/search/data/ui/views \
+  -d "name=Conjur-FailedLogins&eai:data=$(cat ./conjur-failed-logins.xml | tr -d '\n')"
+
+# append server file size config to local server config and restart
+docker exec -i splunk tee -a /opt/splunk/etc/system/local/server.conf << END_DISK_USAGE
+
+[diskUsage]
+minFreeSpace = 50
+pollingFrequency = 100000
+pollingTimerFrequency = 10
+END_DISK_USAGE
+
+docker restart splunk

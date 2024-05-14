@@ -1,0 +1,9 @@
+- !policy
+  id: aap
+  body:
+  - !host project1
+
+- !grant
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  members:
+  - !host aap/project1

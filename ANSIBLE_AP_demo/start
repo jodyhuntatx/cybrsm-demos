@@ -1,0 +1,25 @@
+#!/bin/bash
+source ../config/conjur.config
+source ../bin/conjur_utils.sh
+
+export CONJUR_AUTHN_LOGIN=$CONJUR_ADMIN_USERNAME
+export CONJUR_AUTHN_API_KEY=$CONJUR_ADMIN_PASSWORD
+
+conjur_append_policy root ./aap-policy.yaml
+
+NEW_API_KEY=$(conjur_rotate_api_key host aap/project1)
+echo
+echo "AAP authn creds:"
+echo "  Hostname: host/aap/project1"
+echo "  Account: $CONJUR_ACCOUNT"
+echo "  API key: $NEW_API_KEY"
+echo "  Cert:"
+cat ../etc/$CONJUR_LEADER_HOSTNAME-$CONJUR_ACCOUNT.pem
+echo
+echo "Projects: /var/lib/awx/projects"
+echo "AAP start/stop: automation-controller-service start/stop/restart"
+echo
+echo "CCP query format: Safe=<safe-name>;Object=<object-name>"
+echo
+echo "VM login: root/demo"
+echo

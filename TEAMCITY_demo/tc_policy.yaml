@@ -1,0 +1,5 @@
+---
+- !policy
+  id: apps
+  body:
+  - !host tc_test2

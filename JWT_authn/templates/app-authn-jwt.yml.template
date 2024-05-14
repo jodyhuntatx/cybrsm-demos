@@ -1,0 +1,20 @@
+- !policy
+  id: {{ PROJECT_NAME }}
+  body:
+    - !group
+
+    - &hosts
+        - !host
+            id: {{ APP_IDENTITY }}
+            annotations:
+                authn-jwt/{{ SERVICE_ID }}/{{ JWT_CLAIM1_NAME }}: {{ JWT_CLAIM1_VALUE }}
+                authn-jwt/{{ SERVICE_ID }}/{{ JWT_CLAIM2_NAME }}: {{ JWT_CLAIM2_VALUE }}
+                authn-jwt/{{ SERVICE_ID }}/{{ JWT_CLAIM3_NAME }}: {{ JWT_CLAIM3_VALUE }}
+
+    - !grant 
+        role: !group
+        members: *hosts
+
+- !grant
+    role: !group conjur/authn-jwt/{{ SERVICE_ID }}/consumers
+    member: !group {{ PROJECT_NAME }}

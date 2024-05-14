@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source ../config/conjur.config
+
+cybr conjur logoff
+cybr conjur logon -a $CONJUR_ACCOUNT -b $CONJUR_APPLIANCE_URL -l $CONJUR_ADMIN_USERNAME -p $CONJUR_ADMIN_PASSWORD --self-signed
+
+pushd setup
+  ./1-setup-demos.sh
+  ./2-setup-conjur.sh
+  ./3-load-app-policy.sh JenkinsDemo
+  ./4-start-jenkins.sh
+popd

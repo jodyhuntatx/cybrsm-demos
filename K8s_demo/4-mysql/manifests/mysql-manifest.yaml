@@ -1,0 +1,54 @@
+---
+# Create service account for MySql db
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mysql-db
+  namespace: cyberark
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-db
+  namespace: cyberark
+spec:
+  selector:
+    app: mysql-db
+  ports:
+    - port: 3306
+      targetPort: 3306
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-db
+  labels:
+    app: mysql-db
+spec:
+  serviceName: mysql-db
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      labels:
+        app: mysql-db
+    spec:
+      serviceAccountName: mysql-db
+      containers:
+      - name: mysql-db
+        image: mysql:5.7.32
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: Cyberark1
+          - name: MYSQL_USER
+            value: test_user1
+          - name: MYSQL_PASSWORD
+            value: UHGMLk1
+          - name: MYSQL_DATABASE
+            value: 

@@ -1,0 +1,16 @@
+# - cybrlab_policy_metadata
+# branch: data/workloads
+# mode: append-policy
+---
+# create identity based on "sub" claim containing service account spec
+- !host
+  id: "system:serviceaccount:conjur-cloud:k8s-secrets-service-account"
+  annotations:
+    authn-jwt/k8s-eks/sub: system:serviceaccount:conjur-cloud:k8s-secrets-service-account
+    authn/api-key: true
+
+# grant role that has permission to authenticate to authnId endpoint
+- !grant
+  role: !group authn-jwt-k8s-eks
+  members: !host system:serviceaccount:conjur-cloud:k8s-secrets-service-account
+

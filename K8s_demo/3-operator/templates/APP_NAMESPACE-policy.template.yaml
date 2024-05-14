@@ -1,0 +1,18 @@
+- !host {{ APP_NAMESPACE_NAME }}-admin
+- !policy
+  id: {{ APP_NAMESPACE_NAME }}
+  owner: !host {{ APP_NAMESPACE_NAME }}-admin
+  body:
+  - !group consumers
+
+# Grant authn-k8s & safe access roles to namespace consumer rol
+- !grant
+  roles:
+  # groups w/ authentication permissions in cluster
+  - !group conjur/authn-jwt/{{ APP_NAMESPACE_NAME }}/consumers	
+  - !group conjur/authn-k8s/{{ CLUSTER_AUTHN_ID }}/consumers
+  # gropus w/ access to default secrets
+  - !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  - !group DemoVault/CICD/PetClinicDev/delegation/consumers
+  members:
+  - !group {{ APP_NAMESPACE_NAME }}/consumers

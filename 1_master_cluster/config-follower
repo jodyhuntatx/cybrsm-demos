@@ -1,0 +1,28 @@
+############################
+follower_up() {
+  # Bring up Conjur Follower node
+  $DOCKER run -d \
+    --name $CONJUR_FOLLOWER_CONTAINER_NAME \
+    --label role=conjur_node \
+    -p "$CONJUR_FOLLOWER_PORT:443" \
+    --restart unless-stopped \
+    --security-opt seccomp:unconfined \
+    $CONJUR_APPLIANCE_IMAGE
+
+  if $NO_DNS; then
+    # add entry to follower's /etc/hosts so $CONJUR_LEADER_HOSTNAME resolves
+    $DOCKER exec -it $CONJUR_FOLLOWER_CONTAINER_NAME \
+	bash -c "echo \"$CONJUR_LEADER_HOST_IP $CONJUR_LEADER_HOSTNAME\" >> /etc/hosts"
+  fi
+
+  echo "Initializing Conjur Follower"
+  $DOCKER cp $FOLLOWER_SEED_FILE \
+		$CONJUR_FOLLOWER_CONTAINER_NAME:/tmp/follower-seed.tar
+  $DOCKER exec $CONJUR_FOLLOWER_CONTAINER_NAME \
+		evoke unpack seed /tmp/follower-seed.tar
+  $DOCKER exec $CONJUR_FOLLOWER_CONTAINER_NAME \
+		evoke configure follower -p $CONJUR_LEADER_PORT
+
+  echo "Follower configured."
+}
+

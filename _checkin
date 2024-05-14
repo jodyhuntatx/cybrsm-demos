@@ -1,0 +1,38 @@
+#!/bin/bash 
+DEMO_DIRS=$(ls -d */)
+
+main() {
+  BEFORE=$(du -sh -I .git .)
+  clean
+  echo "Space before cleaning: $BEFORE"
+  echo "Space after cleaning: $(du -sh -I .git .)"
+  echo
+  echo "Directories >1M:"
+  du -h | grep -v .git | awk '$1 ~ /[MG]/ {print $0}'
+  echo
+  echo
+  echo "Archive files:"
+  find . | grep z$
+  find . | grep tar$
+  echo
+  echo -n "Press <enter> to proceed, <ctrl-C> to exit..."
+  read foo
+  git add .
+  git commit -m "checkpoint"
+  git push origin main
+}
+
+
+clean() {
+  for i in $DEMO_DIRS; do
+    pushd $i > /dev/null # use pushd/popd in case scripts use cd
+      ./_clean
+    popd > /dev/null
+  done
+  tfstate_files=$(find . | grep tfstate)
+  for i in $tfstate_files; do
+    rm $i
+  done
+}
+
+main "$*"

@@ -1,0 +1,16 @@
+---
+- !policy
+  id: conjur/authn-azure/jdemo
+  body:
+  - !webservice
+  - !variable provider-uri
+
+  - !group
+    id: apps
+    annotations:
+      description: Group of hosts who can authenticate using the authn-azure/az-test authenticator
+
+  - !permit
+    role: !group apps
+    privilege: [ read, authenticate ]
+    resource: !webservice

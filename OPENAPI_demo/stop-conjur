@@ -1,0 +1,7 @@
+#!/bin/bash
+if [[ ! -d conjur-quickstart ]]; then
+  exit
+fi
+pushd conjur-quickstart > /dev/null
+  docker-compose down -v
+popd > /dev/null

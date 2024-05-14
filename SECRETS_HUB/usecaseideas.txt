@@ -1,0 +1,7 @@
+•Report on secrets that have been retirieved but have not been changed
+•Filter secrets that have been retrieved in the last X days but have not been changed in this time frame. Maybe also filter out sourced by CyberArk ones
+Actions
+•Make sure the secrets are rotated
+•Send these secrets to the relevant owners for inquiry
+•Create rotation policy for these secrets
+•Mark them with “must be rotated” tag for better tracking

@@ -1,0 +1,5 @@
+#!/bin/bash
+source ../../../config/conjur.config
+./precheck_follower.sh
+./1-follower-deploy.sh
+#./2-mysqldb-deploy.sh

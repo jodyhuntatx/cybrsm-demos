@@ -1,0 +1,21 @@
+{
+"safeRequest": {
+  "vaultName": "DemoVault",
+  "cpmName": "PasswordManager",
+  "lobName": "CICD",
+  "requestor": "jhunt",
+  "projectName": "user1",
+  "safeName": "user1",
+  "environment": "dev"
+}
+,
+"identities": [
+  {"identity": "!host app-example-sidecar"},
+  {"identity": "!host "}
+]
+,
+"accountRequests": 
+[
+  "MySQL"
+]
+}

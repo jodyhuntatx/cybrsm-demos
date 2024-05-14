@@ -1,0 +1,94 @@
+#!/bin/bash
+
+source wasascpdemo.config
+
+main() {
+  ./was-stop-container
+
+  docker run -d \
+    -h $DEMO_HOSTNAME \
+    --name $DEMO_CONTAINER \
+    --entrypoint sh \
+    -p $HTTP_ADMIN_PORT:9060 \
+    -p $HTTPS_ADMIN_PORT:9043 \
+    -p $HTTP_TRANSPORT_PORT:9080 \
+    -p $HTTPS_TRANSPORT_PORT:9443 \
+    $DEMO_IMAGE \
+    -c "sleep infinity"
+
+  sleep 3
+  start_cp
+  start_was_server
+  copy_jdbc_drivers
+
+  echo "Opening WAS server UI in browser..."
+  open https://localhost:$HTTPS_ADMIN_PORT/ibm/console/
+  echo "Finish installation manually, then configure."
+  open https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/Installing-App-Server-WebSphere-AppServerClassic.htm?tocpath=Installation%7CApplication%20Server%20Credential%20Provider%7CWebSphere%20installation%7C_____1#ConfiguretheWebSphereASCPloginmodule
+  open https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/Configuring-App-Server-WebSphere-AppServerClassic.htm?tocpath=Administration%7CApplication%20Server%20Credential%20Provider%7CWebSphere%20Configuration%7C_____1#Globalconfiguration
+
+  echo "Be sure to start the database and add Prov_$DEMO_HOSTNAME as a member of the safe(s) it needs access to."
+}
+
+######################
+start_cp() {
+  echo "Starting CP..."
+
+  # create credfile
+  docker exec -it $DEMO_CONTAINER \
+	/tmp/CreateCredFile $CP_INSTALL_DIR/$CREDFILE_NAME \
+	Password -Username $VAULT_USERNAME -Password $VAULT_PASSWORD
+
+  # install package & start credential provider
+  DEBFILE=$(docker exec $DEMO_CONTAINER bash -c "ls /tmp/CARKaim*")
+  docker exec $DEMO_CONTAINER dpkg -i $DEBFILE
+
+  # Check status of CP by trying to start it - should already be running
+  status=$(docker exec $DEMO_CONTAINER /etc/init.d/aimprv start)
+  if [[ $(echo $status | grep failed) != "" ]]; then
+    echo
+    echo "############################################################"
+    echo ">> CP startup failed. <<"
+    echo "Use Private Ark client to delete existing Prov_$DEMO_HOSTNAME user in Applications folder."
+    echo "############################################################"
+    echo
+    exit -1
+  fi
+
+  echo "Copying javapasswordsdk.jar to WAS lib dir..."
+  docker exec $DEMO_CONTAINER \
+	cp /opt/CARKaim/sdk/javapasswordsdk.jar /opt/IBM/WebSphere/AppServer/lib
+
+  echo
+  echo "############################################################"
+  echo ">> Be sure to add Prov_$DEMO_HOSTNAME as a member of the safe(s) it needs access to."
+  echo "############################################################"
+  echo
+}
+
+######################
+start_was_server() {
+  echo "Starting WAS server, this takes a few minutes..."
+
+  docker exec $DEMO_CONTAINER \
+	/opt/IBM/WebSphere/AppServer/profiles/default/bin/startServer.sh server1
+}
+
+######################
+copy_jdbc_drivers() {
+  echo "Copying MSSQLserver JDBC driver to WAS server..."
+
+  docker exec $DEMO_CONTAINER \
+	mkdir -p /opt/IBM/WebSphere/AppServer/jdbc
+
+  docker cp $MSSQLSERVER_JDBC_ZIPFILE \
+	$DEMO_CONTAINER:/opt/IBM/WebSphere/AppServer/jdbc/mssql_jdbc.tar.gz
+  docker exec $DEMO_CONTAINER bash -c \
+	"cd /opt/IBM/WebSphere/AppServer/jdbc \
+	&& gunzip mssql_jdbc.tar.gz \
+	&& tar xf mssql_jdbc.tar"
+  echo "JDBC drivers:"
+  docker exec $DEMO_CONTAINER find /opt/IBM/WebSphere/AppServer/jdbc | grep jar$
+}
+
+main "$@"

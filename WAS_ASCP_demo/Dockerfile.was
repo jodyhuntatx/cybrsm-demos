@@ -1,0 +1,13 @@
+FROM ubuntu:20.04
+
+# Install utilities & dependencies
+RUN apt-get update		\
+    && apt-get install -y	\
+	wget			\
+	vim			\
+	curl			\
+	unzip			\
+	ocaml			\
+	libelf-dev
+
+WORKDIR /demo

@@ -1,0 +1,90 @@
+######################
+# Conjur service configuration
+export REMOTE_CONJUR_LEADER=false
+export CONJUR_FOLLOWERS_IN_CLUSTER=true
+export CONJUR_VERSION=12.2.0
+
+######################
+# SSH values to execute scripts if remote Conjur master host
+export SSH_USERNAME=
+export SSH_PVT_KEY=
+
+if $REMOTE_CONJUR_LEADER; then
+  if [[ -z $SSH_USERNAME || -z $SSH_PVT_KEY ]]; then
+    echo "You must set SSH access creds when Conjur master is remote from cluster admin host..."
+    exit -1
+  fi
+fi
+
+######################
+# Cluster parameters
+export PLATFORM=kubernetes
+export CLI=kubectl
+export KUBECONFIG=~/.kube/config
+export CLUSTER_ADMIN=foo			# OpenShift only
+export CYBERARK_NAMESPACE_ADMIN=bar		# OpenShift only
+export CONJUR_SERVICEACCOUNT_NAME=conjur-sa
+
+######################
+# Vault policy parameters & secrets
+export VAULT_NAME=DemoVault
+export LOB_NAME=CICD
+export SAFE_NAME=PetClinicTest
+export ACCOUNT_NAME=MySQL
+
+export MYSQL_USERNAME=test_user1
+export MYSQL_PASSWORD=UHGMLk1
+export MYSQL_DBNAME=petclinic
+
+###################################$#######
+###########################################
+## Values below shouldn't need changing  ##
+###########################################
+###########################################
+
+# Cluster settings
+export CYBERARK_NAMESPACE_NAME=cyberark
+export NUM_USER_NAMESPACES=1
+export APP_NAMESPACE_NAME=user1
+
+# Conjur settings
+export AUTHN_USERNAME=$CONJUR_ADMIN_USERNAME
+export AUTHN_PASSWORD=$CONJUR_ADMIN_PASSWORD
+export CLUSTER_AUTHN_ID=mac-k8s
+export CONJUR_AUTHENTICATORS=authn-k8s/$CLUSTER_AUTHN_ID
+if $CONJUR_FOLLOWERS_IN_CLUSTER; then
+  export CONJUR_FOLLOWER_SERVICE_NAME=conjur-follower.$CYBERARK_NAMESPACE_NAME.svc.cluster.local
+  export FOLLOWER_ALTNAMES="$CONJUR_LEADER_HOSTNAME,$CONJUR_FOLLOWER_SERVICE_NAME"
+else
+  export CONJUR_FOLLOWER_SERVICE_NAME=$CONJUR_LEADER_HOSTNAME:$CONJUR_FOLLOWER_PORT
+fi
+export CONJUR_AUTHN_URL=https://$CONJUR_FOLLOWER_SERVICE_NAME/api/authn-k8s/$CLUSTER_AUTHN_ID
+
+######################
+# Vault target account settings
+export SECRETS_ACCESS_ROLE=$VAULT_NAME/$LOB_NAME/$SAFE_NAME/delegation/consumers
+export ACCOUNT_USERNAME=$VAULT_NAME/$LOB_NAME/$SAFE_NAME/$ACCOUNT_NAME/username
+export ACCOUNT_PASSWORD=$VAULT_NAME/$LOB_NAME/$SAFE_NAME/$ACCOUNT_NAME/password
+export ACCOUNT_ADDRESS=$VAULT_NAME/$LOB_NAME/$SAFE_NAME/$ACCOUNT_NAME/address
+export DB_URL=mysql-db.$CYBERARK_NAMESPACE_NAME.svc.cluster.local
+
+######################
+# Common resource images
+export APPLIANCE_IMAGE=conjur-appliance:$CONJUR_VERSION
+export SEEDFETCHER_IMAGE=cyberark/dap-seedfetcher:latest
+
+######################
+# Use-case images
+export APP_IMAGE=k8s-app:alpine
+export AUTHENTICATOR_IMAGE=cyberark/conjur-authn-k8s-client:latest
+export SECRETS_PROVIDER_IMAGE=cyberark/secrets-provider-for-k8s:latest
+export SECRETLESS_BROKER_IMAGE=cyberark/secretless-broker:latest
+
+######################
+# Portability stuff
+# Use a cap-D for base64 decoding on Macs
+if [[ "$(uname -s)" == "Linux" ]]; then
+  BASE64D="base64 -d"
+else
+  BASE64D="base64 -D"
+fi

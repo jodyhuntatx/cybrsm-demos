@@ -1,0 +1,6 @@
+#!/bin/bash
+source ../config/conjur.config
+source ./splunk-demo.config
+docker stop splunk; docker rm splunk
+docker volume rm splunkvar
+docker volume rm splunketc

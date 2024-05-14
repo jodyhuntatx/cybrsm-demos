@@ -1,0 +1,24 @@
+FROM ubuntu:16.04
+
+RUN apt-get update \
+    && apt-get install -y \
+	bash curl vim \
+	mysql-client \
+	apt-transport-https ca-certificates
+
+# install mssql client
+RUN curl -LO https://packages.microsoft.com/keys/microsoft.asc \
+    && apt-key add microsoft.asc \
+    && rm microsoft.asc \
+    && curl -LO https://packages.microsoft.com/config/ubuntu/16.04/prod.list \
+    && mv prod.list /etc/apt/sources.list.d/msprod.list \
+    && apt-get update \
+    && env ACCEPT_EULA=Y apt-get install -y mssql-tools 
+
+# install jq and update user context for vim & PATH
+RUN curl -LO https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 \
+  && chmod a+x jq-linux64 \
+  && mv jq-linux64 /usr/local/bin/jq \
+  && mv /etc/vim/vimrc /etc/vim/vimrc.bak
+
+ENV PATH="$PATH:/opt/mssql-tools/bin"

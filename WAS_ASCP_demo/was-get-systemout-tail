@@ -1,0 +1,9 @@
+#!/bin/bash
+source ./wasascpdemo.config
+
+if [[ $# == 0 ]]; then
+  LINE_COUNT=f
+else
+  LINE_COUNT=$1
+fi
+docker exec $DEMO_CONTAINER tail -$LINE_COUNT /opt/IBM/WebSphere/AppServer/profiles/default/logs/server1/SystemOut.log

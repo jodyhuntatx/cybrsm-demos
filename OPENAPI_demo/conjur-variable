@@ -1,0 +1,33 @@
+#!/bin/bash
+# Set variables using Conjur OSS client container
+
+export CONJUR_ACCOUNT=myConjurAccount
+export CONJUR_ADMIN_PASSWORD=CYberark11@@
+
+if [[ $# < 2 ]]; then
+  echo "Usage:"
+  echo "  $0 set <variable-name> <variable-value>"
+  echo "  $0 get <variable-name>"
+  exit
+fi
+
+command=$1
+case $command in
+  get)
+	var_name=$2
+	echo $(docker exec conjur_client conjur variable value $var_name)
+	exit
+	;;
+  set)
+	var_name=$2
+	var_value=$3
+	echo $(docker exec conjur_client conjur variable values add $var_name $var_value)
+	exit
+	;;
+  *)
+	echo "Usage:"
+	echo "  $0 set <variable-name> <variable-value>"
+	echo "  $0 get <variable-name>"
+	exit
+	;;
+esac

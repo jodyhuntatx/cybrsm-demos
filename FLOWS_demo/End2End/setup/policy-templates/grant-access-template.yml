@@ -1,0 +1,7 @@
+# loaded at /data
+# referenced in Flows datastore by End2End-Provision flow as:
+#  	conjur-policy-grant-access
+---
+- !grant
+  role: !group vault/{{ SAFE_NAME }}/delegation/consumers
+  member: !host {{ HOST_NAME }}

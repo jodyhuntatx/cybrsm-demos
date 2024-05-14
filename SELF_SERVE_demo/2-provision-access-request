@@ -1,0 +1,8 @@
+#!/bin/bash
+source ./self-serve.bashlib
+if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+export ACCESS_REQUEST_JSON_FILE=$1
+./_git-rest.sh merge $ACCESS_REQUEST_JSON_FILE
+create-safe-and-accounts $ACCESS_REQUEST_JSON_FILE
+create-managed-identities $ACCESS_REQUEST_JSON_FILE
+grant-safe-access-to-identities $ACCESS_REQUEST_JSON_FILE

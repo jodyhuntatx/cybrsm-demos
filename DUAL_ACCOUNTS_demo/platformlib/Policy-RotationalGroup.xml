@@ -1,0 +1,22 @@
+<Device Name="RotationalGroup">
+  <Policies>
+    <Policy ID="RotatationalGroup-Default"
+		AutoChangeOnAdd="No"
+		AutoVerifyOnAdd="No"
+		PlatformBaseID="RotationalGroup"
+		PlatformBaseType="RotationalGroup"
+		PlatformBaseProtocol="RotationalGroup">
+      <Properties>
+	<Required/>
+	<Optional>
+	  <Property Name="CurrInd" Type="Numeric" /> 
+	  <Property Name="Index" Type="Numeric"/>
+	  <Property Name="DualAccountStatus" Type="list" ListValues="Active,Inactive"/>
+	  <Property Name="VirtualUsername" Type="Text"/>
+	</Optional>
+     </Properties>
+     <LinkedPasswords/>
+	<TicketingSystem EnterTicketingInfo="No" ValidateTicketNumber="No" />
+    </Policy>
+  </Policies>
+</Device>

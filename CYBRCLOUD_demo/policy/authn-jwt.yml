@@ -1,0 +1,30 @@
+---
+# =================================================
+# == Register authentication service in CyberArk Identity
+# =================================================
+- !policy
+  id: {{ SERVICE_ID }}
+  annotations:
+    description: authn-jwt defs for CyberArk Identity
+  body:
+
+  - !variable public-keys
+  - !variable issuer
+  - !variable token-app-property
+  - !variable identity-path
+  - !variable audience
+
+  - !webservice
+    annotations:
+      description: authn service for CyberArk Identity
+
+  # Hosts that can authenticate become members of the
+  # `consumers` group.
+  - !group consumers
+
+  # Grant consumers group role authentication privileges
+  - !permit
+    role: !group consumers
+    privilege: [ read, authenticate ]
+    resource: !webservice
+

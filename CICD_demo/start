@@ -1,0 +1,90 @@
+#!/bin/bash 
+set -o pipefail
+
+source ../config/conjur.config
+source ./cicd-demo.conf
+
+main() {
+  ./stop
+  load_policy
+  generate_identity_files
+  build_image
+  start_container
+  initialize_demo
+  docker exec -it $CICD_DEMO_CONTAINER bash
+}
+
+load_policy() {
+  # load policy
+  load_policy_REST.sh root ./policy/cicd-policy.yml
+}
+
+generate_identity_files() {
+  CONJUR_AUTHN_API_KEY=$(conjur_rotate_api_key host $CONJUR_AUTHN_LOGIN)
+
+  # create configuration and identity files (AKA conjurize the host)
+  echo "Generating identity file..."
+  cat <<IDENTITY_EOF | tee conjur.identity
+machine $CONJUR_APPLIANCE_URL/authn
+  login host/$CONJUR_AUTHN_LOGIN
+  password $CONJUR_AUTHN_API_KEY
+IDENTITY_EOF
+
+  echo
+  echo "Generating host configuration file..."
+  cat <<CONF_EOF | tee conjur.conf
+---
+appliance_url: $CONJUR_APPLIANCE_URL
+account: $CONJUR_ACCOUNT
+netrc_path: "/etc/conjur.identity"
+cert_file: "/etc/conjur-$CONJUR_ACCOUNT.pem"
+CONF_EOF
+}
+
+build_image() {
+  cd build
+    ./build.sh
+  cd .. 
+}
+
+start_container() {
+    docker run -d \
+    --name $CICD_DEMO_CONTAINER \
+    --add-host "$CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP" \
+    -e "CONJUR_LEADER_HOSTNAME=$CONJUR_LEADER_HOSTNAME" \
+    -e "TERM=xterm" \
+    --restart always \
+    --entrypoint "sh" \
+    $CICD_DEMO_IMAGE \
+    -c "sleep infinity"
+}
+
+initialize_demo() {
+  docker cp $LEADER_CERT_FILE $CICD_DEMO_CONTAINER:/etc/conjur-$CONJUR_ACCOUNT.pem
+  docker cp ./conjur.conf $CICD_DEMO_CONTAINER:/etc
+  docker cp ./conjur.identity $CICD_DEMO_CONTAINER:/etc
+  docker exec $CICD_DEMO_CONTAINER chmod 400 /etc/conjur.identity
+  rm ./conjur*
+  docker exec -it $CICD_DEMO_CONTAINER terraform init
+  docker cp ./demo/. $CICD_DEMO_CONTAINER:/demo/
+}
+
+# this will return the authorization header used for api calls for other methods
+function conjur_authenticate {
+  api_key=$(curl --fail -s -k --user "admin:$CONJUR_ADMIN_PASSWORD" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/login)
+  session_token=$(curl $CONJUR_VERBOSE --fail -s -k --data "$api_key" $CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/admin/authenticate)
+  token=$(echo -n $session_token | base64 | tr -d '\r\n')
+  header="Authorization: Token token=\"$token\""
+  echo "$header"
+}
+
+function conjur_rotate_api_key {
+  local kind=$1; shift
+  local id=$1; shift
+  $util_defaults
+  header=$(conjur_authenticate)
+  api_key=$(curl -X PUT -k -s -H "$header" "$CONJUR_APPLIANCE_URL/authn/${CONJUR_ACCOUNT}/api_key?role=$CONJUR_ACCOUNT:${kind}:${id}")
+  echo $api_key
+}
+
+main $@

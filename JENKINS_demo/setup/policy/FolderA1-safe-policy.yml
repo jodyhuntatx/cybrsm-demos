@@ -1,0 +1,8 @@
+---
+# This policy is applied to the /<VaultName> branch.
+# It grants the safe access role to app identity.
+- !grant
+  roles:
+  - !group CICD/PetClinicDev/delegation/consumers
+  members:
+  - !host /apps/FolderA1

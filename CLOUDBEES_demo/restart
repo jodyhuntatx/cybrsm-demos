@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source $CONJUR_HOME/config/conjur.config
+source ./cloudbeesvars.sh
+
+$DOCKER exec $CLOUDBEES_DEMO_CONTAINER service jenkins start

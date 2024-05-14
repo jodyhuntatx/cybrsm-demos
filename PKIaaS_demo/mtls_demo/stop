@@ -1,0 +1,7 @@
+#!/bin/bash
+source ../../config/conjur.config
+source ./env/mtls-demo.config
+
+docker-compose down -v
+docker-compose rm
+./demo_cleanup.sh

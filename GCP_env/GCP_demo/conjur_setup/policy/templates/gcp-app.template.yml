@@ -1,0 +1,21 @@
+- !policy
+  id: {{ PROJECT_NAME }}
+  body:
+    - !group
+ 
+    - &hosts
+      - !host
+        id: {{ CONJUR_HOST_ID }}
+        annotations:
+          authn-gcp/instance-name: {{ INSTANCE_NAME }}
+          authn-gcp/project-id: {{ PROJECT_ID }}
+          authn-gcp/service-account-id: {{ SERVICE_ACCOUNT_ID }}
+          authn-gcp/service-account-email: {{ SERVICE_ACCOUNT_EMAIL }}
+           
+    - !grant
+      role: !group
+      members: *hosts
+          
+- !grant
+  role: !group conjur/authn-gcp/apps
+  member: !group {{ PROJECT_NAME }}

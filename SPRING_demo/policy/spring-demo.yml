@@ -1,0 +1,10 @@
+---
+- !policy
+  id: spring-apps
+  body:
+  - !host spring-demo
+
+- !grant
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  members:
+  - !host spring-apps/spring-demo

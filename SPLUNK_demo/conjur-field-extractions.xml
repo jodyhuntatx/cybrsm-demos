@@ -1,0 +1,52 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>props-extract</title>
+  <id>https://conjur-master:8089/services/data/props/extractions</id>
+  <updated>2019-02-24T09:27:15+00:00</updated>
+  <generator build="a0c72a66db66" version="7.1.2"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/services/data/props/extractions/_new" rel="create"/>
+  <link href="/services/data/props/extractions/_acl" rel="_acl"/>
+  <opensearch:totalResults>41</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>access-4 : REPORT-nginx</title>
+    <id>https://conjur-master:8089/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx</id>
+    <updated>2019-02-24T09:27:05+00:00</updated>
+    <link href="/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx" rel="alternate"/>
+    <author>
+      <name>admin</name>
+    </author>
+    <link href="/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx" rel="list"/>
+    <link href="/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx" rel="edit"/>
+    <link href="/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx" rel="remove"/>
+    <link href="/servicesNS/admin/search/data/props/extractions/access-4%20%3A%20REPORT-nginx/move" rel="move"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="attribute">REPORT-nginx</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">search</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">admin</s:key>
+            <s:key name="perms"/>
+            <s:key name="removable">1</s:key>
+            <s:key name="sharing">user</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="stanza">access-4</s:key>
+        <s:key name="type">Uses transform</s:key>
+        <s:key name="value">REPORT-nginx</s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

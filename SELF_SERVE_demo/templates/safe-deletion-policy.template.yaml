@@ -1,0 +1,12 @@
+---
+# Delete consumers group for safe
+- !delete
+  record: !group {{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}/delegation/consumers
+
+# Delete admins group for safe
+- !delete
+  record: !group {{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}-admins
+
+# Delete policy for safe
+- !delete
+  record: !policy {{ PAS_VAULT_NAME }}/{{ PAS_LOB_NAME }}/{{ PAS_SAFE_NAME }}

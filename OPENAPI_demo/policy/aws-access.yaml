@@ -1,0 +1,12 @@
+---
+- &aws_vars
+  - !variable aws-access-key
+  - !variable aws-secret-key
+
+- &tower_hosts
+  - !host tower-job-aws
+
+- !permit
+  roles: !host tower-job-aws
+  privilege: [ read, execute ]
+  resources: *aws_vars 

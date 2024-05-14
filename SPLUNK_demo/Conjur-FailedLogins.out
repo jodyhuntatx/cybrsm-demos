@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <messages>
+    <msg type="WARN">Remote login disabled because you are using a free license which does not provide authentication. To resolve either switch to the forwarder-only license or the enterprise trial license included with the product. To override this and enable unauthenticated remote management, edit the 'allowRemoteLogin' setting in your server.conf file.</msg>
+  </messages>
+</response>

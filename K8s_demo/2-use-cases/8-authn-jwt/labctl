@@ -1,0 +1,88 @@
+#/!/bin/bash
+
+source $CONJUR_HOME/config/conjur.config
+source $CONJUR_HOME/bin/conjur_utils.sh
+
+if [[ "$PLATFORM" == "openshift" ]]; then
+  uname=$($CLI whoami 2> /dev/null)
+  if [[ "$uname" != "user"* ]]; then
+    echo "Please login as a lab user first."
+    exit -1
+    APP_NAMESPACE_NAME=$uname
+  fi
+else
+  uname=$APP_NAMESPACE_NAME
+fi
+
+main() {
+  CMD=$1
+    case $CMD in
+    y*)
+        create_yaml_files
+        ;;
+    a*)
+        deploy_app
+        ;;
+    e*)
+        $CLI exec -it $($CLI get pods -n $APP_NAMESPACE_NAME | grep app-example-authnjwt | grep Running | awk '{print $1}') -n $APP_NAMESPACE_NAME -- bash 
+        ;;
+    d*)
+        reset_lab
+        ;;
+    c*)
+        reset_lab
+        rm -f *.yaml
+        ;;
+    *)
+        echo "Usage: $0 [ yaml | apply | exec | delete | clean ]"
+        exit -1
+  esac
+  exit 0
+}
+
+########################
+create_yaml_files() {
+  echo "creating YAML files..."
+  $CLI get cm conjur-config -n $CYBERARK_NAMESPACE_NAME -o yaml				\
+    | sed "s/namespace: $CYBERARK_NAMESPACE_NAME/namespace: $APP_NAMESPACE_NAME/"	\
+    > ./conjur-config-cm.yaml
+
+  cat ./templates/app-authnjwt-policy.template.yaml			\
+  | sed -e "s#{{ AUTHN_JWT_ID }}#$APP_NAMESPACE_NAME#g"			\
+  | sed -e "s#{{ APP_NAMESPACE_NAME }}#$uname#g"			\
+  > ./app-authnjwt-policy.yaml
+
+  cat ./templates/app-authnjwt-manifest.template.yaml			\
+  | sed -e "s#{{ APP_IMAGE }}#$APP_IMAGE#g"				\
+  | sed -e "s#{{ APP_NAMESPACE_NAME }}#$APP_NAMESPACE_NAME#g"		\
+  | sed -e "s#{{ SECRETS_PROVIDER_IMAGE }}#$SECRETS_PROVIDER_IMAGE#g"	\
+  | sed -e "s#{{ CONJUR_AUTHN_URL }}#$CONJUR_AUTHN_URL#g"		\
+  > ./app-authnjwt-manifest.yaml
+
+  cat ./templates/app-config-map.template.yaml				\
+  | sed -e "s#{{ AUTHN_JWT_ID }}#$APP_NAMESPACE_NAME#g"			\
+  | sed -e "s#{{ ACCOUNT_ADDRESS }}#$ACCOUNT_ADDRESS#g"			\
+  | sed -e "s#{{ ACCOUNT_DATABASE }}#$ACCOUNT_DATABASE#g"		\
+  | sed -e "s#{{ ACCOUNT_USERNAME }}#$ACCOUNT_USERNAME#g"		\
+  | sed -e "s#{{ ACCOUNT_PASSWORD }}#$ACCOUNT_PASSWORD#g"		\
+  > ./app-config-map.yaml
+}
+
+########################
+# instantiate and apply manifest that deploys app
+deploy_app() {
+  conjur_append_policy $APP_NAMESPACE_NAME ./app-authnjwt-policy.yaml
+  if [[ "$($CLI get cm conjur-config -n $APP_NAMESPACE_NAME --ignore-not-found)" == "" ]]; then
+    $CLI apply -f ./conjur-config-cm.yaml -n $APP_NAMESPACE_NAME
+  fi
+  $CLI apply -f ./app-authnjwt-manifest.yaml -n $APP_NAMESPACE_NAME
+  $CLI apply -f ./app-config-map.yaml -n $APP_NAMESPACE_NAME
+}
+
+########################
+# delete any existing resources/deployments
+reset_lab() {
+  $CLI delete -f ./app-authnjwt-manifest.yaml -n $APP_NAMESPACE_NAME --ignore-not-found
+}
+
+main "$@"

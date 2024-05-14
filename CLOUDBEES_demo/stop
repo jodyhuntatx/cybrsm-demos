@@ -1,0 +1,3 @@
+#!/bin/bash
+source ./cloudbeesvars.sh
+$DOCKER stop $CLOUDBEES_DEMO_CONTAINER && $DOCKER rm $CLOUDBEES_DEMO_CONTAINER && $DOCKER volume rm $CLOUDBEES_DEMO_VOLUME

@@ -1,0 +1,6 @@
+# loaded at /data
+# referenced in Flows datastore by End2End-Deprovision flow as:
+#  	conjur-policy-delete-identity
+---
+- !delete
+  record: !host {{ HOST_NAME }}

@@ -1,0 +1,80 @@
+---
+# Subscription 2 policy
+- !policy
+  id: sub1-apps
+  body:
+  - !group
+
+  - &sub1-hosts
+    - !host
+      id: rgrp1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+
+    - !host
+      id: rgrp1-sid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+        authn-azure/system-assigned-identity: 48268f7c-9470-4aff-97a9-fa6c736479f1
+
+    - !host
+      id: rgrp1-uid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: JodyTest
+        authn-azure/user-assigned-identity: JodyID
+
+    - !host
+      id: rgrp2-uid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: DAP-Demo
+        authn-azure/user-assigned-identity: DAP-demo-UA-Identity
+
+  - !grant
+    role: !group
+    members: *sub1-hosts
+
+# Subscription 2 policy
+- !policy
+  id: sub2-apps
+  body:
+  - !group
+
+  - &sub2-hosts
+    - !host
+      id: rgrp1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: Sub2Rgrp1
+
+    - !host
+      id: rgrp1-sid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: Sub2Rgrp1
+        authn-azure/system-assigned-identity: 09b8fc66-16aa-4744-8bc7-23db699f55a1
+
+    - !host
+      id: rgrp1-uid1
+      annotations:
+        authn-azure/subscription-id: a01ff134-ae78-4497-b11c-7a698736b8a0
+        authn-azure/resource-group: Sub2Rgrp1
+        authn-azure/user-assigned-identity: Sub2Rgrp2Uid1
+
+  - !grant
+    role: !group
+    members: *sub2-hosts
+
+# grant role that enables subscription identities to authenticate
+- !grant
+  role: !group conjur/authn-azure/sub1/apps
+  members:
+  - !group sub1-apps
+  - !group sub2-apps
+
+- !grant
+  role: !group conjur/authn-azure/sub2/apps
+  member: !group sub2-apps

@@ -1,0 +1,6 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: False
+  tasks:
+    - debug: msg="{{ lookup('env', 'DB_UNAME') }}"
+    - debug: msg="{{ lookup('env', 'DB_PWD') }}"

@@ -1,0 +1,345 @@
+
+mergePullRequest(master,2021/03/01/,) =============
+Merge branch or base does not exist.
+
+mergePullRequest(master,access-request.json,) =============
+Merge branch or base does not exist.
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(./access-reqquest.json,/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(./access-reqquest.json,) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(./access-reqquest.json,) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.self.projectInfo.projectName.get(),/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.self.projectInfo.projectName.get(),) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.self.projectInfo.projectName.get(),) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.self.projectInfo.projectName.get(),/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.self.projectInfo.projectName.get(),) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.self.projectInfo.projectName.get(),) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.abad,/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.abad,) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.abad,) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.work,/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.work,) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.work,) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.now,/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.now,) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.now,) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+createBranch(master,) =============
+{
+  "message": "refs/heads/ is not a valid ref name.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+commitFile(access-request.almost,/) =============
+{
+  "message": "path cannot start with a slash",
+  "errors": [
+    {
+      "resource": "Commit",
+      "field": "path",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/repos#create-or-update-file-contents"
+}
+
+createPullRequest(access-request.almost,) =============
+{
+  "message": "Validation Failed",
+  "errors": [
+    {
+      "resource": "PullRequest",
+      "field": "head",
+      "code": "invalid"
+    }
+  ],
+  "documentation_url": "https://docs.github.com/rest/reference/pulls#create-a-pull-request"
+}
+
+requestPRReview(access-request.almost,) =============
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+mergePullRequest(master,./access-request,) =============
+Merge branch or base does not exist.
+
+createBranch(master,) =============
+{
+  "message": "Invalid request.\n\nAt least 40 characters are required; only 4 were supplied.",
+  "documentation_url": "https://docs.github.com/rest/reference/git#create-a-reference"
+}
+{
+  "message": "Branch not found",
+  "documentation_url": "https://docs.github.com/rest/reference/repos#update-branch-protection"
+}
+
+createBranch(master,) =============
+{
+  "message": "Bad credentials",
+  "documentation_url": "https://docs.github.com/rest"
+}
+{
+  "message": "Bad credentials",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+createBranch(master,) =============
+{
+  "message": "Bad credentials",
+  "documentation_url": "https://docs.github.com/rest"
+}
+{
+  "message": "Bad credentials",
+  "documentation_url": "https://docs.github.com/rest"
+}
+
+mergePullRequest(master,./access-request,) =============

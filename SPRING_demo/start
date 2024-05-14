@@ -1,0 +1,25 @@
+#!/bin/bash
+source ./spring-demo.config
+
+# Start the database if not running
+dbc=$($DOCKER ps | grep $MYSQL_CONTAINER)
+if [[ "$dbc" == "" ]]; then
+  cd mysql && ./start_db && cd ..
+fi
+
+./stop-app
+
+cybr conjur logon-non-interactive
+cybr conjur append-policy -b root -f ./policy/spring-demo.yml
+export DEMO_LOGIN=host/spring-apps/spring-demo
+export CONJUR_AUTHN_API_KEY=$(cybr conjur rotate-api-key -l $DEMO_LOGIN)
+export CONJUR_AUTHN_LOGIN=$DEMO_LOGIN
+
+echo "Starting app container..."
+summon -p summon-conjur 		\
+  $DOCKER run -d			\
+    --add-host $CONJUR_LEADER_HOSTNAME:$CONJUR_LEADER_HOST_IP	\
+    --name $DEMO_CONTAINER		\
+    --env-file @SUMMONENVFILE		\
+    $DEMO_IMAGE				\
+    env 

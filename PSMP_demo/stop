@@ -1,0 +1,3 @@
+#!/bin/bash
+source ./psm4sshdemo.config
+docker stop $PSMP_CNAME && docker rm $PSMP_CNAME

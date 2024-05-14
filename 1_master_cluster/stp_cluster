@@ -1,0 +1,42 @@
+#!/bin/bash
+set -eou pipefail
+
+. ../config/conjur.config
+. ../config/utils.sh
+
+# Deletes a DAP Master HA cluster
+
+if [[ "$($DOCKER ps -a | grep conjur-haproxy)" != "" ]]; then
+  $DOCKER stop conjur-haproxy
+  $DOCKER rm conjur-haproxy
+fi
+
+conjur_nodes=$($DOCKER ps -a -f "label=role=conjur_node" --format "{{ .Names }}")
+for i in $conjur_nodes; do
+  $DOCKER stop $i
+  $DOCKER rm $i
+done
+
+if [[ "$($DOCKER ps -a | grep conjur-cli)" != "" ]]; then
+  $DOCKER stop conjur-cli
+  $DOCKER rm conjur-cli
+fi
+
+if [[ "$($DOCKER network list | grep $CONJUR_NETWORK)" != "" ]]; then
+  sleep 2
+  $DOCKER network rm $CONJUR_NETWORK
+fi
+
+if [[ "$($DOCKER volume list | grep $CONJUR_AUDIT_VOLUME)" != "" ]]; then
+  sleep 2
+  $DOCKER volume rm $CONJUR_AUDIT_VOLUME
+fi
+
+if [[ "$($DOCKER volume list | grep $CONJUR_NGINX_VOLUME)" != "" ]]; then
+  sleep 2
+  $DOCKER volume rm $CONJUR_NGINX_VOLUME
+fi
+
+scope stop
+
+echo "Conjur environment purged."

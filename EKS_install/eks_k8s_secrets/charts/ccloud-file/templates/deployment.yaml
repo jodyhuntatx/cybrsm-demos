@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: test-app
+  name: test-app
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-app
+  template:
+    metadata:
+      labels:
+        app: test-app
+      annotations:
+        conjur.org/debug-logging: "true"
+        conjur.org/log-traces: "true"
+        conjur.org/container-mode: sidecar
+        conjur.org/secrets-refresh-interval: 10s
+        conjur.org/secrets-refresh-enabled: 'true'
+        conjur.org/secrets-destination: file
+        conjur.org/conjur-secrets.user1: |
+          - username: {{ .Values.app_safe_secret_id_01 }}
+          - password: {{ .Values.app_safe_secret_id_02 }}
+        conjur.org/secret-file-path.user1: secrets.json
+        conjur.org/secret-file-format.user1: json
+    spec:
+      serviceAccountName:  {{ .Values.conjur_app_service_account }}
+      containers:
+        - name: test-app
+          image: alpine/curl
+          imagePullPolicy: IfNotPresent
+          command: ["sleep","infinity"]
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: conjur-status
+              mountPath: /conjur/status
+            - name: jwt-token
+              mountPath: /var/run/secrets/tokens
+            - name: conjur-secrets
+              mountPath: /conjur/secrets
+
+        - name: cyberark-secrets-provider-for-k8s
+          image: 'cyberark/secrets-provider-for-k8s:latest'
+          imagePullPolicy: IfNotPresent
+          #command: ["sleep","infinity"]
+          volumeMounts:
+            - name: conjur-status
+              mountPath: /conjur/status
+            - name: jwt-token
+              mountPath: /var/run/secrets/tokens
+            - name: podinfo
+              mountPath: /conjur/podinfo
+            - name: conjur-secrets
+              mountPath: /conjur/secrets
+          env:
+            - name: DEBUG
+              value: "true"
+            - name: CONJURAPI_LOG
+              value: "stdout"
+            - name: JWT_TOKEN_PATH
+              value: /var/run/secrets/tokens/jwt
+            - name: CONTAINER_MODE
+              value: sidecar
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: conjur-cloud
+      volumes:
+        - name: conjur-status
+          emptyDir:
+            medium: Memory
+        - name: jwt-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt
+                  expirationSeconds: 6000
+                  audience: conjur
+        - name: podinfo
+          downwardAPI:
+            items:
+              - path: "annotations"
+                fieldRef:
+                  fieldPath: metadata.annotations
+        - name: conjur-secrets
+          emptyDir:
+            medium: Memory

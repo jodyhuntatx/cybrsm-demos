@@ -1,0 +1,5 @@
+# applied to branch "data"
+# grants access to gitlab secrets
+- !grant
+  role: !group vault/gitlab-cybrlab-conjur-cloud/delegation/consumers
+  member: !host {{ WORKLOAD_ID }}

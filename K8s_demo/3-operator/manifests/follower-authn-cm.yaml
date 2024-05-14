@@ -1,0 +1,3 @@
+authenticators: 
+  - authn-k8s/mac-k8s
+  - authn-jwt/user1

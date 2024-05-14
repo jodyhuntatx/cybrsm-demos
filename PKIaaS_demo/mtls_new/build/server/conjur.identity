@@ -1,0 +1,3 @@
+machine https://conjur-master-mac:443/authn
+  login host/mutual-tls/server
+  password 25h4zrc3fh0xyk3hqzc33manr0p1gy3h3b3arzf1p3fynaff2c19rqt

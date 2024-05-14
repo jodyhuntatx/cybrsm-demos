@@ -1,0 +1,50 @@
+{
+  "safeRequest": {
+    "vaultName": "DemoVault",
+    "cpmName": "PasswordManager",
+    "lobName": "CICD",
+    "requestor": "{{ REQUESTOR }}",
+    "projectName": "{{ PROJECT_NAME }}",
+    "safeName": "{{ PROJECT_NAME }}",
+    "environment": "{{ ENVIRONMENT }}"
+  },
+  "identities": [
+    {
+      "identity": "!host {{ PROJECT_NAME }}/app-example-sidecar
+    },
+    {
+      "identity": "!host {{ PROJECT_NAME }}/admin-app",
+      "managed_identity": "true",
+      "authn": {
+        "type": "k8s",
+        "id": "mac-k8s",
+        "annotations": [
+          {
+            "key": "authn-k8s/namespace",
+            "value": "user1"
+          },
+          {
+            "key": "authn-k8s/service-account",
+            "value": "app-example-sidecar"
+          },
+          {
+            "key": "authn-k8s/authentication-container-name",
+            "value": "authenticator"
+          }
+        ]
+      }
+    }
+  ],
+  "accountRequests": [
+    {
+      "accountName": "MySQL-Dev",
+      "platformId": "MySQL",
+      "systemType": "Database",
+      "address": "conjur-master-mac",
+      "port": 3306,
+      "database": "petclinic",
+      "userName": "devapp1",
+      "secretType": "password"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+<dashboard>
+  <label>Conjur - Failed Logins</label>
+  <row>
+    <panel>
+      <title>Total Failed Logins</title>
+      <single>
+        <search>
+          <query>HTTP_code=401 | stats count as "action"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>By IP Address</title>
+      <chart>
+        <search>
+          <query>HTTP_code=401 | chart count by IP_address</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>By Client App</title>
+      <chart>
+        <search>
+          <query>HTTP_code=401  | chart count by Client</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+pushd setup
+  ./1-setup-demos.sh
+  ./2-setup-conjur.sh
+  ./3-load-app-policy.sh my-jenkins-job
+  ./4-start-jenkins.sh
+popd

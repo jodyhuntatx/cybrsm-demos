@@ -1,0 +1,5 @@
+echo "Freestyle shell step:"
+sh "echo -n DB_UNAME="
+sh "echo $DB_UNAME | sed 's/./& /g'"
+sh "echo -n DB_PWD="
+sh "echo $DB_PWD | sed 's/./& /g'"

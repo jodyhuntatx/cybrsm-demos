@@ -1,0 +1,6 @@
+#!/bin/bash 
+source ./self-serve.bashlib
+if [[ $# != 1 ]]; then echo "Usage: $0 <access-request-filename>"; exit -1; fi
+export ACCESS_REQUEST_JSON_FILE=$1
+delete-safe-and-accounts $ACCESS_REQUEST_JSON_FILE
+delete-managed-identities $ACCESS_REQUEST_JSON_FILE

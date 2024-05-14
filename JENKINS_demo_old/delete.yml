@@ -1,0 +1,2 @@
+- !delete
+  record: !host jenkins/plugin-demo-pipeline

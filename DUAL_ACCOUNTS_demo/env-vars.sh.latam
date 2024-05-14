@@ -1,0 +1,78 @@
+# Edit this file substituting correct values for '<<YOUR_VALUE_HERE>>'
+
+# set to 'true' for self-hosted PAM, 'false' for Pcloud
+export SELF_HOSTED_PAM="false"
+if $SELF_HOSTED_PAM; then
+  ENV_TAG="Self-Hosted"
+else
+  ENV_TAG="Pcloud"
+fi
+
+##################################################
+# CyberArk tenant values
+
+# URL of your CyberArk Identity tenant - no trailing slash
+export IDENTITY_TENANT_URL=https://latamlab.my.idaptive.app
+
+# URL of your CyberArk Privilege Cloud tenant - no trailing slash
+export PCLOUD_BASE_URL=https://latamlab.cyberark.cloud
+
+#export INSTALLERUSER=installeruser@cyberark.cloud.3357
+#export INSTALLERUSER_PASSWORD=$(keyring get cybrid installeruserpwd)
+
+if $SELF_HOSTED_PAM; then
+  export INSTALLERUSER=Administrator
+  export INSTALLERUSER_PASSWORD=$(keyring get cybrid pasadminpwd)
+fi
+
+###########################################################
+# THERE SHOULD BE NO NEED TO CHANGE ANYTHING BELOW THIS LINE.
+# ALL VALUES BELOW ARE DEFAULTS, PRESET, DERIVED FROM ABOVE
+# OR PROMPTED FOR.
+###########################################################
+
+tmp=$(echo $PCLOUD_BASE_URL | cut -d'/' -f3)
+export CYBERARK_SUBDOMAIN_NAME=$(echo $tmp | cut -d'.' -f1)
+
+###########################################################
+# A CyberArk admin user is needed for all vault administration.
+# The admin user must be a Service user & Oauth2 confidential client
+# in CyberArk Identity and must be granted the Privilege Cloud Administrator
+# role.
+
+# Prompt for admin user name if not already set
+if [[ "$CYBERARK_ADMIN_USER" == "" ]]; then
+  echo -n "Please enter the name of the CyberArk admin service user: "
+  read admin_user
+  export CYBERARK_ADMIN_USER=$admin_user
+fi
+
+# Prompt for admin password if not already set
+if [[ "$CYBERARK_ADMIN_PWD" == "" ]]; then
+  echo -n "Please enter password for $CYBERARK_ADMIN_USER: "
+  unset password
+  while IFS= read -r -s -n1 pass; do
+    if [[ -z $pass ]]; then
+       echo
+       break
+    else
+       echo -n '*'
+       password+=$pass
+    fi
+  done
+  export CYBERARK_ADMIN_PWD=$password
+fi
+
+# CyberArk Product API URLS
+
+export PCLOUD_URL=https://$CYBERARK_SUBDOMAIN_NAME.privilegecloud.cyberark.cloud/PasswordVault/api
+export PCLOUD_URL_V1=https://$CYBERARK_SUBDOMAIN_NAME.privilegecloud.cyberark.cloud/PasswordVault/WebServices/PIMServices.svc
+
+# For testing with Self-Hosted PAM, instead of Pcloud
+if $SELF_HOSTED_PAM; then
+  LOCAL_VAULT_BASE_URL=https://comp-server/PasswordVault/API
+  export PCLOUD_URL=$LOCAL_VAULT_BASE_URL
+fi
+
+##########################################################
+# END

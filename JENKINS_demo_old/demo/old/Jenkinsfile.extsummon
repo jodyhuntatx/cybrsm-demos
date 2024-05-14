@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    stages {
+        stage ('Do some work') {
+            steps {
+                echo "Doing work with DB_UNAME value ${DB_UNAME}"
+            }
+        }
+        stage ('Doing more work') {
+            steps {
+                echo "Doing work with DB_PASSWORD value ${DB_PWD}"
+            }
+        }
+    }
+}

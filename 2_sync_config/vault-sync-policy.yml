@@ -1,0 +1,14 @@
+---
+- !group DemoVault-admins
+
+- !policy
+  id: DemoVault
+  owner: !group DemoVault-admins
+
+- !host
+  id: Sync_WIN-6COKN51MA8P
+
+- !grant
+  role: !group DemoVault-admins
+  members:
+  - !host Sync_WIN-6COKN51MA8P

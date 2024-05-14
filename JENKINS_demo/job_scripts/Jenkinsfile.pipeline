@@ -1,0 +1,19 @@
+node {
+   stage('Test') {
+       withCredentials([
+        conjurSecretCredential(credentialsId: 'jenkins-variable-id', variable: 'DB_PWD')
+	]) {
+		sh "echo"
+		sh "echo Pipeline job:"
+		sh "date"
+		sh "echo Test:"
+		sh "echo -n DB_PWD="
+		sh "echo $DB_PWD | sed 's/./& /g'"
+		sh "echo"
+       }
+   }
+
+   stage('Results') {
+       echo "Finished!"
+   }
+}

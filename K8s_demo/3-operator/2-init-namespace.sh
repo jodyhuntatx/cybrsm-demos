@@ -1,0 +1,169 @@
+#!/bin/bash 
+
+if [[ -z "${CONJUR_HOME}" ]]; then
+  echo "Set CONJUR_HOME to demo base directory."; exit -1
+fi
+source $CONJUR_HOME/config/conjur.config
+source $CONJUR_HOME/bin/conjur_utils.sh
+
+main() {
+  if [[ "$PLATFORM" == "openshift" ]]; then
+    $CLI login -u $CLUSTER_ADMIN
+  fi
+
+  if [[ "$1" == "clean" ]]; then
+    clean_user_labs
+    clean_namespace
+    exit 0
+  fi
+
+  mkdir -p ./manifests
+  init_namespace
+  create_lab_namespaces
+  create_secrets_access_clusterrole
+  load_namespace_policies
+
+  if [[ "$PLATFORM" == "openshift" ]]; then
+    update_htpasswd_file
+    grant_user_access_to_conjur_cm
+    grant_user_access_to_lab_images
+  fi
+}
+
+########################
+clean_namespace() {
+  $CLI delete -f ./manifests/$CYBERARK_NAMESPACE_NAME-manifest.yaml -n $CYBERARK_NAMESPACE_NAME --ignore-not-found
+  rm -f ./manifests/$CYBERARK_NAMESPACE_NAME-manifest.yaml
+}
+
+########################
+init_namespace() {
+  cat ./templates/CYBERARK-namespace-manifest.template.yaml			\
+  | sed -e "s#{{ CYBERARK_NAMESPACE_NAME }}#$CYBERARK_NAMESPACE_NAME#g"		\
+  | sed -e "s#{{ CYBERARK_NAMESPACE_ADMIN }}#$CYBERARK_NAMESPACE_ADMIN#g"	\
+  > ./manifests/$CYBERARK_NAMESPACE_NAME-namespace-manifest.yaml
+
+  $CLI apply -f ./manifests/$CYBERARK_NAMESPACE_NAME-namespace-manifest.yaml -n $CYBERARK_NAMESPACE_NAME
+
+  if [[ "$PLATFORM" == "openshift" ]]; then
+    $CLI adm policy add-scc-to-user anyuid -z conjur-authn-service -n $CYBERARK_NAMESPACE_NAME
+
+  fi
+}
+
+#############################
+clean_user_labs() {
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))
+  do
+    uname=$(echo user${unum})
+    mkdir -p ./manifests
+    $CLI delete -f ./manifests/$uname-manifest.yaml -n $uname --ignore-not-found
+    rm -f ./manifests/$uname-manifest.yaml > /dev/null
+    rm -f ./manifests/$uname-policy.yaml > /dev/null
+    $CLI delete ns $uname
+
+    if [[ "$PLATFORM" == "openshift" ]]; then
+      $CLI delete user $uname --ignore-not-found
+      $CLI delete identity $LAB_HTPASS_PROVIDER:$uname --ignore-not-found
+      $CLI delete -f ./manifests/$uname-conjur-cm-rolebinding.yaml -n $CYBERARK_NAMESPACE_NAME --ignore-not-found
+      rm -f ./manifests/$uname-conjur-cm-rolebinding.yaml
+      rm -f users.htpasswd
+    fi
+  done
+
+}
+
+#############################
+create_lab_namespaces() {
+
+  # For OpenShift, use template that creates user
+  NAMESPACE_TEMPLATE_FILE=./templates/APP_NAMESPACE-manifest.template.yaml
+  if [[ "$PLATFORM" == "openshift" ]]; then
+    NAMESPACE_TEMPLATE_FILE=./templates/APP_NAMESPACE-manifest-ocp.template.yaml
+  fi
+
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))	# apply manifest for namespace and user 
+  do
+    uname=$(echo user${unum})
+    sed -e "s#{{ APP_NAMESPACE_NAME }}#$uname#g" 			\
+	$NAMESPACE_TEMPLATE_FILE					\
+    | sed -e "s#{{ APP_NAMESPACE_ADMIN }}#$uname#g"			\
+    | sed -e "s#{{ CYBERARK_NAMESPACE_NAME }}#$CYBERARK_NAMESPACE_NAME#g" \
+    > ./manifests/$uname-manifest.yaml
+    $CLI apply -f ./manifests/$uname-manifest.yaml -n $uname
+  done
+}
+
+#############################
+create_secrets_access_clusterrole() {
+  $CLI apply -f ./templates/secrets-access-clusterrole.template.yaml
+}
+
+#############################
+# Update EXISTING htpasswd file for users
+# Doc: https://docs.openshift.com/container-platform/4.4/authentication/identity_providers/configuring-htpasswd-identity-provider.html
+
+update_htpasswd_file() {
+  $CLI get secret $LAB_HTPASS_SECRET -ojsonpath={.data.htpasswd} -n openshift-config | $BASE64D > users.htpasswd
+  if [[ $(du -k users.htpasswd | cut -f 1)  == 0 ]]; then
+    echo "Password file users.htpasswd is empty."
+    exit -1
+  fi
+
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))
+  do
+    uname=$(echo user${unum})
+    passwd=$(echo user${unum})
+    htpasswd -B -b users.htpasswd $uname $passwd
+  done
+
+  $CLI create secret generic $LAB_HTPASS_SECRET --from-file=htpasswd=users.htpasswd --dry-run -o yaml -n openshift-config | $CLI replace -f -
+}
+
+#############################
+# Grant user namespace service accounts access to images in CYBERARK_NAMESPACE_NAME
+grant_user_access_to_lab_images() {
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ )); do
+     $CLI policy add-role-to-group					\
+	system:image-puller system:serviceaccounts:user$unum:default	\
+	--namespace=$CYBERARK_NAMESPACE_NAME
+     $CLI policy add-role-to-user			\
+	system:image-auditor user$unum		\
+	--namespace=$CYBERARK_NAMESPACE_NAME
+  done
+}
+
+#############################
+grant_user_access_to_conjur_cm() {
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))	# apply manifest for namespace and user 
+  do
+    uname=$(echo user${unum})
+    sed -e "s#{{ APP_NAMESPACE_NAME }}#$uname#g" 			\
+	./templates/conjur-cm-rolebinding.template.yaml			\
+    | sed -e "s#{{ APP_NAMESPACE_ADMIN }}#$uname#g"			\
+    | sed -e "s#{{ CYBERARK_NAMESPACE_NAME }}#$CYBERARK_NAMESPACE_NAME#g" \
+    > ./manifests/$uname-conjur-cm-rolebinding.yaml
+    $CLI apply -f ./manifests/$uname-conjur-cm-rolebinding.yaml -n $CYBERARK_NAMESPACE_NAME
+  done
+}
+
+#############################
+load_namespace_policies() {
+  cat ./templates/follower-policy.template.yml	\
+  > ./manifests/follower-policy.yml
+  conjur_append_policy root ./manifests/follower-policy.yml
+  
+  for (( unum=1; unum<=$NUM_USER_NAMESPACES; unum++ ))	# apply manifest for namespace and user 
+  do
+    uname=$(echo user${unum})
+    sed -e "s#{{ APP_NAMESPACE_NAME }}#$uname#g" 			\
+	./templates/APP_NAMESPACE-policy.template.yaml			\
+    | sed -e "s#{{ APP_NAMESPACE_ADMIN }}#$uname#g"			\
+    | sed -e "s#{{ CLUSTER_AUTHN_ID }}#$CLUSTER_AUTHN_ID#g"		\
+    | sed -e "s#{{ SECRETS_ACCESS_ROLE }}#$SECRETS_ACCESS_ROLE#g"	\
+    > ./manifests/$uname-policy.yaml
+    conjur_append_policy root ./manifests/$uname-policy.yaml
+  done
+}
+
+main "$@"

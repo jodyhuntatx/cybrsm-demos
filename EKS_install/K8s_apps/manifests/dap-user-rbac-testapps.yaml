@@ -1,0 +1,54 @@
+# Define project namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testapps
+  labels:
+    name: testapps
+
+# Grant Follower service account access to pods in testapps namespace
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: conjur-authenticator
+  namespace: testapps
+subjects:
+- kind: ServiceAccount
+  name: conjur-cluster
+  namespace: cyberark
+roleRef:
+  kind: ClusterRole
+  name: conjur-authenticator
+  apiGroup: rbac.authorization.k8s.io
+
+# Grant developer read-only access to the DAP config map
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dap-cm-access-binding
+  namespace: cyberark
+subjects:
+- kind: User
+  name: developer
+roleRef:
+  kind: ClusterRole
+  name: dap-cmaccess
+  apiGroup: rbac.authorization.k8s.io
+
+# Grant developer namespace admin privileges
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: project-admin-access-binding
+  namespace: testapps
+subjects:
+- kind: User
+  name: developer
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io

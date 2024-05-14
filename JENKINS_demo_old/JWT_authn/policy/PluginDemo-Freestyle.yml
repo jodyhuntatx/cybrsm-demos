@@ -1,0 +1,20 @@
+- !policy
+  id: ossjenkins
+  body:
+    - !group
+
+    - &hosts
+        - !host
+            id: PluginDemo-Freestyle
+            annotations:
+                authn-jwt/ossjenkins/jenkins_full_name: PluginDemo-Freestyle
+#                authn-jwt/ossjenkins/{{ JWT_CLAIM2_NAME }}: {{ JWT_CLAIM2_VALUE }}
+#                authn-jwt/ossjenkins/{{ JWT_CLAIM3_NAME }}: {{ JWT_CLAIM3_VALUE }}
+
+    - !grant 
+        role: !group
+        members: *hosts
+
+- !grant
+    role: !group conjur/authn-jwt/ossjenkins/consumers
+    member: !group ossjenkins

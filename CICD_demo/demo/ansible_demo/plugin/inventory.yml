@@ -1,0 +1,2 @@
+[demoMachines]
+localhost ansible_connection=local

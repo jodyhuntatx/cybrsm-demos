@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+    stages {
+        stage("DEV stage") {
+            steps {
+                sh "summon -e dev -f /demo/secrets.yml /demo/secrets_echo.sh"
+            }
+        }
+        stage("TEST stage") {
+            steps {
+                sh "summon -e test -f /demo/secrets.yml /demo/secrets_echo.sh"
+            }
+        }
+        stage("PROD stage") {
+            steps {
+                sh "summon -e prod -f /demo/secrets.yml /demo/secrets_echo.sh"
+            }
+        }
+    }
+}

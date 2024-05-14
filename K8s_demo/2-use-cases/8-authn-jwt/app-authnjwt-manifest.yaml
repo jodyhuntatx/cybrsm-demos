@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-example-authnjwt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: app-example-authnjwt
+  name: app-example-authnjwt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-example-authnjwt
+  template:
+    metadata:
+      labels:
+        app: app-example-authnjwt
+    spec:
+      serviceAccountName: app-example-authnjwt
+
+      containers:
+      - image: k8s-app:alpine
+        imagePullPolicy: IfNotPresent
+        name: test-app
+        env:
+
+          - name: AUTHN_JWT_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: AUTHN_JWT_ID
+
+          - name: DB_HOSTNAME_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: DB_HOSTNAME_ID
+
+          - name: DB_NAME_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: DB_NAME_ID
+
+          - name: DB_UNAME_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: DB_UNAME_ID
+
+          - name: DB_PWD_ID
+            valueFrom:
+              configMapKeyRef:
+                name: app-config-map
+                key: DB_PWD_ID
+
+        # values from Conjur config map
+          - name: CONJUR_ACCOUNT
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_ACCOUNT
+          - name: CONJUR_APPLIANCE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_APPLIANCE_URL
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-config
+                key: CONJUR_FOLLOWER_CERTIFICATE
+
+#        resources:
+#          requests:
+#            cpu: "300m"
+#            memory: "250Mi"
+#          limits:
+#            cpu: "300m"
+#            memory: "250Mi"
+

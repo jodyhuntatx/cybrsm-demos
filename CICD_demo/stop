@@ -1,0 +1,3 @@
+source ../config/conjur.config
+echo "Stopping and removing client_node container..."
+docker stop cicddemo && docker rm cicddemo

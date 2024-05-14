@@ -1,0 +1,31 @@
+---
+# =================================================
+# == Register the authentication service for a cluster
+# =================================================
+- !policy
+  id: conjur/authn-jwt/{{ APP_NAMESPACE_NAME }}
+  annotations:
+    description: authn-jwt defs for an application namespace cluster
+  body:
+
+  # vars for ocp/k8s api url & access creds
+  - !variable public-keys
+  - !variable issuer
+  - !variable token-app-property
+  - !variable identity-path
+  - !variable audience
+
+  - !webservice
+    annotations:
+      description: authn service for namespace {{ APP_NAMESPACE_NAME }}
+
+  # Hosts that can authenticate become members of the
+  # `consumers` group.
+  - !group consumers
+
+  # Grant consumers group role authentication privileges
+  - !permit
+    role: !group consumers
+    privilege: [ read, authenticate ]
+    resource: !webservice
+

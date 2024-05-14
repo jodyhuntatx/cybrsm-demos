@@ -1,0 +1,4 @@
+---
+- !revoke
+  role: !group DemoVault/CICD/CICD_Secrets/delegation/consumers
+  member: !host tf-build-ids/tf-id-2

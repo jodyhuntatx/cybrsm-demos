@@ -1,0 +1,65 @@
+#!/bin/bash
+source ./wasascpdemo.config
+
+# Download MSSQL JDBC driver here:
+#  https://docs.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server?view=sql-server-ver15
+
+# Build images if not found
+if [[ "$(docker images mssqlserver -q)" == "" ]]; then
+  docker build . -f ./Dockerfile.mssql-db -t mssqlserver:latest
+fi
+
+if [[ "$(docker images mssql-cli -q)" == "" ]]; then
+  docker build . -f ./Dockerfile.mssql-cli -t mssql-cli:latest
+fi
+
+./db-stop
+
+echo "Starting database & cli containers..."
+docker run -d \
+    -h mssqlserver \
+    --name mssqlserver \
+    -e "ACCEPT_EULA=yes" \
+    -e "SA_PASSWORD=Cyberark1" \
+    -e "MSSQL_PID=Developer" \
+    -p 1433:1433 \
+    mssqlserver:latest
+
+docker run -d \
+    -h mssql-cli \
+    --name mssql-cli \
+    --add-host "$DB_HOSTNAME:$DB_HOST_IP" \
+    --entrypoint sh \
+    mssql-cli:latest \
+    -c "sleep infinity"
+
+echo -n "Waiting for database to be available..."
+status=""
+while [[ -z $status ]]; do
+  status=$(docker exec mssql-cli bash -c "sqlcmd -S $DB_HOSTNAME -U sa -P Cyberark1 -Q 'select name from sys.databases' 2> /dev/null" | grep name)
+  echo -n "."
+  sleep 3
+done
+echo
+
+echo "Initializing petclinic database..."
+cat db-petclinic.sql		\
+  | docker exec -i mssql-cli	\
+        /opt/mssql-tools/bin/sqlcmd -S $DB_HOSTNAME -U sa -P Cyberark1 -i /dev/stdin
+
+echo "Adding user account - these credentials should match those to be retrieved from EPV"
+echo "  Database: $DB_NAME"
+echo "  Username: $DB_USERNAME"
+echo "  Password: $DB_PASSWORD"
+cat db-adduseracct.sql				\
+  | sed -e "s/{{ DATABASE }}/$DB_NAME/g"	\
+  | sed -e "s/{{ USERNAME }}/$DB_USERNAME/g"	\
+  | sed -e "s/{{ PASSWORD }}/$DB_PASSWORD/g"	\
+  | docker exec -i mssql-cli			\
+        /opt/mssql-tools/bin/sqlcmd -S $DB_HOSTNAME -U sa -P Cyberark1 -i /dev/stdin
+
+echo "Writing DB creds to dbcreds.tmp..."
+echo "DB credentials for database account:"
+echo "  Database: $DB_NAME" > dbcreds.tmp
+echo "  Username: $DB_USERNAME" >> dbcreds.tmp
+echo "  Password: $DB_PASSWORD" >> dbcreds.tmp

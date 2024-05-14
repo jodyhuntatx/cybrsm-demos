@@ -1,0 +1,110 @@
+=======================================
+=======================================
+	Initial impressions
+=======================================
+=======================================
+- User experience should be firmly guided by the product and supported by documentation. Currently the user must often resort to trial and error. Without a high-level workflow to follow, the user must guess at next steps.
+- The tenant guides the user to one-time assessment scanning and reporting. This is the user's first impression, so should be well laid out with a recipe leading to success. User should be directed to well-tested integrations that are known to work.
+- Gitlab scanning did not work. There was an obvious typo in the value for the base URL variable in anun_env/lib/python3.8/site-packages/anun_configure_cust
+omer/common/gitlab/gitlab_client.py. Automated regression testing should catch that kind of thing.
+- Github scanning worked and there was clear indication that data had been sent to the Anun console. But there was no evidence of that in the tenant, so next steps were unclear. Configuring a report did not present scan data from which to compose the report.
+- Apparently the API key determines the tenant to which scan data is sent. I did not change the API from the Prod tenant to my personal tenant. I was wondering why I never saw scan data in my personal tenant until I realized I had not changed the API key. Suggest scan CLI indicate the name or other ID for the tenant to which it is sending data.
+- Tracer configuration for GitLab requires a Docker runner configuration but that is not stated anywhere.
+- 'nc' is a blacklisted command in a CyberArk security rule, but using 'nc' in a pipeline does not trigger an event. This suggests that all that is required to bypass tracer detection is a command alias.
+- Apparently the Tracer knows its tenant based on the tracer installation. This is not consistent with the Scanner. It would seem explicitly identifying the target Tenant may prevent confusion in the case a customer has more than one tenant. Admittedly, I'm not sure how often that might arise.
+- Doubt about text MFA configuration.
+
+=======================================
+=======================================
+		Anun Scanner
+=======================================
+=======================================
+
+###################
+# Dockerfile config
+
+- Installing pyenv is not trivial and required some research.
+- Recommend providing full Dockerfile
+
+###################
+## Scanner CLI installation error:
+
+Building wheels for collected packages: azure-devops, pipfile, grapheme
+  Building wheel for azure-devops (setup.py): started
+  Building wheel for azure-devops (setup.py): finished with status 'error'
+  ERROR: Command errored out with exit status 1:
+   command: /demo/anun_env/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-znq9unw3/azure-devops/setup.py'"'"'; __file__='"'"'/tmp/pip-install-znq9unw3/azure-devops/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-fbhjsrkm
+       cwd: /tmp/pip-install-znq9unw3/azure-devops/
+  Complete output (6 lines):
+  usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+     or: setup.py --help [cmd1 cmd2 ...]
+     or: setup.py --help-commands
+     or: setup.py cmd --help
+
+  error: invalid command 'bdist_wheel'
+  ----------------------------------------
+  ERROR: Failed building wheel for azure-devops
+  Running setup.py clean for azure-devops
+  Building wheel for pipfile (setup.py): started
+  Building wheel for pipfile (setup.py): finished with status 'error'
+  ERROR: Command errored out with exit status 1:
+   command: /demo/anun_env/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-znq9unw3/pipfile/setup.py'"'"'; __file__='"'"'/tmp/pip-install-znq9unw3/pipfile/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-l85rlg0c
+       cwd: /tmp/pip-install-znq9unw3/pipfile/
+  Complete output (6 lines):
+  usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+     or: setup.py --help [cmd1 cmd2 ...]
+     or: setup.py --help-commands
+     or: setup.py cmd --help
+
+  error: invalid command 'bdist_wheel'
+  ----------------------------------------
+  ERROR: Failed building wheel for pipfile
+  Running setup.py clean for pipfile
+  Building wheel for grapheme (setup.py): started
+  Building wheel for grapheme (setup.py): finished with status 'error'
+  ERROR: Command errored out with exit status 1:
+   command: /demo/anun_env/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-znq9unw3/grapheme/setup.py'"'"'; __file__='"'"'/tmp/pip-install-znq9unw3/grapheme/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-qqp9vlcw
+       cwd: /tmp/pip-install-znq9unw3/grapheme/
+  Complete output (6 lines):
+  usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+     or: setup.py --help [cmd1 cmd2 ...]
+     or: setup.py --help-commands
+     or: setup.py cmd --help
+
+  error: invalid command 'bdist_wheel'
+  ----------------------------------------
+  ERROR: Failed building wheel for grapheme
+  Running setup.py clean for grapheme
+Failed to build azure-devops pipfile grapheme
+
+#########################################################
+## GitLab scanning
+
+- Scanning gets error:
+    2023-06-13 13:22:27,329 - root - INFO - Retrieving execution policy
+    2023-06-13 13:22:33,598 - root - INFO - Successfully fetched execution policy
+    2023-06-13 13:22:34,134 - root - ERROR - An error has occurred while trying to resolve workspaces for gitlab
+    2023-06-13 13:22:34,135 - root - ERROR - 'GitlabClient' object has no attribute 'base_url'
+    please notice the errors above and rerun the script
+
+- The GitLab/GitLab CI icons show up in the pipeline overview but are unconfigured.
+
+#########################################################
+## GitHub scanning 
+- GitHub scanning works, and shows that data was successfully sent to anun. But there is no confirmation in Anun console that a scan was run or that scan data is ready.
+- Assessment Report - no indication that data is available for reporting.
+
+=======================================
+=======================================
+		Anun Tracer
+=======================================
+=======================================
+- Directions are vague for runner configuration. A Docker Ubuntu Linux runner is required, but not specified. It is not possible to build a Runner image from base image and add Tracer because of ptrace requirements.
+- Docker runner config requires adding the SYS_PTRACE capability in the runner's config.toml. This is not documented.
+  [runners.docker]
+    cap_add = ["SYS_PTRACE"]
+- There are many kinds of GitLab runners. Does anun only work with Docker/Ubuntu?
+- Any plans for Windows build support?
+- Events take a few minutes to show up in the console. User expectation should be set accordingly.
+- 'nc' is listed as a CyberArk-defined blacklisted command. But invoking nc in a build pipeline does not trigger an event.
+

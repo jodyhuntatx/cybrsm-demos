@@ -1,0 +1,22 @@
+Configuration Safe:
+https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/CommonTasks.htm
+ Provider:
+ - Use accounts
+ - Retrieve accounts
+ - List accounts
+ - Add accounts
+ - Update password value
+ - Update password properties
+ - Rename accounts
+ - Create/Rename folders
+
+Account Safe:
+https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/Testing-Installation.htm
+ Provider:
+ - List accounts
+ - Retrieve accounts
+ - View Safe Members
+
+ AppID:
+ - List accounts
+ - Retrieve accounts

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Reference Include="ConjurClient">
+      <HintPath>/demo/conjur-api-net-core-master/src/ConjurClient/bin/Release/netcoreapp3.1/ConjurClient.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+</Project>

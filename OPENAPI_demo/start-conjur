@@ -1,0 +1,123 @@
+#!/bin/bash 
+
+# Conjur Open Source Quick Start
+#
+# Implementation of startup instructions from:
+#   https://www.conjur.org/get-started/quick-start/oss-environment/
+
+export IMAGES="svagi/openssl:latest
+  cfmanteiga/alpine-bash-curl-jq
+  postgres:9.4
+  cyberark/conjur
+  nginx:1.13.6-alpine
+  cyberark/conjur-cli:5"
+
+export CONJUR_ACCOUNT=myConjurAccount
+
+main() {
+  ./stop-conjur
+  1_setup_a_conjur_oss_environment
+  2_define_policy
+  3_store_a_secret_in_conjur
+  4_run_the_demo_app
+}
+
+################################
+function 1_setup_a_conjur_oss_environment() {
+  echo
+  echo "### Setup a Conjur OSS environment ###"
+  echo "Cloning github repo cyberark/conjur-quickstart..."
+  git clone https://github.com/cyberark/conjur-quickstart.git > /dev/null 2>&1
+  pushd conjur-quickstart > /dev/null 2>&1
+    echo
+    echo "Step 1: Pull the Docker images:"
+    for img in $IMAGES; do
+      echo "  $img"
+      success=$(docker images -q $img)
+      while [[ $success == "" ]]; do  # retry image pulls due to timeouts
+        docker pull $img
+        success=$(docker images -q $img)
+      done
+    done
+    echo
+    echo "Steps 2 & 3: Generate master key & Load master key as environment variable..."
+    docker-compose run --no-deps --rm conjur data-key generate > data_key
+    export CONJUR_DATA_KEY="$(< data_key)"
+    echo
+    echo "Step 4: Start the Conjur OSS environment..."
+    docker-compose up -d
+    docker-compose ps -a
+    sleep 5	# give server time to finish initialization
+    echo
+    echo "Step 5: Create admin account..."
+    docker-compose exec conjur conjurctl account create $CONJUR_ACCOUNT > admin_data
+    echo
+    echo "Step 6: Connect the Conjur client to the Conjur server..."
+    docker-compose exec client conjur init -u conjur -a $CONJUR_ACCOUNT
+  popd > /dev/null 2>&1
+  echo "Conjur OSS environment setup completed."
+  echo "#######################################"
+}
+
+################################
+function 2_define_policy() {
+  echo
+  echo "### Define policy ###"
+  pushd conjur-quickstart > /dev/null 2>&1
+    echo
+    echo "Step 1: Log in to Conjur as admin..."
+    admin_login
+    echo
+    echo "Step 2: Load the sample policy..."
+    docker-compose exec client conjur policy load root policy/BotApp.yml > my_app_data
+    echo
+    echo "Step 3: Log out of Conjur..."
+    docker-compose exec client conjur authn logout
+  popd > /dev/null 2>&1
+}
+
+################################
+function 3_store_a_secret_in_conjur() {
+  echo
+  echo "### Store a secret in Conjur ###"
+  pushd conjur-quickstart > /dev/null 2>&1
+    echo
+    echo "Step 1: Log in as Dave..."
+    DAVE_API_KEY=$(cat my_app_data | grep -v policy | jq .created_roles | jq -r '.["myConjurAccount:user:Dave@BotApp"].api_key')
+    docker-compose exec client conjur authn login -u Dave@BotApp -p $DAVE_API_KEY
+    docker-compose exec client conjur authn whoami
+    echo
+    echo "Step 2: Generate a secret..."
+    secretVal=$(openssl rand -hex 12 | tr -d '\r\n')
+    echo
+    echo "Step 3: Store the secret..."
+    docker-compose exec client conjur variable values add BotApp/secretVar ${secretVal}
+  popd > /dev/null 2>&1
+}
+
+################################
+function 4_run_the_demo_app() {
+  echo
+  echo "### Run the Demo App ###"
+  pushd conjur-quickstart > /dev/null 2>&1
+    echo
+    echo "Step 1: Start a bash session...<skipping>"
+    echo
+    echo "Step 2: Generate a Conjur token..."
+    BOTAPP_API_KEY=$(cat my_app_data | grep -v policy | jq .created_roles | jq -r '.["myConjurAccount:host:BotApp/myDemoApp"].api_key')
+    docker exec -it bot_app \
+	curl -d $BOTAPP_API_KEY -k https://proxy/authn/myConjurAccount/host%2FBotApp%2FmyDemoApp/authenticate > conjur_token
+    docker cp conjur_token bot_app:/tmp/conjur_token
+    echo
+    echo "Step 3: Fetch the secret..."
+    docker exec -it bot_app /tmp/program.sh
+  popd > /dev/null 2>&1
+}
+
+################################
+function admin_login() {
+  ADMIN_API_KEY=$(cat admin_data | grep "API key" | cut -d : -f 2 | tr -d ' \r\n')
+  docker-compose exec client conjur authn login -u admin -p $ADMIN_API_KEY
+}
+
+main "$@"

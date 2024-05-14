@@ -1,0 +1,5 @@
+#!/bin/bash
+./1-deploy-operator.sh
+./2-init-namespace.sh
+./3-init-k8s.sh
+./4-deploy-follower.sh

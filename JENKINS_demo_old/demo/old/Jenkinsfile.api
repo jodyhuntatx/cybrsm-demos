@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        EXECUTOR_HOSTNAME = "Executor-" + "${env.NODE_NAME}-" + "${env.EXECUTOR_NUMBER}"
+        CONJUR_URL = "${env.CONJUR_APPLIANCE_URL}"
+        CONJUR_CERT = "${env.CONJUR_CERT_FILE}"
+    }
+
+    stages {
+        stage ('Get auth token') {
+            steps {
+                withCredentials([string(credentialsId: 'ConjurHFToken', variable: 'HF_TOKEN')]) {
+                    script {
+                        AUTH_TOKEN = sh (
+                            script: "/demo/get_authn_token.sh $HF_TOKEN $EXECUTOR_HOSTNAME $CONJUR_URL $CONJUR_CERT",
+                            returnStdout: true
+                        ).trim()
+                    }
+                }
+            }
+        }
+        stage ('Pull secret and do some work') {
+            steps {
+                script {
+                    DB_UNAME = sh (
+                            script: "/demo/get_variable_value.sh $AUTH_TOKEN secrets/db_username $CONJUR_URL $CONJUR_CERT",
+                            returnStdout: true
+                    ).trim()
+                    echo "Pulled DB_UNAME value $DB_UNAME"
+                }
+            }
+        }
+        stage ('Pull another secret and do more work') {
+            steps {
+                script {
+                    DB_PWD = sh (
+                            script: "/demo/get_variable_value.sh $AUTH_TOKEN secrets/db_password $CONJUR_URL $CONJUR_CERT",
+                            returnStdout: true
+                    ).trim()
+                    echo "Pulled DB_PWD value $DB_PWD"
+                }
+            }
+        }
+    }
+}
